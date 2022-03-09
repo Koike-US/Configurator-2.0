@@ -10,6 +10,9 @@ using System.IO;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
+using MongoDB.Bson;
+using MongoDB.Driver;
+
 
 using System.Text.RegularExpressions;
 
@@ -19,53 +22,40 @@ namespace Configurator_2._0
     {
         public void updateDBs()
         {
-            string bUpName = Globals.dbDir + @"Database Backups\" + Path.GetFileNameWithoutExtension(Globals.dbName) + "_" + DateTime.Now.ToShortDateString().Replace(@"/","_") + Path.GetExtension(Globals.dbName);
-            if(File.Exists(bUpName) == false)
-            {
-                File.Copy(Globals.dbFile, bUpName);
-            }
-            Globals.dataBase = new DataSet();
-            var dbConnStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + Globals.dbFile + "';Extended Properties=\"Excel 12.0;HDR=YES;\"";
+            string mongoDbAtlasString = "mongodb+srv://messer:5hoSjwIpbCwKSdH2@cluster0.gftmk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+            MongoClient dbClient = new MongoClient(mongoDbAtlasString);
+            var database = dbClient.GetDatabase("configurator_db");
+            var collectionList = database.ListCollectionNames().ToList();
 
-            using (OleDbConnection conn = new OleDbConnection(dbConnStr))
+            foreach (var collectionName in collectionList)
             {
-                try
+                var collection = database.GetCollection<BsonDocument>(collectionName);
+                var documents = collection.Find(new BsonDocument()).ToList();
+
+                DataTable dt = new DataTable();
+                dt.TableName = collectionName;
+                foreach (BsonDocument doc in documents)
                 {
-                    conn.Open();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString());//"Cannot Connect to Configurator Database. Please try again and contact Support if the issue continues.");
-                    conn.Close();
-                    conn.Dispose();
-                    Application.Exit();
-                }
-                DataTable shts = conn.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Tables, null);
-                using (var cmd = conn.CreateCommand())
-                {
-                    foreach (DataRow r in shts.Rows)
+                    foreach (BsonElement elm in doc.Elements)
                     {
-                        try
+                        if (!dt.Columns.Contains(elm.Name))
                         {
-                            DataTable dt = new DataTable();
-                            cmd.CommandText = "SELECT * FROM [" + r["TABLE_NAME"].ToString() + "] ";
-                            var adapter = new OleDbDataAdapter(cmd);
-                            adapter.Fill(dt);
-                            if (dt.Rows.Count < 1)
-                            {
-                                continue;
-                            }
-                            dt.TableName = r["TABLE_NAME"].ToString().Replace("$", "").Replace("_", " ").Replace("'", "");
-                            Globals.dataBase.Tables.Add(delEmptyRows(dt));
+                            dt.Columns.Add(new DataColumn(elm.Name));
                         }
-                        catch { }
-                    }
-                }
-                conn.Close();
-                conn.Dispose();
-                GC.Collect();
-            }
 
+                    }
+                    Console.WriteLine(dt.Columns.ToString());
+                    DataRow dr = dt.NewRow();
+                    foreach (BsonElement elm in doc.Elements)
+                    {
+                        if (elm.Name == "")
+                            continue;
+                        dr[elm.Name] = elm.Value;
+                    }
+                    dt.Rows.Add(dr);
+                }
+                Globals.dataBase.Tables.Add(dt);
+            }
             Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"];
             Globals.compData = Globals.dataBase.Tables["Component Database"];
             Globals.machineData = Globals.dataBase.Tables["Machine Data"];
