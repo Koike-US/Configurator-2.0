@@ -99,7 +99,19 @@
     </Compile>
     <Compile Include="dataTypes.cs" />
     <Compile Include="checkListGen.cs" />
+    <Compile Include="helpForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="helpForm.Designer.cs">
+      <DependentUpon>helpForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Globals.cs" />
+    <Compile Include="machineSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="machineSearch.Designer.cs">
+      <DependentUpon>machineSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
@@ -114,6 +126,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Configurator.resx">
       <DependentUpon>Configurator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="helpForm.resx">
+      <DependentUpon>helpForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="machineSearch.resx">
+      <DependentUpon>machineSearch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

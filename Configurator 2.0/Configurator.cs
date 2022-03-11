@@ -287,10 +287,11 @@ namespace Configurator_2._0
             Globals.machine.revision = dr2.Rows[0].Field<string>("Revision");
 
             Globals.machine.checkName = dr2.Rows[0].Field<string>("Base CL Name");
+            Globals.machine.machCode = dr2.Rows[0].Field<string>("MachCode");
             Globals.machine.checkEnd = dr2.Rows[0].Field<string>("End CL Name");
             Globals.machine.machName = selVal;
             Globals.machine.partType = DivisionCombo.Text;
-            Globals.machine.desc = dr2.Rows[0].Field<string>("Description") + ", ";
+            Globals.machine.desc = dr2.Rows[0].Field<string>("ModelCombo") + ", ";
             Globals.machine.snList[0] =dr2.Rows[0].Field<string>("Smart PN");
             Globals.machine.soNum = soBox.Text;
             component c = new component();
@@ -557,7 +558,7 @@ namespace Configurator_2._0
             }
             return comps.ToArray();
         }
-        private void finddNum()
+        private void findDumNum()
         {
             string dNum = "";
             string prefix = Globals.machine.prefix;
@@ -599,7 +600,7 @@ namespace Configurator_2._0
                 pType = "CM";
             }
             //Number PartDescription Epicor_Mfgcomment Epicor_Purcomment   Epicor_Mfg_name Epicor_MFGPartNum   Epicor_RandD_c Epicor_createdbylegacy_c    Epicor_PartType_c Epicor_EngComment_c Epicor_Confreq_c Epicor_EA_Manf_c    Epicor_EA_Volts_c Epicor_EA_Phase_c   Epicor_EA_Freq_c Epicor_EA_FLA_Supply_c  Epicor_EA_FLA_LgMot_c Epicor_EA_ProtDevRating_c   Epicor_EA_PannelSCCR_c Epicor_EA_EncRating_c   Revision Epicor_RevisionDescription  Dwg.Rev.Epicor_FullRel_c Reference Count PartRev.DrawNum_c Part.Model_c PartTypeElectrical  PartRev.DrawSize_c PartRev.SheetCount_c
-            string[] mRow = (Globals.machine.dumNum + "," + Globals.machine.desc.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,A,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.dwgName + "," + Globals.machine.machName + ",FALSE," + Globals.machine.dwgSize + ",").Split(',');
+            string[] mRow = (Globals.machine.dumNum + "," + Globals.machine.desc.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,A,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.dwgName + "," + Globals.machine.machCode + ",FALSE," + Globals.machine.dwgSize + ",").Split(',');
 
             //string[] mRow = (Globals.machine.dumNum + "," + Globals.machine.desc.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() +"," + Globals.machine.partType + ",,False, , , , , , , , , ," + Globals.machine.dumNum + ",A," + "New Machine" + "," + Globals.machine.dwgRev + ",1," + Globals.machine.dumNum + ",A,1,,,FALSE,,FALSE," + Globals.machine.dwgName + "," + Globals.machine.dwgSize + ",,").Split(',');
             int i = 0;
@@ -679,7 +680,7 @@ namespace Configurator_2._0
                     smartNum = smartNum + "-" + i;
                 }
             }
-            finddNum();
+            findDumNum();
             timesConfBox.Text = "0";
             confNumBox.Text = "";
             dwgNumBox.Text = Globals.machine.dwgName;
@@ -829,19 +830,24 @@ namespace Configurator_2._0
                 return;
             }
             ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
-            Info.Arguments = "Machine Configurator 1";
-            Info.UseShellExecute = true;
+            Info.Arguments = "Configurator 1";
+            //Info.UseShellExecute = true;
             Process.Start(Info);
+            
             Application.Exit();
         }
         private void requestsButt_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://forms.clickup.com/f/85n7e-434/7LVVFXREY1COZ692U6");
         }
-
         private void faqButt_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://app.clickup.com/8574190/v/l/li/82070636?pr=14768824");
+        }
+        private void helpButt_Click(object sender, EventArgs e)
+        {
+            helpForm help = new helpForm();
+            help.Show();
         }
     }
 }

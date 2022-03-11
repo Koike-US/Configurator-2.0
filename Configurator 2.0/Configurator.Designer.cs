@@ -66,13 +66,14 @@
             this.label11 = new System.Windows.Forms.Label();
             this.userBox = new System.Windows.Forms.TextBox();
             this.faqButt = new System.Windows.Forms.Button();
+            this.helpButt = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // TypeCombo
             // 
             this.TypeCombo.FormattingEnabled = true;
-            this.TypeCombo.Location = new System.Drawing.Point(12, 143);
+            this.TypeCombo.Location = new System.Drawing.Point(12, 89);
             this.TypeCombo.Name = "TypeCombo";
             this.TypeCombo.Size = new System.Drawing.Size(288, 21);
             this.TypeCombo.TabIndex = 2;
@@ -80,7 +81,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(307, 146);
+            this.label1.Location = new System.Drawing.Point(307, 92);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 1;
@@ -90,14 +91,14 @@
             // 
             this.soBox.Location = new System.Drawing.Point(12, 12);
             this.soBox.Name = "soBox";
-            this.soBox.Size = new System.Drawing.Size(100, 20);
+            this.soBox.Size = new System.Drawing.Size(58, 20);
             this.soBox.TabIndex = 0;
             this.soBox.TextChanged += new System.EventHandler(this.soBox_TextChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(118, 19);
+            this.label2.Location = new System.Drawing.Point(76, 19);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 13);
             this.label2.TabIndex = 3;
@@ -106,7 +107,7 @@
             // LineCombo
             // 
             this.LineCombo.FormattingEnabled = true;
-            this.LineCombo.Location = new System.Drawing.Point(12, 170);
+            this.LineCombo.Location = new System.Drawing.Point(12, 116);
             this.LineCombo.Name = "LineCombo";
             this.LineCombo.Size = new System.Drawing.Size(288, 21);
             this.LineCombo.TabIndex = 4;
@@ -114,7 +115,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(307, 173);
+            this.label3.Location = new System.Drawing.Point(307, 119);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 13);
             this.label3.TabIndex = 5;
@@ -123,7 +124,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(307, 200);
+            this.label4.Location = new System.Drawing.Point(307, 146);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(80, 13);
             this.label4.TabIndex = 7;
@@ -132,7 +133,7 @@
             // ModelCombo
             // 
             this.ModelCombo.FormattingEnabled = true;
-            this.ModelCombo.Location = new System.Drawing.Point(12, 197);
+            this.ModelCombo.Location = new System.Drawing.Point(12, 143);
             this.ModelCombo.Name = "ModelCombo";
             this.ModelCombo.Size = new System.Drawing.Size(288, 21);
             this.ModelCombo.TabIndex = 6;
@@ -140,7 +141,7 @@
             // DivisionCombo
             // 
             this.DivisionCombo.FormattingEnabled = true;
-            this.DivisionCombo.Location = new System.Drawing.Point(12, 116);
+            this.DivisionCombo.Location = new System.Drawing.Point(12, 62);
             this.DivisionCombo.Name = "DivisionCombo";
             this.DivisionCombo.Size = new System.Drawing.Size(288, 21);
             this.DivisionCombo.TabIndex = 1;
@@ -148,7 +149,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(307, 119);
+            this.label5.Location = new System.Drawing.Point(307, 65);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(44, 13);
             this.label5.TabIndex = 9;
@@ -156,7 +157,7 @@
             // 
             // confButt
             // 
-            this.confButt.Location = new System.Drawing.Point(525, 9);
+            this.confButt.Location = new System.Drawing.Point(413, 10);
             this.confButt.Name = "confButt";
             this.confButt.Size = new System.Drawing.Size(137, 23);
             this.confButt.TabIndex = 10;
@@ -166,7 +167,7 @@
             // 
             // exportButt
             // 
-            this.exportButt.Location = new System.Drawing.Point(525, 38);
+            this.exportButt.Location = new System.Drawing.Point(556, 10);
             this.exportButt.Name = "exportButt";
             this.exportButt.Size = new System.Drawing.Size(137, 23);
             this.exportButt.TabIndex = 11;
@@ -177,9 +178,9 @@
             // addCompButt
             // 
             this.addCompButt.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.addCompButt.Location = new System.Drawing.Point(670, 38);
+            this.addCompButt.Location = new System.Drawing.Point(1166, 292);
             this.addCompButt.Name = "addCompButt";
-            this.addCompButt.Size = new System.Drawing.Size(137, 23);
+            this.addCompButt.Size = new System.Drawing.Size(110, 23);
             this.addCompButt.TabIndex = 13;
             this.addCompButt.Text = "Add Component";
             this.addCompButt.UseVisualStyleBackColor = true;
@@ -187,7 +188,7 @@
             // 
             // clearButt
             // 
-            this.clearButt.Location = new System.Drawing.Point(668, 9);
+            this.clearButt.Location = new System.Drawing.Point(699, 9);
             this.clearButt.Name = "clearButt";
             this.clearButt.Size = new System.Drawing.Size(137, 23);
             this.clearButt.TabIndex = 14;
@@ -197,9 +198,9 @@
             // 
             // addOptButt
             // 
-            this.addOptButt.Location = new System.Drawing.Point(811, 38);
+            this.addOptButt.Location = new System.Drawing.Point(1166, 263);
             this.addOptButt.Name = "addOptButt";
-            this.addOptButt.Size = new System.Drawing.Size(137, 23);
+            this.addOptButt.Size = new System.Drawing.Size(110, 23);
             this.addOptButt.TabIndex = 15;
             this.addOptButt.Text = "Add Option";
             this.addOptButt.UseVisualStyleBackColor = true;
@@ -207,9 +208,9 @@
             // 
             // quitButt
             // 
-            this.quitButt.Location = new System.Drawing.Point(1097, 9);
+            this.quitButt.Location = new System.Drawing.Point(1166, 567);
             this.quitButt.Name = "quitButt";
-            this.quitButt.Size = new System.Drawing.Size(137, 23);
+            this.quitButt.Size = new System.Drawing.Size(110, 23);
             this.quitButt.TabIndex = 16;
             this.quitButt.Text = "Quit";
             this.quitButt.UseVisualStyleBackColor = true;
@@ -220,7 +221,7 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(525, 116);
+            this.dataGridView1.Location = new System.Drawing.Point(413, 119);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.Size = new System.Drawing.Size(747, 471);
@@ -228,9 +229,9 @@
             // 
             // addMachButt
             // 
-            this.addMachButt.Location = new System.Drawing.Point(954, 38);
+            this.addMachButt.Location = new System.Drawing.Point(1166, 234);
             this.addMachButt.Name = "addMachButt";
-            this.addMachButt.Size = new System.Drawing.Size(137, 23);
+            this.addMachButt.Size = new System.Drawing.Size(110, 23);
             this.addMachButt.TabIndex = 19;
             this.addMachButt.Text = "Add Machine";
             this.addMachButt.UseVisualStyleBackColor = true;
@@ -238,7 +239,7 @@
             // 
             // timesConfBox
             // 
-            this.timesConfBox.Location = new System.Drawing.Point(617, 67);
+            this.timesConfBox.Location = new System.Drawing.Point(716, 96);
             this.timesConfBox.Name = "timesConfBox";
             this.timesConfBox.ReadOnly = true;
             this.timesConfBox.Size = new System.Drawing.Size(55, 20);
@@ -247,7 +248,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(522, 70);
+            this.label6.Location = new System.Drawing.Point(621, 99);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(89, 13);
             this.label6.TabIndex = 21;
@@ -256,7 +257,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(698, 70);
+            this.label7.Location = new System.Drawing.Point(420, 100);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(109, 13);
             this.label7.TabIndex = 22;
@@ -264,7 +265,7 @@
             // 
             // confNumBox
             // 
-            this.confNumBox.Location = new System.Drawing.Point(813, 66);
+            this.confNumBox.Location = new System.Drawing.Point(535, 96);
             this.confNumBox.Name = "confNumBox";
             this.confNumBox.ReadOnly = true;
             this.confNumBox.Size = new System.Drawing.Size(80, 20);
@@ -273,7 +274,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(522, 96);
+            this.label8.Location = new System.Drawing.Point(777, 99);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(86, 13);
             this.label8.TabIndex = 25;
@@ -281,16 +282,16 @@
             // 
             // dwgNumBox
             // 
-            this.dwgNumBox.Location = new System.Drawing.Point(617, 93);
+            this.dwgNumBox.Location = new System.Drawing.Point(872, 96);
             this.dwgNumBox.Name = "dwgNumBox";
             this.dwgNumBox.ReadOnly = true;
-            this.dwgNumBox.Size = new System.Drawing.Size(190, 20);
+            this.dwgNumBox.Size = new System.Drawing.Size(118, 20);
             this.dwgNumBox.TabIndex = 24;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(813, 96);
+            this.label9.Location = new System.Drawing.Point(996, 99);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(69, 13);
             this.label9.TabIndex = 27;
@@ -298,24 +299,24 @@
             // 
             // dwgSizeBox
             // 
-            this.dwgSizeBox.Location = new System.Drawing.Point(888, 93);
+            this.dwgSizeBox.Location = new System.Drawing.Point(1071, 96);
             this.dwgSizeBox.Name = "dwgSizeBox";
             this.dwgSizeBox.ReadOnly = true;
-            this.dwgSizeBox.Size = new System.Drawing.Size(190, 20);
+            this.dwgSizeBox.Size = new System.Drawing.Size(49, 20);
             this.dwgSizeBox.TabIndex = 26;
             // 
             // prevSoCombo
             // 
             this.prevSoCombo.FormattingEnabled = true;
-            this.prevSoCombo.Location = new System.Drawing.Point(12, 40);
+            this.prevSoCombo.Location = new System.Drawing.Point(999, 66);
             this.prevSoCombo.Name = "prevSoCombo";
-            this.prevSoCombo.Size = new System.Drawing.Size(121, 21);
+            this.prevSoCombo.Size = new System.Drawing.Size(92, 21);
             this.prevSoCombo.TabIndex = 28;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(139, 43);
+            this.label10.Location = new System.Drawing.Point(879, 70);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(111, 13);
             this.label10.TabIndex = 29;
@@ -323,9 +324,9 @@
             // 
             // checkDBButt
             // 
-            this.checkDBButt.Location = new System.Drawing.Point(811, 9);
+            this.checkDBButt.Location = new System.Drawing.Point(1166, 321);
             this.checkDBButt.Name = "checkDBButt";
-            this.checkDBButt.Size = new System.Drawing.Size(137, 23);
+            this.checkDBButt.Size = new System.Drawing.Size(110, 23);
             this.checkDBButt.TabIndex = 30;
             this.checkDBButt.Text = "Check DBs";
             this.checkDBButt.UseVisualStyleBackColor = true;
@@ -333,9 +334,9 @@
             // 
             // refreshDBButt
             // 
-            this.refreshDBButt.Location = new System.Drawing.Point(954, 9);
+            this.refreshDBButt.Location = new System.Drawing.Point(1166, 350);
             this.refreshDBButt.Name = "refreshDBButt";
-            this.refreshDBButt.Size = new System.Drawing.Size(137, 23);
+            this.refreshDBButt.Size = new System.Drawing.Size(110, 23);
             this.refreshDBButt.TabIndex = 31;
             this.refreshDBButt.Text = "Refresh DB";
             this.refreshDBButt.UseVisualStyleBackColor = true;
@@ -346,7 +347,7 @@
             this.expEpicorCheck.AutoSize = true;
             this.expEpicorCheck.Checked = true;
             this.expEpicorCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.expEpicorCheck.Location = new System.Drawing.Point(418, 14);
+            this.expEpicorCheck.Location = new System.Drawing.Point(144, 44);
             this.expEpicorCheck.Name = "expEpicorCheck";
             this.expEpicorCheck.Size = new System.Drawing.Size(101, 17);
             this.expEpicorCheck.TabIndex = 32;
@@ -355,9 +356,9 @@
             // 
             // updateConfButt
             // 
-            this.updateConfButt.Location = new System.Drawing.Point(1097, 38);
+            this.updateConfButt.Location = new System.Drawing.Point(1166, 538);
             this.updateConfButt.Name = "updateConfButt";
-            this.updateConfButt.Size = new System.Drawing.Size(137, 23);
+            this.updateConfButt.Size = new System.Drawing.Size(110, 23);
             this.updateConfButt.TabIndex = 33;
             this.updateConfButt.Text = "Update Configurator";
             this.updateConfButt.UseVisualStyleBackColor = true;
@@ -366,7 +367,7 @@
             // testExpCheck
             // 
             this.testExpCheck.AutoSize = true;
-            this.testExpCheck.Location = new System.Drawing.Point(418, 44);
+            this.testExpCheck.Location = new System.Drawing.Point(12, 44);
             this.testExpCheck.Name = "testExpCheck";
             this.testExpCheck.Size = new System.Drawing.Size(80, 17);
             this.testExpCheck.TabIndex = 34;
@@ -375,9 +376,9 @@
             // 
             // requestsButt
             // 
-            this.requestsButt.Location = new System.Drawing.Point(1097, 67);
+            this.requestsButt.Location = new System.Drawing.Point(1166, 379);
             this.requestsButt.Name = "requestsButt";
-            this.requestsButt.Size = new System.Drawing.Size(137, 23);
+            this.requestsButt.Size = new System.Drawing.Size(110, 23);
             this.requestsButt.TabIndex = 35;
             this.requestsButt.Text = "Requests/Issues";
             this.requestsButt.UseVisualStyleBackColor = true;
@@ -386,7 +387,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(118, 77);
+            this.label11.Location = new System.Drawing.Point(210, 19);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(61, 13);
             this.label11.TabIndex = 37;
@@ -394,20 +395,30 @@
             // 
             // userBox
             // 
-            this.userBox.Location = new System.Drawing.Point(12, 70);
+            this.userBox.Location = new System.Drawing.Point(144, 12);
             this.userBox.Name = "userBox";
-            this.userBox.Size = new System.Drawing.Size(100, 20);
+            this.userBox.Size = new System.Drawing.Size(60, 20);
             this.userBox.TabIndex = 36;
             // 
             // faqButt
             // 
-            this.faqButt.Location = new System.Drawing.Point(1097, 93);
+            this.faqButt.Location = new System.Drawing.Point(1166, 408);
             this.faqButt.Name = "faqButt";
-            this.faqButt.Size = new System.Drawing.Size(137, 23);
+            this.faqButt.Size = new System.Drawing.Size(110, 23);
             this.faqButt.TabIndex = 38;
             this.faqButt.Text = "FAQ/Procedures";
             this.faqButt.UseVisualStyleBackColor = true;
             this.faqButt.Click += new System.EventHandler(this.faqButt_Click);
+            // 
+            // helpButt
+            // 
+            this.helpButt.Location = new System.Drawing.Point(1166, 437);
+            this.helpButt.Name = "helpButt";
+            this.helpButt.Size = new System.Drawing.Size(110, 23);
+            this.helpButt.TabIndex = 39;
+            this.helpButt.Text = "Help";
+            this.helpButt.UseVisualStyleBackColor = true;
+            this.helpButt.Click += new System.EventHandler(this.helpButt_Click);
             // 
             // Configurator
             // 
@@ -417,6 +428,7 @@
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.ClientSize = new System.Drawing.Size(1284, 1101);
             this.ControlBox = false;
+            this.Controls.Add(this.helpButt);
             this.Controls.Add(this.faqButt);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.userBox);
@@ -502,5 +514,6 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox userBox;
         private System.Windows.Forms.Button faqButt;
+        private System.Windows.Forms.Button helpButt;
     }
 }
