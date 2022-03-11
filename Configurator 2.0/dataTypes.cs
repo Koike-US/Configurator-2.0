@@ -70,6 +70,7 @@ namespace Configurator_2._0
         public string partType { get; set; }
         public int timesConfigured { get; set; }
         public string configuredDate { get; set; }
+        public string configuredBy { get; set; }
         public DataTable bom = new DataTable();
         public DataTable lines = new DataTable();
         public object[,] bomObj;

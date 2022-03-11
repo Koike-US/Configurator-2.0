@@ -710,6 +710,7 @@ namespace Configurator_2._0
                                 Globals.machine.EpicorPartNumber = dr[0].Field<string>("Epicor Part Number");
                                 timesConfBox.Text = Convert.ToInt32(dr[0].Field<string>("Times Configured")).ToString();
                                 Globals.machine.configuredDate = dr[0].Field<string>("Date Configured").ToString();
+                                Globals.machine.configuredBy = dr[0].Field<string>("User Added").ToString();
                                 timesConfBox.BackColor = System.Drawing.Color.LightGreen;
                                 confNumBox.Text = Globals.machine.EpicorPartNumber;
                                 confNumBox.BackColor = System.Drawing.Color.LightGreen;
@@ -726,6 +727,8 @@ namespace Configurator_2._0
 
             Globals.machine.SmartPartNumber = smartNum;
             Globals.machine.timesConfigured = Convert.ToInt32(timesConfBox.Text);
+            Globals.machine.configuredDate = DateTime.Now.ToShortDateString();
+            Globals.machine.configuredBy = Environment.UserName;
             Globals.utils.writeMachine();
             DataTable dt = Globals.machine.bom;
             dataGridView1.DataSource = dt;

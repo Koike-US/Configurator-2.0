@@ -334,7 +334,7 @@ namespace Configurator_2._0
             SimpleMachineData sm = new SimpleMachineData
             {
                 _id = _machineData.SmartPartNumber,
-                User_Added = Environment.UserName,
+                User_Added = _machineData.configuredBy,
                 Epicor_Part_Number = _machineData.EpicorPartNumber,
                 Description = _machineData.description,
                 Date_Configured = _machineData.configuredDate,
@@ -342,7 +342,7 @@ namespace Configurator_2._0
                 Times_Configured = _machineData.timesConfigured,
                 BOM = new List<SimplePartData>(),
                 Line_Items = new List<SimplePartData>(),
-                Sales_Orders = new List<string>()
+                Sales_Orders = new List<string>(),
             };
             foreach (var part in _machineData.bomComps)
             {
@@ -368,6 +368,11 @@ namespace Configurator_2._0
             }
             sm.Sales_Orders.Add(_machineData.soNum);
             sm.Times_Configured += 1;
+
+            if (string.IsNullOrEmpty(sm.User_Added))
+                sm.User_Added = Environment.UserName;
+            if (string.IsNullOrEmpty(sm.Date_Configured))
+                sm.Date_Configured = DateTime.Now.ToShortDateString();
 
             return sm;
         }
