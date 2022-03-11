@@ -402,11 +402,11 @@ namespace Configurator_2._0
             DataTable dt2 = getDT2(dt, col, parCol, val);
             //Determine if there is a max quantity for this option
             List<int> maxItems = new List<int>();
-            if (Globals.machine.machineName != null)
+            if (Globals.machine.machName != null)
             {
                 foreach (DataRow r in dt2.Rows)
                 {
-                    string dat = r.Field<string>(Globals.machine.machineName);
+                    string dat = r.Field<string>(Globals.machine.machName);
                     if (dat.Contains("{"))
                     {
                         string result = dat.Split(new string[] { "{", "}" }, 3, StringSplitOptions.None)[1];
@@ -459,7 +459,7 @@ namespace Configurator_2._0
                 {
                     headers.Add(dt2.Columns[k].ColumnName);
                 }
-                dv.RowFilter = "Isnull([" + Globals.machine.machineName + "],'') <> ''";
+                dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
 
                 dt2 = dv.ToTable(false, headers.ToArray());
                 int r = 0;
@@ -471,9 +471,9 @@ namespace Configurator_2._0
                     string req1 = dr.Field<string>("OptionReqs");
                     if (req1 == "+")
                     {
-                        if (dr.Field<string>(Globals.machine.machineName).Contains("["))
+                        if (dr.Field<string>(Globals.machine.machName).Contains("["))
                         {
-                            string[] req2 = dr.Field<string>(Globals.machine.machineName).Split('[', ']');
+                            string[] req2 = dr.Field<string>(Globals.machine.machName).Split('[', ']');
                             foreach (option opt in Globals.machine.selOpts)
                             {
                                 foreach (component c in opt.optComps)
@@ -528,7 +528,7 @@ namespace Configurator_2._0
                 DataTable dt3 = dt2.Copy();
                 foreach (DataColumn d in dt3.Columns)
                 {
-                    if (i > 5 && d.ColumnName.ToUpper() != Globals.machine.machineName.ToUpper())
+                    if (i > 5 && d.ColumnName.ToUpper() != Globals.machine.machName.ToUpper())
                     {
                         dt2.Columns.Remove(d.ColumnName);
                     }
@@ -564,7 +564,7 @@ namespace Configurator_2._0
                 {
                     headers.Add(dt2.Columns[k].ColumnName);
                 }
-                dv.RowFilter = "Isnull([" + Globals.machine.machineName + "],'') <> ''";
+                dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
                 dt2 = dv.ToTable(false, headers.ToArray());
                 if (dt2.Rows.Count > 0)
                 {
