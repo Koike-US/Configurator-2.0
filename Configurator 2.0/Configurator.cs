@@ -287,10 +287,11 @@ namespace Configurator_2._0
             Globals.machine.revision = dr2.Rows[0].Field<string>("Revision");
 
             Globals.machine.checkName = dr2.Rows[0].Field<string>("Base CL Name");
+            Globals.machine.machCode = dr2.Rows[0].Field<string>("MachCode");
             Globals.machine.checkEnd = dr2.Rows[0].Field<string>("End CL Name");
             Globals.machine.machineName = selVal;
             Globals.machine.partType = DivisionCombo.Text;
-            Globals.machine.description = dr2.Rows[0].Field<string>("Description") + ", ";
+            Globals.machine.desc = dr2.Rows[0].Field<string>("ModelCombo") + ", ";
             Globals.machine.snList[0] =dr2.Rows[0].Field<string>("Smart PN");
             Globals.machine.soNum = soBox.Text;
             component c = new component();
@@ -560,7 +561,7 @@ namespace Configurator_2._0
             }
             return comps.ToArray();
         }
-        private void finddNum()
+        private void findDumNum()
         {
             string dNum = "";
             string prefix = Globals.machine.prefix;
@@ -683,7 +684,7 @@ namespace Configurator_2._0
                     smartNum = smartNum + "-" + i;
                 }
             }
-            finddNum();
+            findDumNum();
             timesConfBox.Text = "0";
             confNumBox.Text = "";
             dwgNumBox.Text = Globals.machine.drawingName;
@@ -812,19 +813,24 @@ namespace Configurator_2._0
                 return;
             }
             ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
-            Info.Arguments = "Machine Configurator 1";
-            Info.UseShellExecute = true;
+            Info.Arguments = "Configurator 1";
+            //Info.UseShellExecute = true;
             Process.Start(Info);
+            
             Application.Exit();
         }
         private void requestsButt_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://forms.clickup.com/f/85n7e-434/7LVVFXREY1COZ692U6");
         }
-
         private void faqButt_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://app.clickup.com/8574190/v/l/li/82070636?pr=14768824");
+        }
+        private void helpButt_Click(object sender, EventArgs e)
+        {
+            helpForm help = new helpForm();
+            help.Show();
         }
     }
 }

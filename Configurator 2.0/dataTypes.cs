@@ -63,7 +63,8 @@ namespace Configurator_2._0
         public string drawingSize { get; set; }
         public string revision { get; set; }
         public string dwgRev { get; set; }
-        public string machineName { get; set; }
+        public string machName { get; set; }
+        public string machCode { get; set; }
         public string soNum { get; set; }
         public string checkName { get; set; }
         public string checkEnd { get; set; }
