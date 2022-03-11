@@ -75,6 +75,7 @@ namespace Configurator_2._0
         public DataTable lines = new DataTable();
         public object[,] bomObj;
         public List<string> snList = new List<string>();
+        public List<String> salesOrders = new List<string>();
         public List<component> bomComps = new List<component>();
         public List<component> lineComps = new List<component>();
         public List<option> selOpts = new List<option>();

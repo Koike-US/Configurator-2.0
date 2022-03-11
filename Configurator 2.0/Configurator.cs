@@ -701,21 +701,18 @@ namespace Configurator_2._0
                             List<string> confNum = new List<string>(); 
                             confNum.AddRange(Globals.confMachs.Rows[j][0].ToString().Split('-'));
                             confNum.Sort();
-                            if(j == 808)
-                            {
-                                string derp2 = "herp";
-                            }
                             if (confNum.SequenceEqual(sortedSNs))
                             {
                                 Globals.machine.EpicorPartNumber = dr[0].Field<string>("Epicor Part Number");
                                 timesConfBox.Text = Convert.ToInt32(dr[0].Field<string>("Times Configured")).ToString();
                                 Globals.machine.configuredDate = dr[0].Field<string>("Date Configured").ToString();
                                 Globals.machine.configuredBy = dr[0].Field<string>("User Added").ToString();
+                                var sales_orders = dr[0].Field<string>("Sales Orders").ToString().Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
                                 timesConfBox.BackColor = System.Drawing.Color.LightGreen;
                                 confNumBox.Text = Globals.machine.EpicorPartNumber;
                                 confNumBox.BackColor = System.Drawing.Color.LightGreen;
-                                string[] prevSOs = Globals.confMachs.Rows[j][9].ToString().Split(';');
-                                prevSoCombo.Items.AddRange(prevSOs);
+                                Globals.machine.salesOrders = sales_orders.ToList();
+                                prevSoCombo.Items.AddRange(sales_orders);
                                 Globals.foundRow = j;
                                 Globals.prevConf = true;
                                 break;
@@ -761,6 +758,7 @@ namespace Configurator_2._0
                 return;
             }
 
+            Globals.machine.salesOrders.Add(soBox.Text);
             Globals.utils.WriteMachineToDatabase(Globals.machine);
 
             if (expEpicorCheck.Checked == true || testExpCheck.Checked == true)
