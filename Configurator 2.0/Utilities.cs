@@ -26,6 +26,7 @@ namespace Configurator_2._0
             MongoClient dbClient = new MongoClient(mongoDbAtlasString);
             var database = dbClient.GetDatabase("configurator_db");
             var collectionList = database.ListCollectionNames().ToList();
+            Globals.dataBase = new DataSet();
 
             foreach (var collectionName in collectionList)
             {
@@ -38,9 +39,20 @@ namespace Configurator_2._0
                 {
                     foreach (BsonElement elm in doc.Elements)
                     {
-                        if (!dt.Columns.Contains(elm.Name))
+                        var collName = elm.Name.Replace("_"," ");
+                        if (collName == "" || collName == " id")
                         {
-                            dt.Columns.Add(new DataColumn(elm.Name));
+                            if (collectionName.Contains("CONF") && !dt.Columns.Contains("Part Number"))
+                            {
+                                dt.Columns.Add(new DataColumn("Part Number"));
+                            }
+
+                            continue;
+                        }
+
+                        if (!dt.Columns.Contains(collName))
+                        {
+                            dt.Columns.Add(new DataColumn(collName));
                         }
 
                     }
@@ -48,9 +60,19 @@ namespace Configurator_2._0
                     DataRow dr = dt.NewRow();
                     foreach (BsonElement elm in doc.Elements)
                     {
-                        if (elm.Name == "")
+                        var collName = elm.Name.Replace("_", " ");
+                        if (collName == "" || elm.Name == "_id")
+                        {
+                            if (collectionName.Contains("CONF") && !dt.Columns.Contains(collName))
+                                dr["Part Number"] = elm.Value.AsString.Replace("\"", "");
                             continue;
-                        dr[elm.Name] = elm.Value;
+                        }
+                        if(elm.Value is BsonString)
+                        {
+                            dr[collName] = elm.Value.AsString.Replace("\"", "");
+                            continue;
+                        }
+                        dr[collName] = elm.Value;
                     }
                     dt.Rows.Add(dr);
                 }
@@ -63,7 +85,7 @@ namespace Configurator_2._0
         }
         private void genDesc()
         {
-            Globals.machine.desc = Globals.machine.desc.Substring(0, Globals.machine.desc.IndexOf(",")+2);
+            Globals.machine.description = Globals.machine.description.Substring(0, Globals.machine.description.IndexOf(",")+2);
             DataTable dt = Globals.machine.bom;
             option[] derp = Globals.machine.selOpts.ToArray();
             for (int i = 0; i < Globals.machine.selOpts.Count; ++i)
@@ -72,10 +94,10 @@ namespace Configurator_2._0
                 {
                     string ding = Globals.machine.selOpts[i].optDesc;
                     string ring = Globals.machine.selOpts[i].optName;
-                    Globals.machine.desc = Globals.machine.desc + Globals.machine.selOpts[i].optDesc + ", ";
+                    Globals.machine.description = Globals.machine.description + Globals.machine.selOpts[i].optDesc + ", ";
                 }
             }
-            Globals.machine.desc = Globals.machine.desc.Substring(0, Globals.machine.desc.Length - 2);
+            Globals.machine.description = Globals.machine.description.Substring(0, Globals.machine.description.Length - 2);
         }
 
         public void writeMachine()
@@ -101,8 +123,8 @@ namespace Configurator_2._0
 
             dtl = dt.Copy();
             DateTime d = DateTime.Now;
-            dt.Rows.Add(Globals.machine.smartNum, "", "","", "1", d.ToShortDateString(), Environment.UserName, d.ToShortDateString(), "", Globals.machine.soNum + ";");
-            dt.Rows.Add(Globals.machine.dumNum, Globals.machine.desc, "", "","","","","", "","");
+            dt.Rows.Add(Globals.machine.SmartPartNumber, "", "","", "1", d.ToShortDateString(), Environment.UserName, d.ToShortDateString(), "", Globals.machine.soNum + ";");
+            dt.Rows.Add(Globals.machine.EpicorPartNumber, Globals.machine.description, "", "","","","","", "","");
             foreach(component c in Globals.machine.bomComps)
             {
                 dt.Rows.Add(c.number, c.desc, c.mrpType, c.qty, "", "", "", "", "", "");
@@ -301,100 +323,86 @@ namespace Configurator_2._0
         }
         public void writeExcel(object arr, string bkName, string shtName,  int ht, int len, int r, int c, string chkName)
         {
-            if (Globals.prevConf == true)
-            {
-                MessageBox.Show("Machine was Previously Configured. BOM Should have been imported into MRP System");
-                if (c == 1)
-                {
-                    return;
-                }
-            }
-            Excel.Application xl = new Excel.Application();
-            Excel.Workbook wrkbk;
-            if (File.Exists(bkName) == false)
-            {
-                wrkbk = xl.Workbooks.Add(Type.Missing);
-                wrkbk.SaveAs(bkName);
-            }
-            else
-            {
-                wrkbk  = xl.Workbooks.Open(bkName);
-            }
-            Excel.Worksheet wrksht = null;
-            if (shtName == "EpdmBOMTable")
-            {
-                wrksht = wrkbk.Sheets[1];
-                wrksht.Name = "EpdmBOMTable";
-            }
-            else
-            {
-                try
-                {
-                    wrksht = wrkbk.Worksheets[shtName];
-                }
-                catch//if(wrksht == null)
-                {
-                    wrksht = wrkbk.Worksheets["CONF TEMPLATE"];
-                    wrksht.Copy(wrkbk.Worksheets[wrkbk.Worksheets.Count]);
-                    wrksht = wrkbk.Worksheets[wrkbk.Worksheets.Count - 1];
-                    wrksht.Name = shtName;
-                }
-            }
-            int row = r+1;
-            if (c == 1)
-            {
-                row = 1;
-                bool insert = true;
-                if (r == -1)
-                {
-                    insert = false;
-                }
-                while (wrksht.Cells[row, 1].Value2 != null)
-                {
-                    if (insert == true)
-                    {
-                        if (wrksht.Cells[row, 2].Value2 == null && (wrksht.Cells[row, 1].Value2.Equals(chkName)))
-                        {
-                            wrksht.Rows[row + 1].Insert();
-                            break;
-                        }
-                    }
-                    else if (wrksht.Cells[row, 1].Value2.Equals(chkName))
-                    {
-                        break;
-                    }
-                    ++row;
-                }
-            }
-            Excel.Range c1 = (Excel.Range)wrksht.Cells[row, c];
-            Excel.Range c2 = (Excel.Range)wrksht.Cells[row+ht-1, c+len-1];
-            Excel.Range rng = wrksht.Range[c1, c2];
-            if (wrksht.Name.Contains("CONF"))
-            {
-                Excel.Range r1 = (Excel.Range)wrksht.Cells[2, 1];
-                Excel.Range r2 = (Excel.Range)wrksht.Cells[row, 1];
-                r2.Rows.EntireRow.Interior.Color = System.Drawing.Color.LightGreen;
-            }
-            rng.Value = arr;
-            wrkbk.Save();
-            wrkbk.Close(0);
-            xl.Quit();
-            GC.Collect();
-            Marshal.FinalReleaseComObject(wrkbk);
-            Marshal.FinalReleaseComObject(xl);
+            
+
             Globals.utils.updateDBs();
             return;
         }
+
+        public SimpleMachineData CreateSimpleMachine(MachineData _machineData)
+        {
+            SimpleMachineData sm = new SimpleMachineData
+            {
+                _id = _machineData.SmartPartNumber,
+                User_Added = Environment.UserName,
+                Epicor_Part_Number = _machineData.EpicorPartNumber,
+                Description = _machineData.description,
+                Date_Configured = _machineData.configuredDate,
+                Last_Configured = DateTime.Now.ToShortDateString(),
+                Times_Configured = _machineData.timesConfigured,
+                BOM = new List<SimplePartData>(),
+                Line_Items = new List<SimplePartData>(),
+                Sales_Orders = new List<string>()
+            };
+            foreach (var part in _machineData.bomComps)
+            {
+                SimplePartData sp = new SimplePartData
+                {
+                    Part_Number = part.number,
+                    Part_Description = part.desc,
+                    MRP_Type = part.mrpType,
+                    Qty = part.qty.ToString()
+                };
+                sm.BOM.Add(sp);
+            }
+            foreach (var part in _machineData.lineComps)
+            {
+                SimplePartData sp = new SimplePartData
+                {
+                    Part_Number = part.number,
+                    Part_Description = part.desc,
+                    MRP_Type = part.mrpType,
+                    Qty = part.qty.ToString()
+                };
+                sm.BOM.Add(sp);
+            }
+            sm.Sales_Orders.Add(_machineData.soNum);
+            sm.Times_Configured += 1;
+
+            return sm;
+        }
+
+        public bool WriteMachineToDatabase(MachineData _machineData)
+        {
+            SimpleMachineData simpleMachine = CreateSimpleMachine(_machineData);
+
+            string mongoDbAtlasString = "mongodb+srv://messer:5hoSjwIpbCwKSdH2@cluster0.gftmk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+            MongoClient dbClient = new MongoClient(mongoDbAtlasString);
+            var database = dbClient.GetDatabase("configurator_db");
+            var collectionName = Globals.machine.prefix + " CONF";
+            var collection = database.GetCollection<BsonDocument>(collectionName);
+
+            var filter = Builders<BsonDocument>.Filter
+                .Eq("_id", simpleMachine._id);
+
+            var replaceOption = new ReplaceOptions { IsUpsert = true };
+
+            collection.ReplaceOne(filter, simpleMachine.ToBsonDocument(), replaceOption);
+
+            return true;
+        }
+
+
         public int[] popItem(Control cb, DataTable dt, string col, string parCol, string val)
         {
             DataTable dt2 = getDT2(dt, col, parCol, val);
             //Determine if there is a max quantity for this option
             List<int> maxItems = new List<int>();
-            if (Globals.machine.machName != null)
+            if (Globals.machine.machineName != null)
             {
                 foreach (DataRow r in dt2.Rows)
                 {
-                    string dat = r.Field<string>(Globals.machine.machName);
+                    string dat = r.Field<string>(Globals.machine.machineName);
                     if (dat.Contains("{"))
                     {
                         string result = dat.Split(new string[] { "{", "}" }, 3, StringSplitOptions.None)[1];
@@ -447,7 +455,7 @@ namespace Configurator_2._0
                 {
                     headers.Add(dt2.Columns[k].ColumnName);
                 }
-                dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
+                dv.RowFilter = "Isnull([" + Globals.machine.machineName + "],'') <> ''";
 
                 dt2 = dv.ToTable(false, headers.ToArray());
                 int r = 0;
@@ -459,9 +467,9 @@ namespace Configurator_2._0
                     string req1 = dr.Field<string>("OptionReqs");
                     if (req1 == "+")
                     {
-                        if (dr.Field<string>(Globals.machine.machName).Contains("["))
+                        if (dr.Field<string>(Globals.machine.machineName).Contains("["))
                         {
-                            string[] req2 = dr.Field<string>(Globals.machine.machName).Split('[', ']');
+                            string[] req2 = dr.Field<string>(Globals.machine.machineName).Split('[', ']');
                             foreach (option opt in Globals.machine.selOpts)
                             {
                                 foreach (component c in opt.optComps)
@@ -516,7 +524,7 @@ namespace Configurator_2._0
                 DataTable dt3 = dt2.Copy();
                 foreach (DataColumn d in dt3.Columns)
                 {
-                    if (i > 5 && d.ColumnName.ToUpper() != Globals.machine.machName.ToUpper())
+                    if (i > 5 && d.ColumnName.ToUpper() != Globals.machine.machineName.ToUpper())
                     {
                         dt2.Columns.Remove(d.ColumnName);
                     }
@@ -552,7 +560,7 @@ namespace Configurator_2._0
                 {
                     headers.Add(dt2.Columns[k].ColumnName);
                 }
-                dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
+                dv.RowFilter = "Isnull([" + Globals.machine.machineName + "],'') <> ''";
                 dt2 = dv.ToTable(false, headers.ToArray());
                 if (dt2.Rows.Count > 0)
                 {

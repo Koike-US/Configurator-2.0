@@ -125,7 +125,7 @@ namespace Configurator_2._0
             cBoxH = 220;
             dataGridView1.DataSource = null;
             Task.Run(() => Globals.utils.updateDBs());
-            Globals.machine = new machData();
+            Globals.machine = new MachineData();
             Globals.prevConf = false;
             Globals.utils.popItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "", "");
             return;
@@ -227,7 +227,7 @@ namespace Configurator_2._0
 
             if (dbName == "OptionCompatability")
             {
-                if (co.Name != "ModelCombo" && Globals.machine.machName != null)
+                if (co.Name != "ModelCombo" && Globals.machine.machineName != null)
                 {
                     foreach (option o in Globals.machine.selOpts)
                     {
@@ -278,19 +278,19 @@ namespace Configurator_2._0
         {
             DataTable dr2 = Globals.machineData.Select("ModelCombo = '" + selVal + "'").CopyToDataTable();
             Globals.machine.prefix = dr2.Rows[0].Field<string>("Name Prefix");
-            Globals.machine.smartNum = dr2.Rows[0].Field<string>("Smart PN");
-            Globals.machine.partNum = dr2.Rows[0].Field<string>("Base Part Number");
-            Globals.machine.dwgName = dr2.Rows[0].Field<string>("Drawing Name");
-            Globals.machine.dwgSize = dr2.Rows[0].Field<string>("Drawing Size");
+            Globals.machine.SmartPartNumber = dr2.Rows[0].Field<string>("Smart PN");
+            Globals.machine.PartNumber = dr2.Rows[0].Field<string>("Base Part Number");
+            Globals.machine.drawingName = dr2.Rows[0].Field<string>("Drawing Name");
+            Globals.machine.drawingSize = dr2.Rows[0].Field<string>("Drawing Size");
 
             Globals.machine.dwgRev = dr2.Rows[0].Field<string>("Drawing Rev");
             Globals.machine.revision = dr2.Rows[0].Field<string>("Revision");
 
             Globals.machine.checkName = dr2.Rows[0].Field<string>("Base CL Name");
             Globals.machine.checkEnd = dr2.Rows[0].Field<string>("End CL Name");
-            Globals.machine.machName = selVal;
+            Globals.machine.machineName = selVal;
             Globals.machine.partType = DivisionCombo.Text;
-            Globals.machine.desc = dr2.Rows[0].Field<string>("Description") + ", ";
+            Globals.machine.description = dr2.Rows[0].Field<string>("Description") + ", ";
             Globals.machine.snList[0] =dr2.Rows[0].Field<string>("Smart PN");
             Globals.machine.soNum = soBox.Text;
             component c = new component();
@@ -504,7 +504,7 @@ namespace Configurator_2._0
         private component[] getCompData(DataRow dr, int optQty)
         {
             List<component> comps = new List<component>();
-            string[] compList = dr.Field<string>(Globals.machine.machName).Split(',');
+            string[] compList = dr.Field<string>(Globals.machine.machineName).Split(',');
             DataTable dt = Globals.compData;
             string comp = "";
             foreach(string lComp in compList)
@@ -534,7 +534,10 @@ namespace Configurator_2._0
                     }
                     c.addType = dr2.Field<string>("Add Type");
                     c.desc = dr2.Field<string>("Part Description");
-                    c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
+                    if (string.IsNullOrWhiteSpace(dr2.Field<string>("Max Qty")) == false)
+                    {
+                        c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
+                    }
                     c.mrpType = dr2.Field<string>("MRP Type");
                     c.number = dr2.Field<string>("Part Number");
                     c.typQty = Convert.ToInt32(dr2.Field<string>("Typ Qty"));
@@ -570,16 +573,16 @@ namespace Configurator_2._0
                 dNum = prefix + suffix;
                 if (Globals.confMachs != null)
                 {
-                    DataRow[] dr = Globals.confMachs.Select("[Part Number] = '" + dNum + "'");
+                    DataRow[] dr = Globals.confMachs.Select("[Epicor Part Number] = '" + dNum + "'");
                     if (dr.Count() <= 0)
                     {
-                        Globals.machine.dumNum = dNum;
+                        Globals.machine.EpicorPartNumber = dNum;
                         return;
                     }
                 }
                 else
                 {
-                    Globals.machine.dumNum = dNum;
+                    Globals.machine.EpicorPartNumber = dNum;
                     return;
                 }
             }
@@ -599,7 +602,7 @@ namespace Configurator_2._0
                 pType = "CM";
             }
             //Number PartDescription Epicor_Mfgcomment Epicor_Purcomment   Epicor_Mfg_name Epicor_MFGPartNum   Epicor_RandD_c Epicor_createdbylegacy_c    Epicor_PartType_c Epicor_EngComment_c Epicor_Confreq_c Epicor_EA_Manf_c    Epicor_EA_Volts_c Epicor_EA_Phase_c   Epicor_EA_Freq_c Epicor_EA_FLA_Supply_c  Epicor_EA_FLA_LgMot_c Epicor_EA_ProtDevRating_c   Epicor_EA_PannelSCCR_c Epicor_EA_EncRating_c   Revision Epicor_RevisionDescription  Dwg.Rev.Epicor_FullRel_c Reference Count PartRev.DrawNum_c Part.Model_c PartTypeElectrical  PartRev.DrawSize_c PartRev.SheetCount_c
-            string[] mRow = (Globals.machine.dumNum + "," + Globals.machine.desc.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,A,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.dwgName + "," + Globals.machine.machName + ",FALSE," + Globals.machine.dwgSize + ",").Split(',');
+            string[] mRow = (Globals.machine.EpicorPartNumber + "," + Globals.machine.description.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,A,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.drawingName + "," + Globals.machine.machineName + ",FALSE," + Globals.machine.drawingSize + ",").Split(',');
 
             //string[] mRow = (Globals.machine.dumNum + "," + Globals.machine.desc.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() +"," + Globals.machine.partType + ",,False, , , , , , , , , ," + Globals.machine.dumNum + ",A," + "New Machine" + "," + Globals.machine.dwgRev + ",1," + Globals.machine.dumNum + ",A,1,,,FALSE,,FALSE," + Globals.machine.dwgName + "," + Globals.machine.dwgSize + ",,").Split(',');
             int i = 0;
@@ -631,12 +634,12 @@ namespace Configurator_2._0
             }
             if (expEpicorCheck.Checked == true && Globals.prevConf == false)
             {
-                Globals.utils.writeExcel(expBOM, @"\\manifest\BOM_Import\Mechanical\Import\" + Globals.machine.dumNum + "_BOM_0000.xlsx", "EpdmBOMTable", Globals.machine.bom.Rows.Count + 2, Globals.expRows, -1, 1, "");
+                Globals.utils.writeExcel(expBOM, @"\\manifest\BOM_Import\Mechanical\Import\" + Globals.machine.EpicorPartNumber + "_BOM_0000.xlsx", "EpdmBOMTable", Globals.machine.bom.Rows.Count + 2, Globals.expRows, -1, 1, "");
             }
             if (testExpCheck.Checked == true)
             {
                 Globals.prevConf = false;
-                Globals.utils.writeExcel(expBOM, @"C:\Temp\BOM\" + Globals.machine.dumNum + "_BOM_0000.xlsx", "EpdmBOMTable", Globals.machine.bom.Rows.Count + 2, Globals.expRows, -1, 1, "");
+                Globals.utils.writeExcel(expBOM, @"C:\Temp\BOM\" + Globals.machine.EpicorPartNumber + "_BOM_0000.xlsx", "EpdmBOMTable", Globals.machine.bom.Rows.Count + 2, Globals.expRows, -1, 1, "");
             }
         }
 
@@ -671,6 +674,7 @@ namespace Configurator_2._0
             sortedSNs.AddRange(Globals.machine.snList.ToArray());
             sortedSNs.Sort();
             sortedSNs.RemoveAll(item => item == null);
+            sortedSNs.RemoveAll(item => item == "");
             int j = 0;
             foreach (string i in sortedSNs)
             {
@@ -682,8 +686,8 @@ namespace Configurator_2._0
             finddNum();
             timesConfBox.Text = "0";
             confNumBox.Text = "";
-            dwgNumBox.Text = Globals.machine.dwgName;
-            dwgSizeBox.Text = Globals.machine.dwgSize;
+            dwgNumBox.Text = Globals.machine.drawingName;
+            dwgSizeBox.Text = Globals.machine.drawingSize;
             if (Globals.confMachs != null)
             {
                 DataRow[] dr = Globals.confMachs.Select("[Part Number] = '" + smartNum + "'");
@@ -703,10 +707,11 @@ namespace Configurator_2._0
                             }
                             if (confNum.SequenceEqual(sortedSNs))
                             {
-                                Globals.machine.dumNum = Globals.confMachs.Rows[j + 1][0].ToString();
-                                timesConfBox.Text = (Convert.ToInt32(Globals.confMachs.Rows[j][4]) + 1).ToString();
+                                Globals.machine.EpicorPartNumber = dr[0].Field<string>("Epicor Part Number");
+                                timesConfBox.Text = Convert.ToInt32(dr[0].Field<string>("Times Configured")).ToString();
+                                Globals.machine.configuredDate = dr[0].Field<string>("Date Configured").ToString();
                                 timesConfBox.BackColor = System.Drawing.Color.LightGreen;
-                                confNumBox.Text = Globals.machine.dumNum;
+                                confNumBox.Text = Globals.machine.EpicorPartNumber;
                                 confNumBox.BackColor = System.Drawing.Color.LightGreen;
                                 string[] prevSOs = Globals.confMachs.Rows[j][9].ToString().Split(';');
                                 prevSoCombo.Items.AddRange(prevSOs);
@@ -719,7 +724,8 @@ namespace Configurator_2._0
                 }
             }
 
-            Globals.machine.smartNum = smartNum;
+            Globals.machine.SmartPartNumber = smartNum;
+            Globals.machine.timesConfigured = Convert.ToInt32(timesConfBox.Text);
             Globals.utils.writeMachine();
             DataTable dt = Globals.machine.bom;
             dataGridView1.DataSource = dt;
@@ -751,33 +757,9 @@ namespace Configurator_2._0
                 MessageBox.Show("No User initials entered!!!! Please enter your three character User Initials and try again.", "Can I See Your ID Error");
                 return;
             }
-            if (Globals.prevConf == true)
-            {
-                DateTime d = DateTime.Now;
-                DateTime d1 = DateTime.Now;
-                try
-                {
-                    d1 = (DateTime)Globals.confMachs.Rows[Globals.foundRow][5];
-                }
-                catch { }
-                string prevSOs = Globals.confMachs.Rows[Globals.foundRow][9].ToString();
-                if(prevSOs == "")
-                {
-                    prevSOs = soBox.Text;
-                }
-                else
-                {
-                    prevSOs = prevSOs + "; " + soBox.Text;
-                }
-                string[] arr = new string[] { (Convert.ToInt32(timesConfBox.Text)).ToString(), d1.ToShortDateString(), (string)Globals.confMachs.Rows[Globals.foundRow][6], d.ToShortDateString(), "", prevSOs };
-                Globals.utils.writeExcel(arr, Globals.dbFile, Globals.machine.prefix + " CONF", 1, arr.Length, Globals.foundRow + 1, 5, "");
-                //MessageBox.Show("Database Write Complete.");
-            }
-            else
-            {
-                Globals.utils.writeExcel(Globals.machine.bomObj, Globals.dbFile, Globals.machine.prefix + " CONF", Globals.machine.bom.Rows.Count, Globals.machine.bom.Columns.Count, -1, 1, "");
-                //MessageBox.Show("Database Write Complete.");
-            }
+
+            Globals.utils.WriteMachineToDatabase(Globals.machine);
+
             if (expEpicorCheck.Checked == true || testExpCheck.Checked == true)
             { 
                 Task.Run(() => exportBOM());
