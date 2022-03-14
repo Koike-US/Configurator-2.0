@@ -41,12 +41,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.confButt = new System.Windows.Forms.Button();
             this.exportButt = new System.Windows.Forms.Button();
-            this.addCompButt = new System.Windows.Forms.Button();
-            this.clearButt = new System.Windows.Forms.Button();
-            this.addOptButt = new System.Windows.Forms.Button();
-            this.quitButt = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.addMachButt = new System.Windows.Forms.Button();
             this.timesConfBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -57,31 +52,43 @@
             this.dwgSizeBox = new System.Windows.Forms.TextBox();
             this.prevSoCombo = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.checkDBButt = new System.Windows.Forms.Button();
-            this.refreshDBButt = new System.Windows.Forms.Button();
-            this.expEpicorCheck = new System.Windows.Forms.CheckBox();
-            this.updateConfButt = new System.Windows.Forms.Button();
-            this.testExpCheck = new System.Windows.Forms.CheckBox();
-            this.requestsButt = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.userBox = new System.Windows.Forms.TextBox();
-            this.faqButt = new System.Windows.Forms.Button();
-            this.helpButt = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.salesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.engineeringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addMachineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addOptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addComponentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.howToUseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.featureRequestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkDBsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.refreshDBsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.epicorExportCheckbox = new System.Windows.Forms.ToolStripMenuItem();
+            this.testExportCheckbox = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // TypeCombo
             // 
             this.TypeCombo.FormattingEnabled = true;
-            this.TypeCombo.Location = new System.Drawing.Point(12, 89);
+            this.TypeCombo.Location = new System.Drawing.Point(12, 138);
             this.TypeCombo.Name = "TypeCombo";
             this.TypeCombo.Size = new System.Drawing.Size(288, 21);
-            this.TypeCombo.TabIndex = 2;
+            this.TypeCombo.TabIndex = 3;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(307, 92);
+            this.label1.Location = new System.Drawing.Point(12, 121);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 1;
@@ -89,16 +96,15 @@
             // 
             // soBox
             // 
-            this.soBox.Location = new System.Drawing.Point(12, 12);
+            this.soBox.Location = new System.Drawing.Point(12, 50);
             this.soBox.Name = "soBox";
-            this.soBox.Size = new System.Drawing.Size(58, 20);
+            this.soBox.Size = new System.Drawing.Size(134, 20);
             this.soBox.TabIndex = 0;
-            this.soBox.TextChanged += new System.EventHandler(this.soBox_TextChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(76, 19);
+            this.label2.Location = new System.Drawing.Point(9, 34);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 13);
             this.label2.TabIndex = 3;
@@ -107,7 +113,7 @@
             // LineCombo
             // 
             this.LineCombo.FormattingEnabled = true;
-            this.LineCombo.Location = new System.Drawing.Point(12, 116);
+            this.LineCombo.Location = new System.Drawing.Point(12, 180);
             this.LineCombo.Name = "LineCombo";
             this.LineCombo.Size = new System.Drawing.Size(288, 21);
             this.LineCombo.TabIndex = 4;
@@ -115,7 +121,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(307, 119);
+            this.label3.Location = new System.Drawing.Point(12, 163);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 13);
             this.label3.TabIndex = 5;
@@ -124,7 +130,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(307, 146);
+            this.label4.Location = new System.Drawing.Point(12, 205);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(80, 13);
             this.label4.TabIndex = 7;
@@ -133,23 +139,23 @@
             // ModelCombo
             // 
             this.ModelCombo.FormattingEnabled = true;
-            this.ModelCombo.Location = new System.Drawing.Point(12, 143);
+            this.ModelCombo.Location = new System.Drawing.Point(12, 222);
             this.ModelCombo.Name = "ModelCombo";
             this.ModelCombo.Size = new System.Drawing.Size(288, 21);
-            this.ModelCombo.TabIndex = 6;
+            this.ModelCombo.TabIndex = 5;
             // 
             // DivisionCombo
             // 
             this.DivisionCombo.FormattingEnabled = true;
-            this.DivisionCombo.Location = new System.Drawing.Point(12, 62);
+            this.DivisionCombo.Location = new System.Drawing.Point(12, 96);
             this.DivisionCombo.Name = "DivisionCombo";
             this.DivisionCombo.Size = new System.Drawing.Size(288, 21);
-            this.DivisionCombo.TabIndex = 1;
+            this.DivisionCombo.TabIndex = 2;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(307, 65);
+            this.label5.Location = new System.Drawing.Point(12, 79);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(44, 13);
             this.label5.TabIndex = 9;
@@ -157,98 +163,50 @@
             // 
             // confButt
             // 
-            this.confButt.Location = new System.Drawing.Point(413, 10);
+            this.confButt.Location = new System.Drawing.Point(320, 44);
             this.confButt.Name = "confButt";
             this.confButt.Size = new System.Drawing.Size(137, 23);
             this.confButt.TabIndex = 10;
+            this.confButt.TabStop = false;
             this.confButt.Text = "Check Configuration";
             this.confButt.UseVisualStyleBackColor = true;
             this.confButt.Click += new System.EventHandler(this.confButt_Click);
             // 
             // exportButt
             // 
-            this.exportButt.Location = new System.Drawing.Point(556, 10);
+            this.exportButt.Location = new System.Drawing.Point(463, 44);
             this.exportButt.Name = "exportButt";
             this.exportButt.Size = new System.Drawing.Size(137, 23);
             this.exportButt.TabIndex = 11;
+            this.exportButt.TabStop = false;
             this.exportButt.Text = "Complete Configuration";
             this.exportButt.UseVisualStyleBackColor = true;
             this.exportButt.Click += new System.EventHandler(this.exportButt_Click);
-            // 
-            // addCompButt
-            // 
-            this.addCompButt.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.addCompButt.Location = new System.Drawing.Point(1166, 292);
-            this.addCompButt.Name = "addCompButt";
-            this.addCompButt.Size = new System.Drawing.Size(110, 23);
-            this.addCompButt.TabIndex = 13;
-            this.addCompButt.Text = "Add Component";
-            this.addCompButt.UseVisualStyleBackColor = true;
-            this.addCompButt.Click += new System.EventHandler(this.addCompButt_Click);
-            // 
-            // clearButt
-            // 
-            this.clearButt.Location = new System.Drawing.Point(699, 9);
-            this.clearButt.Name = "clearButt";
-            this.clearButt.Size = new System.Drawing.Size(137, 23);
-            this.clearButt.TabIndex = 14;
-            this.clearButt.Text = "Clear";
-            this.clearButt.UseVisualStyleBackColor = true;
-            this.clearButt.Click += new System.EventHandler(this.clearButt_Click);
-            // 
-            // addOptButt
-            // 
-            this.addOptButt.Location = new System.Drawing.Point(1166, 263);
-            this.addOptButt.Name = "addOptButt";
-            this.addOptButt.Size = new System.Drawing.Size(110, 23);
-            this.addOptButt.TabIndex = 15;
-            this.addOptButt.Text = "Add Option";
-            this.addOptButt.UseVisualStyleBackColor = true;
-            this.addOptButt.Click += new System.EventHandler(this.addOptButt_Click);
-            // 
-            // quitButt
-            // 
-            this.quitButt.Location = new System.Drawing.Point(1166, 567);
-            this.quitButt.Name = "quitButt";
-            this.quitButt.Size = new System.Drawing.Size(110, 23);
-            this.quitButt.TabIndex = 16;
-            this.quitButt.Text = "Quit";
-            this.quitButt.UseVisualStyleBackColor = true;
-            this.quitButt.Click += new System.EventHandler(this.quitButt_Click);
             // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(413, 119);
+            this.dataGridView1.Location = new System.Drawing.Point(323, 98);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(747, 471);
+            this.dataGridView1.Size = new System.Drawing.Size(830, 471);
             this.dataGridView1.TabIndex = 18;
-            // 
-            // addMachButt
-            // 
-            this.addMachButt.Location = new System.Drawing.Point(1166, 234);
-            this.addMachButt.Name = "addMachButt";
-            this.addMachButt.Size = new System.Drawing.Size(110, 23);
-            this.addMachButt.TabIndex = 19;
-            this.addMachButt.Text = "Add Machine";
-            this.addMachButt.UseVisualStyleBackColor = true;
-            this.addMachButt.Click += new System.EventHandler(this.addMachButt_Click);
             // 
             // timesConfBox
             // 
-            this.timesConfBox.Location = new System.Drawing.Point(716, 96);
+            this.timesConfBox.Location = new System.Drawing.Point(626, 75);
             this.timesConfBox.Name = "timesConfBox";
             this.timesConfBox.ReadOnly = true;
             this.timesConfBox.Size = new System.Drawing.Size(55, 20);
             this.timesConfBox.TabIndex = 20;
+            this.timesConfBox.TabStop = false;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(621, 99);
+            this.label6.Location = new System.Drawing.Point(531, 78);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(89, 13);
             this.label6.TabIndex = 21;
@@ -257,7 +215,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(420, 100);
+            this.label7.Location = new System.Drawing.Point(330, 79);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(109, 13);
             this.label7.TabIndex = 22;
@@ -265,16 +223,17 @@
             // 
             // confNumBox
             // 
-            this.confNumBox.Location = new System.Drawing.Point(535, 96);
+            this.confNumBox.Location = new System.Drawing.Point(445, 75);
             this.confNumBox.Name = "confNumBox";
             this.confNumBox.ReadOnly = true;
             this.confNumBox.Size = new System.Drawing.Size(80, 20);
             this.confNumBox.TabIndex = 23;
+            this.confNumBox.TabStop = false;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(777, 99);
+            this.label8.Location = new System.Drawing.Point(687, 78);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(86, 13);
             this.label8.TabIndex = 25;
@@ -282,16 +241,17 @@
             // 
             // dwgNumBox
             // 
-            this.dwgNumBox.Location = new System.Drawing.Point(872, 96);
+            this.dwgNumBox.Location = new System.Drawing.Point(779, 75);
             this.dwgNumBox.Name = "dwgNumBox";
             this.dwgNumBox.ReadOnly = true;
             this.dwgNumBox.Size = new System.Drawing.Size(118, 20);
             this.dwgNumBox.TabIndex = 24;
+            this.dwgNumBox.TabStop = false;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(996, 99);
+            this.label9.Location = new System.Drawing.Point(903, 78);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(69, 13);
             this.label9.TabIndex = 27;
@@ -299,95 +259,35 @@
             // 
             // dwgSizeBox
             // 
-            this.dwgSizeBox.Location = new System.Drawing.Point(1071, 96);
+            this.dwgSizeBox.Location = new System.Drawing.Point(978, 75);
             this.dwgSizeBox.Name = "dwgSizeBox";
             this.dwgSizeBox.ReadOnly = true;
             this.dwgSizeBox.Size = new System.Drawing.Size(49, 20);
             this.dwgSizeBox.TabIndex = 26;
+            this.dwgSizeBox.TabStop = false;
             // 
             // prevSoCombo
             // 
             this.prevSoCombo.FormattingEnabled = true;
-            this.prevSoCombo.Location = new System.Drawing.Point(999, 66);
+            this.prevSoCombo.Location = new System.Drawing.Point(723, 46);
             this.prevSoCombo.Name = "prevSoCombo";
             this.prevSoCombo.Size = new System.Drawing.Size(92, 21);
             this.prevSoCombo.TabIndex = 28;
+            this.prevSoCombo.TabStop = false;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(879, 70);
+            this.label10.Location = new System.Drawing.Point(606, 49);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(111, 13);
             this.label10.TabIndex = 29;
             this.label10.Text = "Previous Sales Orders";
             // 
-            // checkDBButt
-            // 
-            this.checkDBButt.Location = new System.Drawing.Point(1166, 321);
-            this.checkDBButt.Name = "checkDBButt";
-            this.checkDBButt.Size = new System.Drawing.Size(110, 23);
-            this.checkDBButt.TabIndex = 30;
-            this.checkDBButt.Text = "Check DBs";
-            this.checkDBButt.UseVisualStyleBackColor = true;
-            this.checkDBButt.Click += new System.EventHandler(this.checkDBButt_Click);
-            // 
-            // refreshDBButt
-            // 
-            this.refreshDBButt.Location = new System.Drawing.Point(1166, 350);
-            this.refreshDBButt.Name = "refreshDBButt";
-            this.refreshDBButt.Size = new System.Drawing.Size(110, 23);
-            this.refreshDBButt.TabIndex = 31;
-            this.refreshDBButt.Text = "Refresh DB";
-            this.refreshDBButt.UseVisualStyleBackColor = true;
-            this.refreshDBButt.Click += new System.EventHandler(this.refreshDBButt_Click);
-            // 
-            // expEpicorCheck
-            // 
-            this.expEpicorCheck.AutoSize = true;
-            this.expEpicorCheck.Checked = true;
-            this.expEpicorCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.expEpicorCheck.Location = new System.Drawing.Point(144, 44);
-            this.expEpicorCheck.Name = "expEpicorCheck";
-            this.expEpicorCheck.Size = new System.Drawing.Size(101, 17);
-            this.expEpicorCheck.TabIndex = 32;
-            this.expEpicorCheck.Text = "Export to Epicor";
-            this.expEpicorCheck.UseVisualStyleBackColor = true;
-            // 
-            // updateConfButt
-            // 
-            this.updateConfButt.Location = new System.Drawing.Point(1166, 538);
-            this.updateConfButt.Name = "updateConfButt";
-            this.updateConfButt.Size = new System.Drawing.Size(110, 23);
-            this.updateConfButt.TabIndex = 33;
-            this.updateConfButt.Text = "Update Configurator";
-            this.updateConfButt.UseVisualStyleBackColor = true;
-            this.updateConfButt.Click += new System.EventHandler(this.updateConfButt_Click);
-            // 
-            // testExpCheck
-            // 
-            this.testExpCheck.AutoSize = true;
-            this.testExpCheck.Location = new System.Drawing.Point(12, 44);
-            this.testExpCheck.Name = "testExpCheck";
-            this.testExpCheck.Size = new System.Drawing.Size(80, 17);
-            this.testExpCheck.TabIndex = 34;
-            this.testExpCheck.Text = "Test Export";
-            this.testExpCheck.UseVisualStyleBackColor = true;
-            // 
-            // requestsButt
-            // 
-            this.requestsButt.Location = new System.Drawing.Point(1166, 379);
-            this.requestsButt.Name = "requestsButt";
-            this.requestsButt.Size = new System.Drawing.Size(110, 23);
-            this.requestsButt.TabIndex = 35;
-            this.requestsButt.Text = "Requests/Issues";
-            this.requestsButt.UseVisualStyleBackColor = true;
-            this.requestsButt.Click += new System.EventHandler(this.requestsButt_Click);
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(210, 19);
+            this.label11.Location = new System.Drawing.Point(164, 34);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(61, 13);
             this.label11.TabIndex = 37;
@@ -395,30 +295,165 @@
             // 
             // userBox
             // 
-            this.userBox.Location = new System.Drawing.Point(144, 12);
+            this.userBox.Location = new System.Drawing.Point(167, 50);
             this.userBox.Name = "userBox";
-            this.userBox.Size = new System.Drawing.Size(60, 20);
-            this.userBox.TabIndex = 36;
+            this.userBox.Size = new System.Drawing.Size(133, 20);
+            this.userBox.TabIndex = 1;
             // 
-            // faqButt
+            // menuStrip1
             // 
-            this.faqButt.Location = new System.Drawing.Point(1166, 408);
-            this.faqButt.Name = "faqButt";
-            this.faqButt.Size = new System.Drawing.Size(110, 23);
-            this.faqButt.TabIndex = 38;
-            this.faqButt.Text = "FAQ/Procedures";
-            this.faqButt.UseVisualStyleBackColor = true;
-            this.faqButt.Click += new System.EventHandler(this.faqButt_Click);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.salesToolStripMenuItem,
+            this.engineeringToolStripMenuItem,
+            this.helpToolStripMenuItem,
+            this.toolsToolStripMenuItem,
+            this.exportOptionsToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1172, 24);
+            this.menuStrip1.TabIndex = 40;
+            this.menuStrip1.Text = "menuStrip1";
             // 
-            // helpButt
+            // fileToolStripMenuItem
             // 
-            this.helpButt.Location = new System.Drawing.Point(1166, 437);
-            this.helpButt.Name = "helpButt";
-            this.helpButt.Size = new System.Drawing.Size(110, 23);
-            this.helpButt.TabIndex = 39;
-            this.helpButt.Text = "Help";
-            this.helpButt.UseVisualStyleBackColor = true;
-            this.helpButt.Click += new System.EventHandler(this.helpButt_Click);
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
+            // salesToolStripMenuItem
+            // 
+            this.salesToolStripMenuItem.Name = "salesToolStripMenuItem";
+            this.salesToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
+            this.salesToolStripMenuItem.Text = "Sales";
+            // 
+            // engineeringToolStripMenuItem
+            // 
+            this.engineeringToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addMachineToolStripMenuItem,
+            this.addOptionToolStripMenuItem,
+            this.addComponentToolStripMenuItem});
+            this.engineeringToolStripMenuItem.Name = "engineeringToolStripMenuItem";
+            this.engineeringToolStripMenuItem.Size = new System.Drawing.Size(82, 20);
+            this.engineeringToolStripMenuItem.Text = "Engineering";
+            // 
+            // addMachineToolStripMenuItem
+            // 
+            this.addMachineToolStripMenuItem.Name = "addMachineToolStripMenuItem";
+            this.addMachineToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.addMachineToolStripMenuItem.Text = "Add Machine";
+            this.addMachineToolStripMenuItem.Click += new System.EventHandler(this.addMachineToolStripMenuItem_Click);
+            // 
+            // addOptionToolStripMenuItem
+            // 
+            this.addOptionToolStripMenuItem.Name = "addOptionToolStripMenuItem";
+            this.addOptionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.addOptionToolStripMenuItem.Text = "Add Option";
+            this.addOptionToolStripMenuItem.Click += new System.EventHandler(this.addOptionToolStripMenuItem_Click);
+            // 
+            // addComponentToolStripMenuItem
+            // 
+            this.addComponentToolStripMenuItem.Name = "addComponentToolStripMenuItem";
+            this.addComponentToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.addComponentToolStripMenuItem.Text = "Add Component";
+            this.addComponentToolStripMenuItem.Click += new System.EventHandler(this.addComponentToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.howToUseToolStripMenuItem,
+            this.featureRequestToolStripMenuItem,
+            this.helpToolStripMenuItem1,
+            this.updateToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // howToUseToolStripMenuItem
+            // 
+            this.howToUseToolStripMenuItem.Name = "howToUseToolStripMenuItem";
+            this.howToUseToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.howToUseToolStripMenuItem.Text = "How To Use";
+            this.howToUseToolStripMenuItem.Click += new System.EventHandler(this.howToUseToolStripMenuItem_Click);
+            // 
+            // featureRequestToolStripMenuItem
+            // 
+            this.featureRequestToolStripMenuItem.Name = "featureRequestToolStripMenuItem";
+            this.featureRequestToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.featureRequestToolStripMenuItem.Text = "Feature Request";
+            this.featureRequestToolStripMenuItem.Click += new System.EventHandler(this.featureRequestToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem1
+            // 
+            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(158, 22);
+            this.helpToolStripMenuItem1.Text = "Help";
+            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
+            // 
+            // updateToolStripMenuItem
+            // 
+            this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.updateToolStripMenuItem.Text = "Update";
+            this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkDBsToolStripMenuItem,
+            this.refreshDBsToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // checkDBsToolStripMenuItem
+            // 
+            this.checkDBsToolStripMenuItem.Name = "checkDBsToolStripMenuItem";
+            this.checkDBsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.checkDBsToolStripMenuItem.Text = "Check DB\'s";
+            this.checkDBsToolStripMenuItem.Click += new System.EventHandler(this.checkDBsToolStripMenuItem_Click);
+            // 
+            // refreshDBsToolStripMenuItem
+            // 
+            this.refreshDBsToolStripMenuItem.Name = "refreshDBsToolStripMenuItem";
+            this.refreshDBsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.refreshDBsToolStripMenuItem.Text = "Refresh DB\'s";
+            this.refreshDBsToolStripMenuItem.Click += new System.EventHandler(this.refreshDBsToolStripMenuItem_Click);
+            // 
+            // exportOptionsToolStripMenuItem
+            // 
+            this.exportOptionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.epicorExportCheckbox,
+            this.testExportCheckbox});
+            this.exportOptionsToolStripMenuItem.Name = "exportOptionsToolStripMenuItem";
+            this.exportOptionsToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
+            this.exportOptionsToolStripMenuItem.Text = "Export Option";
+            // 
+            // epicorExportCheckbox
+            // 
+            this.epicorExportCheckbox.Checked = true;
+            this.epicorExportCheckbox.CheckOnClick = true;
+            this.epicorExportCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.epicorExportCheckbox.Name = "epicorExportCheckbox";
+            this.epicorExportCheckbox.Size = new System.Drawing.Size(180, 22);
+            this.epicorExportCheckbox.Text = "Epicor";
+            this.epicorExportCheckbox.Click += new System.EventHandler(this.epicorExportCheckbox_Click);
+            // 
+            // testExportCheckbox
+            // 
+            this.testExportCheckbox.CheckOnClick = true;
+            this.testExportCheckbox.Name = "testExportCheckbox";
+            this.testExportCheckbox.Size = new System.Drawing.Size(180, 22);
+            this.testExportCheckbox.Text = "Test";
             // 
             // Configurator
             // 
@@ -426,18 +461,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1284, 1101);
-            this.ControlBox = false;
-            this.Controls.Add(this.helpButt);
-            this.Controls.Add(this.faqButt);
+            this.ClientSize = new System.Drawing.Size(1172, 891);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.userBox);
-            this.Controls.Add(this.requestsButt);
-            this.Controls.Add(this.testExpCheck);
-            this.Controls.Add(this.updateConfButt);
-            this.Controls.Add(this.expEpicorCheck);
-            this.Controls.Add(this.refreshDBButt);
-            this.Controls.Add(this.checkDBButt);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.prevSoCombo);
             this.Controls.Add(this.label9);
@@ -448,12 +474,7 @@
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.timesConfBox);
-            this.Controls.Add(this.addMachButt);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.quitButt);
-            this.Controls.Add(this.addOptButt);
-            this.Controls.Add(this.clearButt);
-            this.Controls.Add(this.addCompButt);
             this.Controls.Add(this.exportButt);
             this.Controls.Add(this.confButt);
             this.Controls.Add(this.label5);
@@ -466,10 +487,15 @@
             this.Controls.Add(this.soBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TypeCombo);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(0, 930);
             this.Name = "Configurator";
             this.Text = "Configurator, Version: {0}.{1}.{2}.{3}";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -489,12 +515,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button confButt;
         private System.Windows.Forms.Button exportButt;
-        private System.Windows.Forms.Button addCompButt;
-        private System.Windows.Forms.Button clearButt;
-        private System.Windows.Forms.Button addOptButt;
-        private System.Windows.Forms.Button quitButt;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button addMachButt;
         private System.Windows.Forms.TextBox timesConfBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
@@ -505,15 +526,26 @@
         private System.Windows.Forms.TextBox dwgSizeBox;
         private System.Windows.Forms.ComboBox prevSoCombo;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button checkDBButt;
-        private System.Windows.Forms.Button refreshDBButt;
-        private System.Windows.Forms.CheckBox expEpicorCheck;
-        private System.Windows.Forms.Button updateConfButt;
-        private System.Windows.Forms.CheckBox testExpCheck;
-        private System.Windows.Forms.Button requestsButt;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox userBox;
-        private System.Windows.Forms.Button faqButt;
-        private System.Windows.Forms.Button helpButt;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem salesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem engineeringToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addMachineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addOptionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addComponentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem howToUseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem featureRequestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem checkDBsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem refreshDBsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem epicorExportCheckbox;
+        private System.Windows.Forms.ToolStripMenuItem testExportCheckbox;
     }
 }
