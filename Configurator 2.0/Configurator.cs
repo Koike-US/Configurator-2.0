@@ -34,6 +34,8 @@ namespace Configurator_2._0
         int[] maxOptQty;
         public Configurator()
         {
+            LoadingForm lf = new LoadingForm();
+            lf.Show();
             Globals.utils.updateDBs();
             InitializeComponent();
             this.FormClosing += Configurator_FormClosing;
@@ -45,6 +47,7 @@ namespace Configurator_2._0
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = String.Format(this.Text, version.Major, version.Minor, version.Build, version.Revision);
             this.Refresh();
+            lf.Close();
 
             string version1 = AssemblyName.GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe").Version.ToString();
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
@@ -154,6 +157,8 @@ namespace Configurator_2._0
                 control.Dispose();
             }
             addedControls.Clear();
+            completeConfigurationButton.BackColor = SystemColors.Control;
+            checkConfigurationButton.BackColor = SystemColors.Control;
         }
 
         private void clearAndResetForm()
@@ -169,8 +174,8 @@ namespace Configurator_2._0
         }
         private void selecChange(object sender, EventArgs e)
         {
-            confButt.BackColor = SystemColors.Control;
-            exportButt.BackColor = SystemColors.Control;
+            checkConfigurationButton.BackColor = SystemColors.Control;
+            completeConfigurationButton.BackColor = SystemColors.Control;
             Control co = (Control)sender;
             //clearCombos(co.Name);
             List<string> sns = Globals.machine.snList;
@@ -690,122 +695,6 @@ namespace Configurator_2._0
                 Globals.utils.writeExcel(expBOM, @"C:\Temp\BOM\" + Globals.machine.EpicorPartNumber + "_BOM_0000.xlsx", "EpdmBOMTable", Globals.machine.bom.Rows.Count + 2, Globals.expRows, -1, 1, "");
             }
         }
-        private void confButt_Click(object sender, EventArgs e)
-        {
-
-            timesConfBox.BackColor = System.Drawing.Color.Red;
-            confNumBox.BackColor = System.Drawing.Color.Red;
-            dataGridView1.DataSource = null;
-            if (Globals.machine.selOpts.Count < 1 && optBoxes.Count > baseOpts.Count)
-            {
-                MessageBox.Show("No machine options have been selected yet.");
-                return;
-            }
-            Globals.confMachs = Globals.dataBase.Tables[Globals.machine.prefix + " CONF"];
-
-            string smartNum = Globals.machine.snList[0];// + "-";
-            string smartStart = Globals.machine.snList[0];
-            string[] derp = Globals.machine.snList.ToArray();
-
-            List<string> sortedSNs = new List<string>();
-            sortedSNs.AddRange(Globals.machine.snList.ToArray());
-            sortedSNs.Sort();
-            sortedSNs.RemoveAll(item => item == null);
-            sortedSNs.RemoveAll(item => item == "");
-            int j = 0;
-            foreach (string i in sortedSNs)
-            {
-                if (i != smartStart && i != null)
-                {
-                    smartNum = smartNum + "-" + i;
-                }
-            }
-            findDumNum();
-            timesConfBox.Text = "0";
-            confNumBox.Text = "";
-            dwgNumBox.Text = Globals.machine.drawingName;
-            dwgSizeBox.Text = Globals.machine.drawingSize;
-            if (Globals.confMachs != null)
-            {
-                DataRow[] dr = Globals.confMachs.Select("[Part Number] = '" + smartNum + "'");
-                if (dr.Count() == 1)
-                {
-                    j = 0;
-                    for (j = 0; j < Globals.confMachs.Rows.Count; ++j)
-                    {
-                        if (Globals.confMachs.Rows[j][0] != DBNull.Value)// && (string)Globals.confMachs.Rows[j][0] == smartNum)
-                        {
-                            List<string> confNum = new List<string>();
-                            confNum.AddRange(Globals.confMachs.Rows[j][0].ToString().Split('-'));
-                            confNum.Sort();
-                            if (confNum.SequenceEqual(sortedSNs))
-                            {
-                                Globals.machine.EpicorPartNumber = dr[0].Field<string>("Epicor Part Number");
-                                timesConfBox.Text = Convert.ToInt32(dr[0].Field<string>("Times Configured")).ToString();
-                                Globals.machine.configuredDate = dr[0].Field<string>("Date Configured").ToString();
-                                Globals.machine.configuredBy = dr[0].Field<string>("User Added").ToString();
-                                var sales_orders = dr[0].Field<string>("Sales Orders").ToString().Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
-                                timesConfBox.BackColor = System.Drawing.Color.LightGreen;
-                                confNumBox.Text = Globals.machine.EpicorPartNumber;
-                                confNumBox.BackColor = System.Drawing.Color.LightGreen;
-                                Globals.machine.salesOrders = sales_orders.ToList();
-                                prevSoCombo.Items.AddRange(sales_orders);
-                                Globals.foundRow = j;
-                                Globals.prevConf = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            Globals.machine.SmartPartNumber = smartNum;
-            Globals.machine.timesConfigured = Convert.ToInt32(timesConfBox.Text);
-            Globals.machine.configuredDate = DateTime.Now.ToShortDateString();
-            Globals.machine.configuredBy = Environment.UserName;
-            Globals.utils.writeMachine();
-            DataTable dt = Globals.machine.bom;
-            dataGridView1.DataSource = dt;
-            dataGridView1.RowHeadersVisible = false;
-            dataGridView1.Columns[0].Width = 175;
-            dataGridView1.Columns[1].Width = 350;
-            dataGridView1.Columns[2].Width = 50;
-            dataGridView1.Columns[3].Width = 50;
-            for (int k = 0; k < dataGridView1.Columns.Count; ++k)
-            {
-                dataGridView1.Columns.Remove(dataGridView1.Columns[4]);
-            }
-            //dataGridView1.Columns.Insert(0, new DataGridViewColumn(dataGridView1.Rows[0].Cells[0]));
-            //i = 1;
-            //foreach(DataGridViewRow r in dataGridView1.Rows)
-            //{
-            //    if(r.Cells[2].Value != DBNull.Value)
-            //    {
-            //        r.Cells[0].Value = i;
-            //        ++i;
-            //    }
-            //}
-            confButt.BackColor = Color.LawnGreen;
-        }
-        private void exportButt_Click(object sender, EventArgs e)
-        {
-            if (userBox.Text == "" || userBox.Text == null)
-            {
-                MessageBox.Show("No User initials entered!!!! Please enter your three character User Initials and try again.", "Can I See Your ID Error");
-                return;
-            }
-
-            Globals.machine.salesOrders.Add(soBox.Text);
-            Globals.utils.WriteMachineToDatabase(Globals.machine);
-
-            if (epicorExportCheckbox.Checked == true || testExportCheckbox.Checked == true)
-            {
-                Task.Run(() => exportBOM());
-                //MessageBox.Show("BOM Exported for Epicor.");
-            }
-            MessageBox.Show("Configuration Complete");
-            exportButt.BackColor = Color.LawnGreen;
-        }
         private void updateConfButt_Click(object sender, EventArgs e)
         {
             string version1 = AssemblyName.GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe").Version.ToString();
@@ -831,11 +720,6 @@ namespace Configurator_2._0
             ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
             Info.Arguments = "Machine Configurator 0";
             Process.Start(Info);
-        }
-
-        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            clearAndResetForm();
         }
 
         private void addMachineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -902,8 +786,115 @@ namespace Configurator_2._0
             Application.Exit();
         }
 
-        private void epicorExportCheckbox_Click(object sender, EventArgs e)
+        private void checkConfigurationButton_Click(object sender, EventArgs e)
         {
+            timesConfBox.BackColor = System.Drawing.Color.Red;
+            confNumBox.BackColor = System.Drawing.Color.Red;
+            dataGridView1.DataSource = null;
+            if (Globals.machine.selOpts.Count < 1 && optBoxes.Count > baseOpts.Count)
+            {
+                MessageBox.Show("No machine options have been selected yet.");
+                return;
+            }
+            Globals.confMachs = Globals.dataBase.Tables[Globals.machine.prefix + " CONF"];
+
+            string smartNum = Globals.machine.snList[0];// + "-";
+            string smartStart = Globals.machine.snList[0];
+            string[] derp = Globals.machine.snList.ToArray();
+
+            List<string> sortedSNs = new List<string>();
+            sortedSNs.AddRange(Globals.machine.snList.ToArray());
+            sortedSNs.Sort();
+            sortedSNs.RemoveAll(item => item == null);
+            sortedSNs.RemoveAll(item => item == "");
+            int j = 0;
+            foreach (string i in sortedSNs)
+            {
+                if (i != smartStart && i != null)
+                {
+                    smartNum = smartNum + "-" + i;
+                }
+            }
+            findDumNum();
+            timesConfBox.Text = "0";
+            confNumBox.Text = "";
+            dwgNumBox.Text = Globals.machine.drawingName;
+            dwgSizeBox.Text = Globals.machine.drawingSize;
+            if (Globals.confMachs != null)
+            {
+                DataRow[] dr = Globals.confMachs.Select("[Part Number] = '" + smartNum + "'");
+                if (dr.Count() == 1)
+                {
+                    j = 0;
+                    for (j = 0; j < Globals.confMachs.Rows.Count; ++j)
+                    {
+                        if (Globals.confMachs.Rows[j][0] != DBNull.Value)// && (string)Globals.confMachs.Rows[j][0] == smartNum)
+                        {
+                            List<string> confNum = new List<string>();
+                            confNum.AddRange(Globals.confMachs.Rows[j][0].ToString().Split('-'));
+                            confNum.Sort();
+                            if (confNum.SequenceEqual(sortedSNs))
+                            {
+                                Globals.machine.EpicorPartNumber = dr[0].Field<string>("Epicor Part Number");
+                                timesConfBox.Text = Convert.ToInt32(dr[0].Field<string>("Times Configured")).ToString();
+                                Globals.machine.configuredDate = dr[0].Field<string>("Date Configured").ToString();
+                                Globals.machine.configuredBy = dr[0].Field<string>("User Added").ToString();
+                                var sales_orders = dr[0].Field<string>("Sales Orders").ToString().Replace("[", "").Replace("]", "").Replace(" ", "").Split(',');
+                                timesConfBox.BackColor = System.Drawing.Color.LightGreen;
+                                confNumBox.Text = Globals.machine.EpicorPartNumber;
+                                confNumBox.BackColor = System.Drawing.Color.LightGreen;
+                                Globals.machine.salesOrders = sales_orders.ToList();
+                                Globals.foundRow = j;
+                                Globals.prevConf = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Globals.machine.SmartPartNumber = smartNum;
+            Globals.machine.timesConfigured = Convert.ToInt32(timesConfBox.Text);
+            Globals.machine.configuredDate = DateTime.Now.ToShortDateString();
+            Globals.machine.configuredBy = Environment.UserName;
+            Globals.utils.writeMachine();
+            DataTable dt = Globals.machine.bom;
+            dataGridView1.DataSource = dt;
+            dataGridView1.RowHeadersVisible = false;
+            dataGridView1.Columns[0].Width = 175;
+            dataGridView1.Columns[1].Width = 350;
+            dataGridView1.Columns[2].Width = 50;
+            dataGridView1.Columns[3].Width = 50;
+            for (int k = 0; k < dataGridView1.Columns.Count; ++k)
+            {
+                dataGridView1.Columns.Remove(dataGridView1.Columns[4]);
+            }
+            checkConfigurationButton.BackColor = Color.LawnGreen;
+        }
+
+        private void completeConfigurationButton_Click(object sender, EventArgs e)
+        {
+            if (userBox.Text == "" || userBox.Text == null)
+            {
+                MessageBox.Show("No User initials entered!!!! Please enter your three character User Initials and try again.", "Can I See Your ID Error");
+                return;
+            }
+
+            Globals.machine.salesOrders.Add(soBox.Text);
+            Globals.utils.WriteMachineToDatabase(Globals.machine);
+
+            if (epicorExportCheckbox.Checked == true || testExportCheckbox.Checked == true)
+            {
+                Task.Run(() => exportBOM());
+                //MessageBox.Show("BOM Exported for Epicor.");
+            }
+            MessageBox.Show("Configuration Complete");
+            completeConfigurationButton.BackColor = Color.LawnGreen;
+        }
+
+        private void clearConfigButton_Click(object sender, EventArgs e)
+        {
+            clearAndResetForm();
         }
     }
 }

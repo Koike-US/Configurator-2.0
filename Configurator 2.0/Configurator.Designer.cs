@@ -39,8 +39,6 @@
             this.ModelCombo = new System.Windows.Forms.ComboBox();
             this.DivisionCombo = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.confButt = new System.Windows.Forms.Button();
-            this.exportButt = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.timesConfBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -50,8 +48,6 @@
             this.dwgNumBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.dwgSizeBox = new System.Windows.Forms.TextBox();
-            this.prevSoCombo = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.userBox = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -73,6 +69,12 @@
             this.exportOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.epicorExportCheckbox = new System.Windows.Forms.ToolStripMenuItem();
             this.testExportCheckbox = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkConfigurationButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.completeConfigurationButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearConfigButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.outputLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -161,52 +163,31 @@
             this.label5.TabIndex = 9;
             this.label5.Text = "Division";
             // 
-            // confButt
-            // 
-            this.confButt.Location = new System.Drawing.Point(320, 44);
-            this.confButt.Name = "confButt";
-            this.confButt.Size = new System.Drawing.Size(137, 23);
-            this.confButt.TabIndex = 10;
-            this.confButt.TabStop = false;
-            this.confButt.Text = "Check Configuration";
-            this.confButt.UseVisualStyleBackColor = true;
-            this.confButt.Click += new System.EventHandler(this.confButt_Click);
-            // 
-            // exportButt
-            // 
-            this.exportButt.Location = new System.Drawing.Point(463, 44);
-            this.exportButt.Name = "exportButt";
-            this.exportButt.Size = new System.Drawing.Size(137, 23);
-            this.exportButt.TabIndex = 11;
-            this.exportButt.TabStop = false;
-            this.exportButt.Text = "Complete Configuration";
-            this.exportButt.UseVisualStyleBackColor = true;
-            this.exportButt.Click += new System.EventHandler(this.exportButt_Click);
-            // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(323, 98);
+            this.dataGridView1.Location = new System.Drawing.Point(324, 96);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(830, 471);
+            this.dataGridView1.Size = new System.Drawing.Size(716, 783);
             this.dataGridView1.TabIndex = 18;
+            this.dataGridView1.TabStop = false;
             // 
             // timesConfBox
             // 
-            this.timesConfBox.Location = new System.Drawing.Point(626, 75);
+            this.timesConfBox.Location = new System.Drawing.Point(439, 50);
             this.timesConfBox.Name = "timesConfBox";
             this.timesConfBox.ReadOnly = true;
-            this.timesConfBox.Size = new System.Drawing.Size(55, 20);
+            this.timesConfBox.Size = new System.Drawing.Size(86, 20);
             this.timesConfBox.TabIndex = 20;
             this.timesConfBox.TabStop = false;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(531, 78);
+            this.label6.Location = new System.Drawing.Point(436, 33);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(89, 13);
             this.label6.TabIndex = 21;
@@ -215,7 +196,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(330, 79);
+            this.label7.Location = new System.Drawing.Point(321, 33);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(109, 13);
             this.label7.TabIndex = 22;
@@ -223,17 +204,17 @@
             // 
             // confNumBox
             // 
-            this.confNumBox.Location = new System.Drawing.Point(445, 75);
+            this.confNumBox.Location = new System.Drawing.Point(324, 50);
             this.confNumBox.Name = "confNumBox";
             this.confNumBox.ReadOnly = true;
-            this.confNumBox.Size = new System.Drawing.Size(80, 20);
+            this.confNumBox.Size = new System.Drawing.Size(106, 20);
             this.confNumBox.TabIndex = 23;
             this.confNumBox.TabStop = false;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(687, 78);
+            this.label8.Location = new System.Drawing.Point(531, 33);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(86, 13);
             this.label8.TabIndex = 25;
@@ -241,7 +222,7 @@
             // 
             // dwgNumBox
             // 
-            this.dwgNumBox.Location = new System.Drawing.Point(779, 75);
+            this.dwgNumBox.Location = new System.Drawing.Point(534, 50);
             this.dwgNumBox.Name = "dwgNumBox";
             this.dwgNumBox.ReadOnly = true;
             this.dwgNumBox.Size = new System.Drawing.Size(118, 20);
@@ -251,7 +232,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(903, 78);
+            this.label9.Location = new System.Drawing.Point(658, 33);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(69, 13);
             this.label9.TabIndex = 27;
@@ -259,30 +240,12 @@
             // 
             // dwgSizeBox
             // 
-            this.dwgSizeBox.Location = new System.Drawing.Point(978, 75);
+            this.dwgSizeBox.Location = new System.Drawing.Point(661, 50);
             this.dwgSizeBox.Name = "dwgSizeBox";
             this.dwgSizeBox.ReadOnly = true;
-            this.dwgSizeBox.Size = new System.Drawing.Size(49, 20);
+            this.dwgSizeBox.Size = new System.Drawing.Size(66, 20);
             this.dwgSizeBox.TabIndex = 26;
             this.dwgSizeBox.TabStop = false;
-            // 
-            // prevSoCombo
-            // 
-            this.prevSoCombo.FormattingEnabled = true;
-            this.prevSoCombo.Location = new System.Drawing.Point(723, 46);
-            this.prevSoCombo.Name = "prevSoCombo";
-            this.prevSoCombo.Size = new System.Drawing.Size(92, 21);
-            this.prevSoCombo.TabIndex = 28;
-            this.prevSoCombo.TabStop = false;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(606, 49);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(111, 13);
-            this.label10.TabIndex = 29;
-            this.label10.Text = "Previous Sales Orders";
             // 
             // label11
             // 
@@ -308,10 +271,16 @@
             this.engineeringToolStripMenuItem,
             this.helpToolStripMenuItem,
             this.toolsToolStripMenuItem,
-            this.exportOptionsToolStripMenuItem});
+            this.exportOptionsToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.checkConfigurationButton,
+            this.completeConfigurationButton,
+            this.toolStripMenuItem2,
+            this.clearConfigButton});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1172, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1062, 24);
+            this.menuStrip1.Stretch = false;
             this.menuStrip1.TabIndex = 40;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -326,9 +295,8 @@
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // salesToolStripMenuItem
             // 
@@ -446,7 +414,6 @@
             this.epicorExportCheckbox.Name = "epicorExportCheckbox";
             this.epicorExportCheckbox.Size = new System.Drawing.Size(180, 22);
             this.epicorExportCheckbox.Text = "Epicor";
-            this.epicorExportCheckbox.Click += new System.EventHandler(this.epicorExportCheckbox_Click);
             // 
             // testExportCheckbox
             // 
@@ -455,17 +422,59 @@
             this.testExportCheckbox.Size = new System.Drawing.Size(180, 22);
             this.testExportCheckbox.Text = "Test";
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(22, 20);
+            this.toolStripMenuItem1.Text = "|";
+            // 
+            // checkConfigurationButton
+            // 
+            this.checkConfigurationButton.Name = "checkConfigurationButton";
+            this.checkConfigurationButton.Size = new System.Drawing.Size(129, 20);
+            this.checkConfigurationButton.Text = "Check Configuration";
+            this.checkConfigurationButton.Click += new System.EventHandler(this.checkConfigurationButton_Click);
+            // 
+            // completeConfigurationButton
+            // 
+            this.completeConfigurationButton.Name = "completeConfigurationButton";
+            this.completeConfigurationButton.Size = new System.Drawing.Size(148, 20);
+            this.completeConfigurationButton.Text = "Complete Configuration";
+            this.completeConfigurationButton.Click += new System.EventHandler(this.completeConfigurationButton_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(22, 20);
+            this.toolStripMenuItem2.Text = "|";
+            // 
+            // clearConfigButton
+            // 
+            this.clearConfigButton.BackColor = System.Drawing.Color.LightCoral;
+            this.clearConfigButton.Name = "clearConfigButton";
+            this.clearConfigButton.Size = new System.Drawing.Size(149, 20);
+            this.clearConfigButton.Text = "CLEAR CONFIGURATION";
+            this.clearConfigButton.Click += new System.EventHandler(this.clearConfigButton_Click);
+            // 
+            // outputLabel
+            // 
+            this.outputLabel.AutoSize = true;
+            this.outputLabel.Location = new System.Drawing.Point(324, 77);
+            this.outputLabel.Name = "outputLabel";
+            this.outputLabel.Size = new System.Drawing.Size(39, 13);
+            this.outputLabel.TabIndex = 41;
+            this.outputLabel.Text = "Output";
+            // 
             // Configurator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1172, 891);
+            this.ClientSize = new System.Drawing.Size(1062, 891);
+            this.Controls.Add(this.outputLabel);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.userBox);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.prevSoCombo);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.dwgSizeBox);
             this.Controls.Add(this.label8);
@@ -475,8 +484,6 @@
             this.Controls.Add(this.label6);
             this.Controls.Add(this.timesConfBox);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.exportButt);
-            this.Controls.Add(this.confButt);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.DivisionCombo);
             this.Controls.Add(this.label4);
@@ -490,7 +497,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(0, 930);
+            this.MinimumSize = new System.Drawing.Size(16, 930);
             this.Name = "Configurator";
             this.Text = "Configurator, Version: {0}.{1}.{2}.{3}";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -513,8 +520,6 @@
         private System.Windows.Forms.ComboBox ModelCombo;
         private System.Windows.Forms.ComboBox DivisionCombo;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button confButt;
-        private System.Windows.Forms.Button exportButt;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.TextBox timesConfBox;
         private System.Windows.Forms.Label label6;
@@ -524,8 +529,6 @@
         private System.Windows.Forms.TextBox dwgNumBox;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox dwgSizeBox;
-        private System.Windows.Forms.ComboBox prevSoCombo;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox userBox;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -547,5 +550,11 @@
         private System.Windows.Forms.ToolStripMenuItem exportOptionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem epicorExportCheckbox;
         private System.Windows.Forms.ToolStripMenuItem testExportCheckbox;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem checkConfigurationButton;
+        private System.Windows.Forms.ToolStripMenuItem completeConfigurationButton;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem clearConfigButton;
+        private System.Windows.Forms.Label outputLabel;
     }
 }
