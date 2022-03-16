@@ -12,7 +12,7 @@ namespace Configurator_2._0
     {
 
         public static Utilities utils = new Utilities();
-        public static machData machine = new machData();
+        public static MachineData machine = new MachineData();
 
         public static DataSet dataBase = new DataSet();
         public static DataTable machineData = new DataTable(); //This contains the base data of each machine type

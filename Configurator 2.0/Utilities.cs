@@ -10,6 +10,9 @@ using System.IO;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
+using MongoDB.Bson;
+using MongoDB.Driver;
+
 
 using System.Text.RegularExpressions;
 
@@ -19,53 +22,62 @@ namespace Configurator_2._0
     {
         public void updateDBs()
         {
-            string bUpName = Globals.dbDir + @"Database Backups\" + Path.GetFileNameWithoutExtension(Globals.dbName) + "_" + DateTime.Now.ToShortDateString().Replace(@"/","_") + Path.GetExtension(Globals.dbName);
-            if(File.Exists(bUpName) == false)
-            {
-                File.Copy(Globals.dbFile, bUpName);
-            }
+            string mongoDbAtlasString = "mongodb+srv://messer:5hoSjwIpbCwKSdH2@cluster0.gftmk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+            MongoClient dbClient = new MongoClient(mongoDbAtlasString);
+            var database = dbClient.GetDatabase("configurator_db");
+            var collectionList = database.ListCollectionNames().ToList();
             Globals.dataBase = new DataSet();
-            var dbConnStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + Globals.dbFile + "';Extended Properties=\"Excel 12.0;HDR=YES;\"";
 
-            using (OleDbConnection conn = new OleDbConnection(dbConnStr))
+            foreach (var collectionName in collectionList)
             {
-                try
-                {
-                    conn.Open();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString());//"Cannot Connect to Configurator Database. Please try again and contact Support if the issue continues.");
-                    conn.Close();
-                    conn.Dispose();
-                    Application.Exit();
-                }
-                DataTable shts = conn.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Tables, null);
-                using (var cmd = conn.CreateCommand())
-                {
-                    foreach (DataRow r in shts.Rows)
-                    {
-                        try
-                        {
-                            DataTable dt = new DataTable();
-                            cmd.CommandText = "SELECT * FROM [" + r["TABLE_NAME"].ToString() + "] ";
-                            var adapter = new OleDbDataAdapter(cmd);
-                            adapter.Fill(dt);
-                            if (dt.Rows.Count < 1)
-                            {
-                                continue;
-                            }
-                            dt.TableName = r["TABLE_NAME"].ToString().Replace("$", "").Replace("_", " ").Replace("'", "");
-                            Globals.dataBase.Tables.Add(delEmptyRows(dt));
-                        }
-                        catch { }
-                    }
-                }
-                conn.Close();
-                conn.Dispose();
-                GC.Collect();
-            }
+                var collection = database.GetCollection<BsonDocument>(collectionName);
+                var documents = collection.Find(new BsonDocument()).ToList();
 
+                DataTable dt = new DataTable();
+                dt.TableName = collectionName;
+                foreach (BsonDocument doc in documents)
+                {
+                    foreach (BsonElement elm in doc.Elements)
+                    {
+                        var collName = elm.Name.Replace("_"," ");
+                        if (collName == "" || collName == " id")
+                        {
+                            if (collectionName.Contains("CONF") && !dt.Columns.Contains("Part Number"))
+                            {
+                                dt.Columns.Add(new DataColumn("Part Number"));
+                            }
+
+                            continue;
+                        }
+
+                        if (!dt.Columns.Contains(collName))
+                        {
+                            dt.Columns.Add(new DataColumn(collName));
+                        }
+
+                    }
+                    Console.WriteLine(dt.Columns.ToString());
+                    DataRow dr = dt.NewRow();
+                    foreach (BsonElement elm in doc.Elements)
+                    {
+                        var collName = elm.Name.Replace("_", " ");
+                        if (collName == "" || elm.Name == "_id")
+                        {
+                            if (collectionName.Contains("CONF") && !dt.Columns.Contains(collName))
+                                dr["Part Number"] = elm.Value.AsString.Replace("\"", "");
+                            continue;
+                        }
+                        if(elm.Value is BsonString)
+                        {
+                            dr[collName] = elm.Value.AsString.Replace("\"", "");
+                            continue;
+                        }
+                        dr[collName] = elm.Value;
+                    }
+                    dt.Rows.Add(dr);
+                }
+                Globals.dataBase.Tables.Add(dt);
+            }
             Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"];
             Globals.compData = Globals.dataBase.Tables["Component Database"];
             Globals.machineData = Globals.dataBase.Tables["Machine Data"];
@@ -73,7 +85,7 @@ namespace Configurator_2._0
         }
         private void genDesc()
         {
-            Globals.machine.desc = Globals.machine.desc.Substring(0, Globals.machine.desc.IndexOf(",")+2);
+            Globals.machine.description = Globals.machine.description.Substring(0, Globals.machine.description.IndexOf(",")+2);
             DataTable dt = Globals.machine.bom;
             option[] derp = Globals.machine.selOpts.ToArray();
             for (int i = 0; i < Globals.machine.selOpts.Count; ++i)
@@ -82,10 +94,10 @@ namespace Configurator_2._0
                 {
                     string ding = Globals.machine.selOpts[i].optDesc;
                     string ring = Globals.machine.selOpts[i].optName;
-                    Globals.machine.desc = Globals.machine.desc + Globals.machine.selOpts[i].optDesc + ", ";
+                    Globals.machine.description = Globals.machine.description + Globals.machine.selOpts[i].optDesc + ", ";
                 }
             }
-            Globals.machine.desc = Globals.machine.desc.Substring(0, Globals.machine.desc.Length - 2);
+            Globals.machine.description = Globals.machine.description.Substring(0, Globals.machine.description.Length - 2);
         }
 
         public void writeMachine()
@@ -111,8 +123,8 @@ namespace Configurator_2._0
 
             dtl = dt.Copy();
             DateTime d = DateTime.Now;
-            dt.Rows.Add(Globals.machine.smartNum, "", "","", "1", d.ToShortDateString(), Environment.UserName, d.ToShortDateString(), "", Globals.machine.soNum + ";");
-            dt.Rows.Add(Globals.machine.dumNum, Globals.machine.desc, "", "","","","","", "","");
+            dt.Rows.Add(Globals.machine.SmartPartNumber, "", "","", "1", d.ToShortDateString(), Environment.UserName, d.ToShortDateString(), "", Globals.machine.soNum + ";");
+            dt.Rows.Add(Globals.machine.EpicorPartNumber, Globals.machine.description, "", "","","","","", "","");
             foreach(component c in Globals.machine.bomComps)
             {
                 dt.Rows.Add(c.number, c.desc, c.mrpType, c.qty, "", "", "", "", "", "");
@@ -311,90 +323,80 @@ namespace Configurator_2._0
         }
         public void writeExcel(object arr, string bkName, string shtName,  int ht, int len, int r, int c, string chkName)
         {
-            if (Globals.prevConf == true)
-            {
-                MessageBox.Show("Machine was Previously Configured. BOM Should have been imported into MRP System");
-                if (c == 1)
-                {
-                    return;
-                }
-            }
-            Excel.Application xl = new Excel.Application();
-            Excel.Workbook wrkbk;
-            if (File.Exists(bkName) == false)
-            {
-                wrkbk = xl.Workbooks.Add(Type.Missing);
-                wrkbk.SaveAs(bkName);
-            }
-            else
-            {
-                wrkbk  = xl.Workbooks.Open(bkName);
-            }
-            Excel.Worksheet wrksht = null;
-            if (shtName == "EpdmBOMTable")
-            {
-                wrksht = wrkbk.Sheets[1];
-                wrksht.Name = "EpdmBOMTable";
-            }
-            else
-            {
-                try
-                {
-                    wrksht = wrkbk.Worksheets[shtName];
-                }
-                catch//if(wrksht == null)
-                {
-                    wrksht = wrkbk.Worksheets["CONF TEMPLATE"];
-                    wrksht.Copy(wrkbk.Worksheets[wrkbk.Worksheets.Count]);
-                    wrksht = wrkbk.Worksheets[wrkbk.Worksheets.Count - 1];
-                    wrksht.Name = shtName;
-                }
-            }
-            int row = r+1;
-            if (c == 1)
-            {
-                row = 1;
-                bool insert = true;
-                if (r == -1)
-                {
-                    insert = false;
-                }
-                while (wrksht.Cells[row, 1].Value2 != null)
-                {
-                    if (insert == true)
-                    {
-                        if (wrksht.Cells[row, 2].Value2 == null && (wrksht.Cells[row, 1].Value2.Equals(chkName)))
-                        {
-                            wrksht.Rows[row + 1].Insert();
-                            break;
-                        }
-                    }
-                    else if (wrksht.Cells[row, 1].Value2.Equals(chkName))
-                    {
-                        break;
-                    }
-                    ++row;
-                }
-            }
-            Excel.Range c1 = (Excel.Range)wrksht.Cells[row, c];
-            Excel.Range c2 = (Excel.Range)wrksht.Cells[row+ht-1, c+len-1];
-            Excel.Range rng = wrksht.Range[c1, c2];
-            if (wrksht.Name.Contains("CONF"))
-            {
-                Excel.Range r1 = (Excel.Range)wrksht.Cells[2, 1];
-                Excel.Range r2 = (Excel.Range)wrksht.Cells[row, 1];
-                r2.Rows.EntireRow.Interior.Color = System.Drawing.Color.LightGreen;
-            }
-            rng.Value = arr;
-            wrkbk.Save();
-            wrkbk.Close(0);
-            xl.Quit();
-            GC.Collect();
-            Marshal.FinalReleaseComObject(wrkbk);
-            Marshal.FinalReleaseComObject(xl);
+            
+
             Globals.utils.updateDBs();
             return;
         }
+
+        public SimpleMachineData CreateSimpleMachine(MachineData _machineData)
+        {
+            SimpleMachineData sm = new SimpleMachineData
+            {
+                _id = _machineData.SmartPartNumber,
+                User_Added = _machineData.configuredBy,
+                Epicor_Part_Number = _machineData.EpicorPartNumber,
+                Description = _machineData.description,
+                Date_Configured = _machineData.configuredDate,
+                Last_Configured = DateTime.Now.ToShortDateString(),
+                Times_Configured = _machineData.timesConfigured,
+                BOM = new List<SimplePartData>(),
+                Line_Items = new List<SimplePartData>(),
+                Sales_Orders = _machineData.salesOrders,
+            };
+            foreach (var part in _machineData.bomComps)
+            {
+                SimplePartData sp = new SimplePartData
+                {
+                    Part_Number = part.number,
+                    Part_Description = part.desc,
+                    MRP_Type = part.mrpType,
+                    Qty = part.qty.ToString()
+                };
+                sm.BOM.Add(sp);
+            }
+            foreach (var part in _machineData.lineComps)
+            {
+                SimplePartData sp = new SimplePartData
+                {
+                    Part_Number = part.number,
+                    Part_Description = part.desc,
+                    MRP_Type = part.mrpType,
+                    Qty = part.qty.ToString()
+                };
+                sm.BOM.Add(sp);
+            }
+            sm.Times_Configured += 1;
+
+            if (string.IsNullOrEmpty(sm.User_Added))
+                sm.User_Added = Environment.UserName;
+            if (string.IsNullOrEmpty(sm.Date_Configured))
+                sm.Date_Configured = DateTime.Now.ToShortDateString();
+
+            return sm;
+        }
+
+        public bool WriteMachineToDatabase(MachineData _machineData)
+        {
+            SimpleMachineData simpleMachine = CreateSimpleMachine(_machineData);
+
+            string mongoDbAtlasString = "mongodb+srv://messer:5hoSjwIpbCwKSdH2@cluster0.gftmk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+            MongoClient dbClient = new MongoClient(mongoDbAtlasString);
+            var database = dbClient.GetDatabase("configurator_db");
+            var collectionName = Globals.machine.prefix + " CONF";
+            var collection = database.GetCollection<BsonDocument>(collectionName);
+
+            var filter = Builders<BsonDocument>.Filter
+                .Eq("_id", simpleMachine._id);
+
+            var replaceOption = new ReplaceOptions { IsUpsert = true };
+
+            collection.ReplaceOne(filter, simpleMachine.ToBsonDocument(), replaceOption);
+
+            return true;
+        }
+
+
         public int[] popItem(Control cb, DataTable dt, string col, string parCol, string val)
         {
             DataTable dt2 = getDT2(dt, col, parCol, val);
