@@ -59,6 +59,7 @@ namespace Configurator_2._0
         public string SmartPartNumber { get; set; }
         public string EpicorPartNumber { get; set; }
         public string PartNumber { get; set; }
+        public string ModelName { get; set; }
         public string drawingName { get; set; }
         public string drawingSize { get; set; }
         public string revision { get; set; }

@@ -20,17 +20,18 @@ namespace Configurator_2._0
 {
     class Utilities
     {
+        public IMongoDatabase webdatabase;
         public void updateDBs()
         {
             string mongoDbAtlasString = "mongodb+srv://messer:5hoSjwIpbCwKSdH2@cluster0.gftmk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
             MongoClient dbClient = new MongoClient(mongoDbAtlasString);
-            var database = dbClient.GetDatabase("configurator_db");
-            var collectionList = database.ListCollectionNames().ToList();
+            webdatabase = (IMongoDatabase)dbClient.GetDatabase("configurator_db");
+            var collectionList = webdatabase.ListCollectionNames().ToList();
             Globals.dataBase = new DataSet();
 
             foreach (var collectionName in collectionList)
             {
-                var collection = database.GetCollection<BsonDocument>(collectionName);
+                var collection = webdatabase.GetCollection<BsonDocument>(collectionName);
                 var documents = collection.Find(new BsonDocument()).ToList();
 
                 DataTable dt = new DataTable();
@@ -78,7 +79,7 @@ namespace Configurator_2._0
                 }
                 Globals.dataBase.Tables.Add(dt);
             }
-            Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"];
+            Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"].AsEnumerable().OrderBy(r => (Convert.ToInt32(r["Order"]))).CopyToDataTable(); 
             Globals.compData = Globals.dataBase.Tables["Component Database"];
             Globals.machineData = Globals.dataBase.Tables["Machine Data"];
             return;
@@ -90,7 +91,7 @@ namespace Configurator_2._0
             option[] derp = Globals.machine.selOpts.ToArray();
             for (int i = 0; i < Globals.machine.selOpts.Count; ++i)
             {
-                if (Globals.machine.selOpts[i].optDesc != null)
+                if (string.IsNullOrWhiteSpace(Globals.machine.selOpts[i].optDesc) == false)
                 {
                     string ding = Globals.machine.selOpts[i].optDesc;
                     string ring = Globals.machine.selOpts[i].optName;
@@ -152,7 +153,7 @@ namespace Configurator_2._0
             Globals.machine.bomObj = arr;
             if (Globals.machine.soNum != "")
             {
-                Task.Run(() => checkListGen.writeSP());
+                Task.Run(() => checkListGen.writeSP2());
             }
             return;
         }
@@ -184,6 +185,10 @@ namespace Configurator_2._0
                     }
                     else
                     {
+                        if (string.IsNullOrEmpty(comp.typQty.ToString()) == true)
+                        {
+                            comp.typQty = 1;
+                        }
                         comp.qty = comp.typQty;
                         doneComps.Add(comp.number);
                         comp.qty = comp.qty * opt.optQty;
@@ -323,7 +328,87 @@ namespace Configurator_2._0
         }
         public void writeExcel(object arr, string bkName, string shtName,  int ht, int len, int r, int c, string chkName)
         {
-            
+            if (Globals.prevConf == true)
+            {
+                MessageBox.Show("Machine was Previously Configured. BOM Should have been imported into MRP System");
+                if (c == 1)
+                {
+                    return;
+                }
+            }
+            Excel.Application xl = new Excel.Application();
+            Excel.Workbook wrkbk;
+            if (File.Exists(bkName) == false)
+            {
+                wrkbk = xl.Workbooks.Add(Type.Missing);
+                wrkbk.SaveAs(bkName);
+            }
+            else
+            {
+                wrkbk = xl.Workbooks.Open(bkName);
+            }
+            Excel.Worksheet wrksht = null;
+            if (shtName == "EpdmBOMTable")
+            {
+                wrksht = wrkbk.Sheets[1];
+                wrksht.Name = "EpdmBOMTable";
+            }
+            else
+            {
+                try
+                {
+                    wrksht = wrkbk.Worksheets[shtName];
+                }
+                catch//if(wrksht == null)
+                {
+                    wrksht = wrkbk.Worksheets["CONF TEMPLATE"];
+                    wrksht.Copy(wrkbk.Worksheets[wrkbk.Worksheets.Count]);
+                    wrksht = wrkbk.Worksheets[wrkbk.Worksheets.Count - 1];
+                    wrksht.Name = shtName;
+                }
+            }
+            int row = r + 1;
+            if (c == 1)
+            {
+                row = 1;
+                bool insert = true;
+                if (r == -1)
+                {
+                    insert = false;
+                }
+                while (wrksht.Cells[row, 1].Value2 != null)
+                {
+                    if (insert == true)
+                    {
+                        if (wrksht.Cells[row, 2].Value2 == null && (wrksht.Cells[row, 1].Value2.Equals(chkName)))
+                        {
+                            wrksht.Rows[row + 1].Insert();
+                            break;
+                        }
+                    }
+                    else if (wrksht.Cells[row, 1].Value2.Equals(chkName))
+                    {
+                        break;
+                    }
+                    ++row;
+                }
+            }
+            Excel.Range c1 = (Excel.Range)wrksht.Cells[row, c];
+            Excel.Range c2 = (Excel.Range)wrksht.Cells[row + ht - 1, c + len - 1];
+            Excel.Range rng = wrksht.Range[c1, c2];
+            if (wrksht.Name.Contains("CONF"))
+            {
+                Excel.Range r1 = (Excel.Range)wrksht.Cells[2, 1];
+                Excel.Range r2 = (Excel.Range)wrksht.Cells[row, 1];
+                r2.Rows.EntireRow.Interior.Color = System.Drawing.Color.LightGreen;
+            }
+            rng.Value = arr;
+            wrkbk.Save();
+            wrkbk.Close(0);
+            xl.Quit();
+            GC.Collect();
+            Marshal.FinalReleaseComObject(wrkbk);
+            Marshal.FinalReleaseComObject(xl);
 
             Globals.utils.updateDBs();
             return;
@@ -379,12 +464,9 @@ namespace Configurator_2._0
         public bool WriteMachineToDatabase(MachineData _machineData)
         {
             SimpleMachineData simpleMachine = CreateSimpleMachine(_machineData);
-
-            string mongoDbAtlasString = "mongodb+srv://messer:5hoSjwIpbCwKSdH2@cluster0.gftmk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-            MongoClient dbClient = new MongoClient(mongoDbAtlasString);
-            var database = dbClient.GetDatabase("configurator_db");
+                        
             var collectionName = Globals.machine.prefix + " CONF";
-            var collection = database.GetCollection<BsonDocument>(collectionName);
+            var collection = webdatabase.GetCollection<BsonDocument>(collectionName);
 
             var filter = Builders<BsonDocument>.Filter
                 .Eq("_id", simpleMachine._id);
@@ -399,7 +481,7 @@ namespace Configurator_2._0
 
         public int[] popItem(Control cb, DataTable dt, string col, string parCol, string val)
         {
-            DataTable dt2 = getDT2(dt, col, parCol, val);
+            DataTable dt2 =  getDT2(dt, col, parCol, val);
             //Determine if there is a max quantity for this option
             List<int> maxItems = new List<int>();
             if (Globals.machine.machName != null)
@@ -452,14 +534,23 @@ namespace Configurator_2._0
             {
                 //This section will handle the compatability DB. Going to pass the CB name through val, and use that in a dt.Select.
                 //Also need to do a dt.Select on the machine name, then grab all of the data and input to the Option datatype (will do that in the selChange method)
-                DataView dv = new DataView(dt.Select("Type = '" + val + "'").CopyToDataTable());
+                DataView dv = new DataView();
+                try
+                {
+                    dv = new DataView(dt.Select("Type = '" + val + "'").CopyToDataTable());
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
                 dv.Sort = col;
                 List<string> headers = new List<string>();
                 for (int k = 0; k < dt2.Columns.Count; ++k)
                 {
                     headers.Add(dt2.Columns[k].ColumnName);
                 }
-                dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
+                dv.RowFilter = '[' + Globals.machine.machName + ']' +" <> ''";
+                
 
                 dt2 = dv.ToTable(false, headers.ToArray());
                 int r = 0;
@@ -503,7 +594,7 @@ namespace Configurator_2._0
                             reqMatch = true;
                         }
                     }
-                    else if (req1 != null && req1 != "" && req1 != "+")
+                    else if (string.IsNullOrEmpty(req1) == false && string.IsNullOrWhiteSpace(req1) == false)
                     {
                         string[] reqs = req1.Split(',');
                         foreach (string req in reqs)

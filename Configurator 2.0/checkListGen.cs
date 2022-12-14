@@ -14,7 +14,9 @@ namespace Configurator_2._0
     class checkListGen
     {
 
-        public static string clLoc = @"C:\EPDM\MANUALS\CHECKLISTS-CMD\SP CL SEGMENTS\";
+        public static string clLoc = @"C:\EPDM\MANUALS\Checklist Segments\";
+
+        public static string clLoc2 = @"W:\Engineering\Machine Configurator\Checklist Segments\";
 
         static EdmVault5 vault = new EdmVault5();
         static IEdmFolder5 fol;
@@ -25,10 +27,11 @@ namespace Configurator_2._0
             {
                 return;
             }
+            vault.LoginAuto("EPDM", 0);
             List<string> opts = new List<string>();
 
             Word.Application ap = new Word.Application();
-            string writePath = searchPDM(salesOrder);
+            string writePath = @"C:\EPDM\MANUALS\CONFIGURED CHECKLISTS\";
             string spCL = writePath + salesOrder + " CHECK LIST.doc";
             Word.Document cl = null;
             Word.Paragraph para = null;
@@ -95,7 +98,67 @@ namespace Configurator_2._0
             }
             catch
             {
-                MessageBox.Show("Check List Not Generated or not Checked in!!!! \n If this was a test configuration you can ignore this error. \n If this is for a sales order, please check C:\\EPDM\\MANUALS\\CHECKLISTS-CMD\\SP CL SEGMENTS for the sales order labelled checklist.");
+                MessageBox.Show("Check List Not Generated or not Checked in!!!! \n If this was a test configuration you can ignore this error. \n If this is for a sales order, please check C:\\EPDM\\MANUALS\\CONFIGURED CHECKLISTS for the sales order labelled checklist.");
+            }
+            return;
+        }
+        public static void writeSP2()
+        {
+            string salesOrder = Globals.machine.soNum;
+            if (salesOrder == "")
+            {
+                return;
+            }
+            try
+            {
+                List<string> opts = new List<string>();
+
+                Word.Application ap = new Word.Application();
+                string writePath = @"W:\Engineering\Machine Configurator\CONFIGURED CHECKLISTS\";
+                string spCL = writePath + salesOrder + " CHECK LIST.doc";
+                Word.Document cl = null;
+                Word.Paragraph para = null;
+                string name = "";
+                string endName = clLoc2 + Globals.machine.checkEnd + ".doc";
+                if (Globals.machine.checkName != "")
+                {
+                    string fName = clLoc2 + Globals.machine.checkName + ".doc";
+                    cl = ap.Documents.Open(fName);
+                    para = cl.Content.Paragraphs.Add();
+                    para.Range.InsertBreak(Word.WdBreakType.wdPageBreak);
+                }
+                for (int i = 0; i < Globals.machine.selOpts.Count(); ++i)
+                {
+                    option opt = Globals.machine.selOpts[i];
+                    if (opt.checkName != "" && opt.checkName != null)
+                    {
+                        if (cl == null)
+                        {
+                            string fName = clLoc2 + Globals.machine.selOpts[i].checkName + ".docx";
+                            cl = ap.Documents.Open(fName);
+                            para = cl.Content.Paragraphs.Add();
+                            continue;
+                        }
+                        name = clLoc2 + opt.checkName + ".docx";
+                        if (File.Exists(name))
+                        {
+                            para.Range.InsertFile(name);
+                        }
+                    }
+                }
+                para = cl.Content.Paragraphs.Add();
+                para.Range.InsertBreak(Word.WdBreakType.wdPageBreak);
+                para.Range.InsertFile(endName);
+                para = cl.Content.Paragraphs.Add();
+                para.Range.InsertBreak(Word.WdBreakType.wdPageBreak);
+                para.Range.InsertFile(@"W:\Engineering\Machine Configurator\Checklist Segments\New Machine Verification Checklist.docx");
+                cl.SaveAs2(spCL);
+                cl.Close();
+
+            }
+            catch
+            {
+                MessageBox.Show("Check List Not Generated or not Checked in!!!! \n If this was a test configuration you can ignore this error. \n If this is for a sales order, please check C:\\EPDM\\MANUALS\\CONFIGURED CHECKLISTS for the sales order labelled checklist.");
             }
             return;
         }

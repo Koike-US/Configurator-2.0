@@ -16,7 +16,14 @@ namespace Configurator_2._0
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Configurator());
+            //try
+            //{
+                Application.Run(new Configurator());
+            //}
+            //catch (Exception e)
+            //{
+            //    MessageBox.Show(e.ToString());
+            //}
         }
     }
 }
