@@ -283,6 +283,7 @@
             this.menuStrip1.Stretch = false;
             this.menuStrip1.TabIndex = 40;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // fileToolStripMenuItem
             // 
@@ -412,14 +413,14 @@
             this.epicorExportCheckbox.CheckOnClick = true;
             this.epicorExportCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.epicorExportCheckbox.Name = "epicorExportCheckbox";
-            this.epicorExportCheckbox.Size = new System.Drawing.Size(180, 22);
+            this.epicorExportCheckbox.Size = new System.Drawing.Size(107, 22);
             this.epicorExportCheckbox.Text = "Epicor";
             // 
             // testExportCheckbox
             // 
             this.testExportCheckbox.CheckOnClick = true;
             this.testExportCheckbox.Name = "testExportCheckbox";
-            this.testExportCheckbox.Size = new System.Drawing.Size(180, 22);
+            this.testExportCheckbox.Size = new System.Drawing.Size(107, 22);
             this.testExportCheckbox.Text = "Test";
             // 
             // toolStripMenuItem1

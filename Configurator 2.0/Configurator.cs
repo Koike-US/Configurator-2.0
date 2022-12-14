@@ -19,6 +19,7 @@ namespace Configurator_2._0
     {
         List<string> baseOpts = new List<string>();
         List<string> optBoxes = new List<string>();
+        List<string> runTypes = new List<string>();
 
         List<ListBox> lBoxes = new List<ListBox>();
         List<Label> lbls = new List<Label>();
@@ -32,6 +33,8 @@ namespace Configurator_2._0
         int cntrlHt = 0;
         int cntrlWidth = 0;
         int[] maxOptQty;
+
+        string optDB = "Option Compatability";
         public Configurator()
         {
             LoadingForm lf = new LoadingForm();
@@ -56,7 +59,8 @@ namespace Configurator_2._0
             Version server = new Version(version1);
             if (server > client)
             {
-                MessageBox.Show("Configurator Update is required!! Please update to ensure correct operation!");
+                MessageBox.Show("Configurator Update is required!! Configurator will now close, update, and restart when complete.");
+                updateConfigurator();
                 //TODO: Auto check for updates
                 //updateConfButt.BackColor = Color.Red;
                 //updateConfButt.Text = "Update Required!";
@@ -170,6 +174,8 @@ namespace Configurator_2._0
             cBoxH = 265;
             dataGridView1.DataSource = null;
             ResetAllControls(this);
+            runTypes.Clear();
+            runTypes.Capacity = 0;
             return;
         }
         private void selecChange(object sender, EventArgs e)
@@ -225,6 +231,10 @@ namespace Configurator_2._0
             if (co is ListBox)
             {
                 lb = (ListBox)co;
+                if(co.Name.ToUpper().Contains("FLASHCUT"))
+                {
+                    string derp = "herp";
+                }
                 int lastSelectedIndex = (int)typeof(ListBox).GetProperty("FocusedIndex", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(lb, null);
                 string sel = lb.Items[lastSelectedIndex].ToString();
                 if (sel.ToUpper() == "NONE" || sel.ToUpper().Contains("STANDARD"))
@@ -260,15 +270,11 @@ namespace Configurator_2._0
             {
                 return;
             }
-            next_opt:
-            Tuple<DataTable, string, string> tup = nextOption(curOpt);
-            dtNext = tup.Item1;
-            nextOpt = tup.Item2;
-            dbName = tup.Item3;
-            coNext = nextCont(nextOpt, 0, "", "");
+            //next_opt:
 
-            if (dbName == "OptionCompatability")
-            {
+
+            //if (dbName == optDB)
+            //{
                 if (co.Name != "ModelCombo" && Globals.machine.machName != null)
                 {
                     foreach (option o in Globals.machine.selOpts)
@@ -285,6 +291,20 @@ namespace Configurator_2._0
                         addOpt(val, co.Name);
                     }
                 }
+            //}
+
+            Tuple<DataTable, string, string> tup = nextOption(curOpt, selVal[0]);
+            if(tup == null)
+            {
+                return;
+            }
+            dtNext = tup.Item1;
+            nextOpt = tup.Item2;
+            dbName = tup.Item3;
+            coNext = nextCont(nextOpt, 0, "", "");
+
+            if (dbName == optDB)
+            {
                 if (nextOpt == "")
                 {
                     return;
@@ -293,25 +313,28 @@ namespace Configurator_2._0
                 nextOpt = "Name";
                 curOpt = "Type";
             }
-
             maxOptQty = Globals.utils.popItem(coNext, dtNext, nextOpt, curOpt, selVal[0]);
-            int coIC = 0;
-            if (coNext is ComboBox)
-            {
-                ComboBox cbt = (ComboBox)coNext;
-                coIC = cbt.Items.Count;
-            }
-            if (coNext is ListBox)
-            {
-                ListBox cbt = (ListBox)coNext;
-                coIC = cbt.Items.Count;
-            }
-            if (coIC == 0)
-            {
-                coNext.Text = "Not Available";
-                curOpt = selVal[0];
-                goto next_opt;
-            }
+            //int coIC = 0;
+            //if (coNext is ComboBox)
+            //{
+            //    ComboBox cbt = (ComboBox)coNext;
+            //    coIC = cbt.Items.Count;
+            //}
+            //else if (coNext is ListBox)
+            //{
+            //    ListBox cbt = (ListBox)coNext;
+            //    coIC = cbt.Items.Count;
+            //}
+            //else if (coNext is Label)
+            //{
+            //    return;
+            //}
+            //if (coIC == 0)
+            //{
+            //    coNext.Text = "Not Available";
+            //    curOpt = selVal[0];
+            //    goto next_opt;
+            //}
 
 
             return;
@@ -342,6 +365,7 @@ namespace Configurator_2._0
             c.qty = 1;
             c.mrpType = "M";
             c.partType = DivisionCombo.Text;
+            c.revision = dr2.Rows[0].Field<string>("Revision"); 
             Globals.machine.machComp = c;
             return;
         }
@@ -352,8 +376,37 @@ namespace Configurator_2._0
             {
                 return;
             }
-            DataTable dr2 = drs.CopyToDataTable();
-            if (dr2.Rows[0].Field<string>("Smart Designator") == null || Globals.machine.snList.Contains(dr2.Rows[0].Field<string>("Smart Designator")) == false)
+            int RowIndex = 0;
+            if (drs.Count() >1)
+            {
+                for(int i = 0; i < drs.Count();++i)
+                {
+                    if (Globals.machine.snList.Contains(drs[i][4]) == true)
+                    {
+                        RowIndex = i;
+                    }
+                }
+            }
+            //Condense option rows across machine lines
+            //for (int i = 1; i < drs.Count();++i)
+            //{
+            //    if (drs[i][1].ToString() == drs[0][1].ToString())
+            //    {
+            //        for(int j = 3; j < drs[0].ItemArray.Count();++j)
+            //        {
+            //            if (string.IsNullOrEmpty(drs[0][j].ToString()) == true)
+            //            {
+            //                drs[0][j] = drs[i][j];
+            //            }
+            //        }
+            //    }
+            //}
+            //Condense option rows across machine lines
+
+            DataRow[] drs2 = new DataRow[] { drs[RowIndex] };
+
+            DataTable dr2 = drs2.CopyToDataTable();
+            if (Globals.machine.snList.Contains(dr2.Rows[0].Field<string>("Smart Designator")) == false)
             {
                 option opt = new option();
                 opt.optType = dr2.Rows[0].Field<string>("Type");
@@ -384,7 +437,10 @@ namespace Configurator_2._0
                     }
                 }
                 //This section checks for and removes an option if it was already selected.
-                Globals.machine.snList.Add(opt.optSnDes);
+                if (string.IsNullOrEmpty(opt.optSnDes) == false)
+                {
+                    Globals.machine.snList.Add(opt.optSnDes);
+                }
                 Globals.machine.selOpts.Add(opt);
             }
             return;
@@ -427,17 +483,18 @@ namespace Configurator_2._0
             cb.Minimum = 1;
             return cb;
         }
-        private Tuple<DataTable, string, string> nextOption(string optName)
+        private Tuple<DataTable, string, string> nextOption(string optName, string selVal)
         {
             //optName should be the name of the current option box that fired off the event in selecChange()
             //Going to handle determining which DB I need to use in here, this should help clean up the selecChange() some
             //As well as improving my accuracy.
             DataTable dt = new DataTable();
             string nextOpt = "";
+            string parCol = "";
             Tuple<DataTable, string, string> opt = new Tuple<DataTable, string, string>(dt, nextOpt, "MachineData");
             if (optName == null)
             {
-                return new Tuple<DataTable, string, string>(dt, "", "OptionCompatability"); ;
+                return new Tuple<DataTable, string, string>(dt, "", optDB); ;
             }
             bool machDB = false;
             bool optFound = false;
@@ -460,7 +517,55 @@ namespace Configurator_2._0
             if (machDB == false)
             {
                 dt = Globals.cmdOptComp;
-                int i = 0;
+                int i;
+                //int i;
+                //if (Globals.MachineOptComp.Rows.Count < 1)
+                //{
+                //    dt = Globals.cmdOptComp.Select('[' + Globals.machine.machName + ']' + " <> ''").CopyToDataTable();
+                //    //dt.DefaultView.Sort = "[Type]";
+                //    //dt = dt.DefaultView.ToTable();
+                //    //int optRow = 0;
+                //    //string optType = "";
+                //    //List<string> done = new List<string>();
+                //    for (i = 1; i < dt.Rows.Count; ++i)
+                //    {
+                //        //DataRow row = dt.Rows[i];
+                //        //if(optRow == 1 || row[1].ToString() != optType)
+                //        //{
+                //        //    optRow = i;
+                //        //    optType = row[1].ToString();
+                //        //}
+                //        ////Determine if requirements and options are out of order from each other
+                //        //DataRow[] ReqRows = dt.Select("[OptionReqs] = '" +  row[2].ToString() + "'");
+                //        //if((ReqRows != null && ReqRows.Count() > 0)) 
+                //        //{
+                //        //    if (row[0].ToString() == "PlasmaTypeCombo")
+                //        //    {
+                //        //        string ring = "";
+                //        //    }
+                //        //    DataRow[] MoveRows = dt.Select("[Type] = '" + ReqRows[0][0].ToString() + "'");
+                //        //    DataRow[] SwapRows = dt.Select("[Type] = '" + row[0].ToString() + "'");
+                //        //    for (int k = 0; k < MoveRows.Count(); ++k)
+                //        //    {
+                //        //        int LowRow = dt.Rows.IndexOf(SwapRows[SwapRows.Count() - 1]) + 1;
+                //        //        DataRow Row = dt.NewRow();
+                //        //        object[] RowData = MoveRows[k].ItemArray;
+                //        //        Row.ItemArray = RowData;
+                //        //        dt.Rows.RemoveAt(dt.Rows.IndexOf(MoveRows[k]));
+                //        //        dt.Rows.InsertAt(Row, LowRow +2);
+                //        //    }
+
+                //        //}
+
+                //    }
+
+                //    Globals.MachineOptComp = dt;
+                //}
+                //else
+                //{
+                //    dt = Globals.MachineOptComp;
+                //}
+                i = 0;
                 try
                 {
                     while (i < dt.Rows.Count && optFound == false)
@@ -471,12 +576,14 @@ namespace Configurator_2._0
                             {
                                 if (i + 1 < dt.Rows.Count && dt.Rows[i + 1][0].ToString() != optName)//&& dt.Rows[i + 1][0] != DBNull.Value)
                                 {
-                                    opt = new Tuple<DataTable, string, string>(dt, dt.Rows[i + 1].Field<string>(0), "OptionCompatability");
+                                    string ring = dt.Rows[i + 1][0].ToString();
+                                    opt = new Tuple<DataTable, string, string>(dt, dt.Rows[i + 1].Field<string>(0), optDB);
+                                    parCol = "Type";
                                     optFound = true;
                                 }
                                 if (i + 1 == dt.Rows.Count)
                                 {
-                                    return new Tuple<DataTable, string, string>(dt, "", "OptionCompatability"); ;
+                                    return new Tuple<DataTable, string, string>(dt, "", optDB); ;
                                 }
                                 ++i;
                             }
@@ -487,14 +594,25 @@ namespace Configurator_2._0
                 catch { }
                 if (optFound == false)
                 {
-                    opt = new Tuple<DataTable, string, string>(dt, "TableCombo", "OptionCompatability");
+                    opt = new Tuple<DataTable, string, string>(dt, dt.Rows[0][0].ToString(), optDB);
                 }
             }
 
-
-            if (opt.Item3 == "OptionCompatability" && Globals.utils.validOpt("Type", opt.Item2) == false)
+            if (opt.Item3 == optDB)
             {
-                opt = nextOption(opt.Item2);
+                DataTable dt2 = Globals.utils.getDT2(dt, "Name", parCol, opt.Item2);
+                if (dt2.Rows.Count == 0 || Globals.utils.validOpt("Type", opt.Item2) == false)
+                {
+                    if (runTypes.Contains(opt.Item2) == false)
+                    {
+                        runTypes.Add(opt.Item2);
+                        opt = nextOption(opt.Item2, selVal);
+                    }
+                    else
+                    {
+                        opt = null;
+                    }
+                }
             }
             return opt;
         }
@@ -591,9 +709,12 @@ namespace Configurator_2._0
                     {
                         c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
                     }
+                    if (string.IsNullOrWhiteSpace(dr2.Field<string>("Typ Qty")) == false)
+                    {
+                        c.typQty = Convert.ToInt32(dr2.Field<string>("Typ Qty"));
+                    }
                     c.mrpType = dr2.Field<string>("MRP Type");
                     c.number = dr2.Field<string>("Part Number");
-                    c.typQty = Convert.ToInt32(dr2.Field<string>("Typ Qty"));
                     c.partType = dr2.Field<string>("Part Type");
                     c.revision = dr2.Field<string>("Revision");
                     //if(c.revision == "" || c.revision == null)
@@ -612,6 +733,26 @@ namespace Configurator_2._0
                 }
             }
             return comps.ToArray();
+        }
+        private bool updateConfigurator()
+        {
+            string version1 = AssemblyName.GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe").Version.ToString();
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string version2 = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Version client = new Version(version2);
+            Version server = new Version(version1);
+            if (server <= client)
+            {
+                MessageBox.Show("Latest Version already installed");
+                return false;
+            }
+            ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
+            Info.Arguments = "Configurator 1";
+            //Info.UseShellExecute = true;
+            Process.Start(Info);
+
+            Application.Exit();
+            return true;
         }
         private void findDumNum()
         {
@@ -655,7 +796,7 @@ namespace Configurator_2._0
                 pType = "CM";
             }
             //Number PartDescription Epicor_Mfgcomment Epicor_Purcomment   Epicor_Mfg_name Epicor_MFGPartNum   Epicor_RandD_c Epicor_createdbylegacy_c    Epicor_PartType_c Epicor_EngComment_c Epicor_Confreq_c Epicor_EA_Manf_c    Epicor_EA_Volts_c Epicor_EA_Phase_c   Epicor_EA_Freq_c Epicor_EA_FLA_Supply_c  Epicor_EA_FLA_LgMot_c Epicor_EA_ProtDevRating_c   Epicor_EA_PannelSCCR_c Epicor_EA_EncRating_c   Revision Epicor_RevisionDescription  Dwg.Rev.Epicor_FullRel_c Reference Count PartRev.DrawNum_c Part.Model_c PartTypeElectrical  PartRev.DrawSize_c PartRev.SheetCount_c
-            string[] mRow = (Globals.machine.EpicorPartNumber + "," + Globals.machine.description.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,A,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.drawingName + "," + Globals.machine.machName + ",FALSE," + Globals.machine.drawingSize + ",").Split(',');
+            string[] mRow = (Globals.machine.EpicorPartNumber + "," + Globals.machine.description.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,-,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.drawingName + "," + Globals.machine.machName + ",FALSE," + Globals.machine.drawingSize + ",").Split(',');
 
             //string[] mRow = (Globals.machine.dumNum + "," + Globals.machine.desc.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() +"," + Globals.machine.partType + ",,False, , , , , , , , , ," + Globals.machine.dumNum + ",A," + "New Machine" + "," + Globals.machine.dwgRev + ",1," + Globals.machine.dumNum + ",A,1,,,FALSE,,FALSE," + Globals.machine.dwgName + "," + Globals.machine.dwgSize + ",,").Split(',');
             int i = 0;
@@ -697,22 +838,7 @@ namespace Configurator_2._0
         }
         private void updateConfButt_Click(object sender, EventArgs e)
         {
-            string version1 = AssemblyName.GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe").Version.ToString();
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            string version2 = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Version client = new Version(version2);
-            Version server = new Version(version1);
-            if (server <= client)
-            {
-                MessageBox.Show("Latest Version already installed");
-                return;
-            }
-            ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
-            Info.Arguments = "Configurator 1";
-            //Info.UseShellExecute = true;
-            Process.Start(Info);
-
-            Application.Exit();
+            updateConfigurator();
         }
 
         private void Configurator_FormClosing(object sender, FormClosingEventArgs e)
@@ -810,7 +936,7 @@ namespace Configurator_2._0
             int j = 0;
             foreach (string i in sortedSNs)
             {
-                if (i != smartStart && i != null)
+                if (i != smartStart &&  String.IsNullOrWhiteSpace(i) == false)
                 {
                     smartNum = smartNum + "-" + i;
                 }
@@ -895,6 +1021,11 @@ namespace Configurator_2._0
         private void clearConfigButton_Click(object sender, EventArgs e)
         {
             clearAndResetForm();
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }
