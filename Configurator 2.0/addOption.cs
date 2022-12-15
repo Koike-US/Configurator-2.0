@@ -17,65 +17,62 @@ namespace Configurator_2._0
             Globals.utils.PopItem(optTypeCombo, Globals.cmdOptComp, "Type", "", "");
         }
 
-        private void OptSels(object sender, EventArgs e)
+        private void OptionSelection(object sender, EventArgs e)
         {
-            ComboBox c;
-            ListBox lb;
             Control co = (Control)sender;
             DataTable dt = Globals.machineData;
-            ;
-            ComboBox cb2;
             string cName = co.Name;
             string parCol = cName;
-            string col = "";
             List<string> selVal =
                 new List<string>(); //Changing selVal from a string to a List to handle Multi-selection elements (Listboxes)
-            if (co is ComboBox)
+            switch (co)
             {
-                c = (ComboBox)sender;
-                selVal.Add((string)c.SelectedValue);
-            }
-
-            if (co is ListBox)
-            {
-                lb = (ListBox)sender;
-                selVal.Clear();
-                selVal.AddRange(lb.SelectedItems.Cast<string>().ToList());
+                case ComboBox _:
+                {
+                    ComboBox c = (ComboBox)sender;
+                    selVal.Add((string)c.SelectedValue);
+                    break;
+                }
+                case ListBox _:
+                {
+                    ListBox lb = (ListBox)sender;
+                    selVal.Clear();
+                    selVal.AddRange(lb.SelectedItems.Cast<string>().ToList());
+                    break;
+                }
             }
 
             if (selVal.Count == 0 || selVal[0] == "")
                 return;
-            if (selVal.Count != 0 || selVal[0] != "")
-                try
-                {
-                    cName = dt.Columns[dt.Columns[cName].Ordinal + 1].ColumnName;
-                    col = cName;
-                    dt = dt.Select(co.Name + " = '" + selVal[0] + "'").CopyToDataTable();
-                    machModelBox.Items.Clear();
-                    foreach (DataRow r in dt.Rows) machModelBox.Items.Add(r[3]);
-                    Control[] cFind = co.Parent.Controls.Find(cName, false);
-                    if (cFind.Count() > 0)
-                    {
-                        cb2 = (ComboBox)cFind[0];
-                        Globals.utils.PopItem(cb2, Globals.machineData, col, parCol, selVal[0]);
-                    }
-                }
-                catch
-                {
-                }
+            if (selVal.Count == 0 && selVal[0] == "") return;
+            try
+            {
+                cName = dt.Columns[dt.Columns[cName].Ordinal + 1].ColumnName;
+                string col = cName;
+                dt = dt.Select(co.Name + " = '" + selVal[0] + "'").CopyToDataTable();
+                machModelBox.Items.Clear();
+                foreach (DataRow r in dt.Rows) machModelBox.Items.Add(r[3]);
+                Control[] cFind = co.Parent.Controls.Find(cName, false);
+                if (!cFind.Any()) return;
+                ComboBox cb2 = (ComboBox)cFind[0];
+                Globals.utils.PopItem(cb2, Globals.machineData, col, parCol, selVal[0]);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void addOption_Load(object sender, EventArgs e)
         {
-            // List<Control> conts = new List<Control>();
-            ControlCollection conts = new ControlCollection(this);
+            ControlCollection controlCollection = new ControlCollection(this);
             foreach (Control c in Controls)
                 if (c.Controls.Count > 1)
                     foreach (Control c2 in c.Controls)
-                        conts.Add(c2);
+                        controlCollection.Add(c2);
                 else
-                    conts.Add(c);
-            Utilities.InitSelChange(conts, OptSels);
+                    controlCollection.Add(c);
+            Utilities.InitializeSelectionChange(controlCollection, OptionSelection);
         }
 
         private void quitButt_Click(object sender, EventArgs e)
@@ -111,7 +108,7 @@ namespace Configurator_2._0
             dr2[4] = reqsBox.Text;
             dr2[5] = shortDescBox.Text;
             DataRow[] d = Globals.cmdOptComp.Select("Type = '" + optTypeCombo.Text + "'");
-            if (d.Count() > 0) row = Globals.cmdOptComp.Rows.IndexOf(d[d.Count() - 1]);
+            if (d.Any()) row = Globals.cmdOptComp.Rows.IndexOf(d[d.Count() - 1]);
             Globals.cmdOptComp.Rows.InsertAt(dr2, row);
             Globals.utils.WriteExcel(dr2.ItemArray, Globals.DbFile, "Option Compatability", 1,
                 dr2.ItemArray.Count() - 1, row, 1, "");
@@ -123,13 +120,20 @@ namespace Configurator_2._0
             componentsGrid.DataSource = null;
             foreach (Control c in Controls)
             {
-                if (c is GroupBox) clearButt_Click(sender, e);
-                if (c is TextBox) c.Text = "";
-                if (c is ComboBox)
+                switch (c)
                 {
-                    ComboBox cb = (ComboBox)c;
-                    cb.Text = "";
-                    cb.DataSource = null;
+                    case GroupBox _:
+                        clearButt_Click(sender, e);
+                        break;
+                    case TextBox _:
+                        c.Text = "";
+                        break;
+                    case ComboBox box:
+                    {
+                        box.Text = "";
+                        box.DataSource = null;
+                        break;
+                    }
                 }
             }
 

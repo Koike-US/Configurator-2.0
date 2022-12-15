@@ -588,7 +588,7 @@ namespace Configurator_2._0
             return dt2;
         }
 
-        public static void InitSelChange(Control.ControlCollection conts, EventHandler hand)
+        public static void InitializeSelectionChange(Control.ControlCollection conts, EventHandler hand)
         {
             foreach (Control c in conts)
             {

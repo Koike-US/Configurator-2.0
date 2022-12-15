@@ -42,7 +42,7 @@ namespace Configurator_2._0
             foreach (DataColumn dc in Globals.machineData.Columns)
             {
                 colName = dc.ColumnName;
-                if ((_colData.Count() > 0 && dc.ColumnName == "CUT WIDTH") || (i > 0 && i < _colData.Count()))
+                if ((_colData.Any() && dc.ColumnName == "CUT WIDTH") || (i > 0 && i < _colData.Count()))
                 {
                     colName = _colData[i];
                     ++i;
@@ -60,12 +60,11 @@ namespace Configurator_2._0
             UpdateRow(null, null);
         }
 
-        private void OptSels(object sender, EventArgs e)
+        private void OptionSelection(object sender, EventArgs e)
         {
             ComboBox c = (ComboBox)sender;
             _dt = Globals.machineData;
             ;
-            ComboBox cb2;
             string cName = c.Name;
             string parCol = cName;
             string col = "";
@@ -82,11 +81,9 @@ namespace Configurator_2._0
                 _dt = _dt.Select(c.Name + " = '" + selVal + "'").CopyToDataTable();
 
                 Control[] cFind = Controls.Find(cName, false);
-                if (cFind.Count() > 0)
-                {
-                    cb2 = (ComboBox)cFind[0];
-                    Globals.utils.PopItem(cb2, Globals.machineData, col, parCol, selVal);
-                }
+                if (!cFind.Any()) return;
+                ComboBox cb2 = (ComboBox)cFind[0];
+                Globals.utils.PopItem(cb2, Globals.machineData, col, parCol, selVal);
             }
         }
 
@@ -94,7 +91,7 @@ namespace Configurator_2._0
         {
             Globals.utils.PopItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
                 "");
-            Utilities.InitSelChange(Controls, OptSels);
+            Utilities.InitializeSelectionChange(Controls, OptionSelection);
             PopGrid();
         }
 
@@ -128,20 +125,18 @@ namespace Configurator_2._0
 
         private void addTypeButt_Click(object sender, EventArgs e)
         {
-            if (modelCombo.Text == "")
-            {
-                _cellCBs = false;
-                int i = machineGrid.Rows.Count - 1;
-                if (machineGrid.Rows.Count == 1 && machineGrid.Rows[i].Cells[0].Value.ToString() != "")
-                    machineGrid.Rows.Add();
-                machineGrid.Rows[i].Cells[0].Value = DivisionCombo.Text;
-                machineGrid.Rows[i].Cells[1].Value = TypeCombo.Text;
-                machineGrid.Rows[i].Cells[2].Value = LineCombo.Text;
-                DivisionCombo.Text = "";
-                TypeCombo.Text = "";
-                LineCombo.Text = "";
-                _cellCBs = true;
-            }
+            if (modelCombo.Text != "") return;
+            _cellCBs = false;
+            int i = machineGrid.Rows.Count - 1;
+            if (machineGrid.Rows.Count == 1 && machineGrid.Rows[i].Cells[0].Value.ToString() != "")
+                machineGrid.Rows.Add();
+            machineGrid.Rows[i].Cells[0].Value = DivisionCombo.Text;
+            machineGrid.Rows[i].Cells[1].Value = TypeCombo.Text;
+            machineGrid.Rows[i].Cells[2].Value = LineCombo.Text;
+            DivisionCombo.Text = "";
+            TypeCombo.Text = "";
+            LineCombo.Text = "";
+            _cellCBs = true;
         }
     }
 }
