@@ -3,10 +3,6 @@ using System.Data;
 
 namespace Configurator_2._0
 {
-    internal class dataTypes
-    {
-    }
-
     internal class option
     {
         public List<component> optComps = new List<component>();
@@ -40,15 +36,6 @@ namespace Configurator_2._0
         public string eePart { get; set; }
         public string partClass { get; set; }
         public int qty { get; set; }
-    }
-
-    internal class cmdData
-    {
-        public int cutWidth { get; set; }
-        public int cutLength { get; set; }
-        public int machinWidth { get; set; }
-        public int machLength { get; set; }
-        public string machWeight { get; set; }
     }
 
     internal class MachineData

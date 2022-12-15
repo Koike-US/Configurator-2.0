@@ -19,22 +19,22 @@ namespace Configurator_2._0
 
         public static void writeSP()
         {
-            var salesOrder = Globals.machine.soNum;
+            string salesOrder = Globals.machine.soNum;
             if (salesOrder == "") return;
             vault.LoginAuto("EPDM", 0);
-            var opts = new List<string>();
+            List<string> opts = new List<string>();
 
-            var ap = new Application();
-            var writePath = @"C:\EPDM\MANUALS\CONFIGURED CHECKLISTS\";
-            var spCL = writePath + salesOrder + " CHECK LIST.doc";
+            Application ap = new Application();
+            string writePath = @"C:\EPDM\MANUALS\CONFIGURED CHECKLISTS\";
+            string spCL = writePath + salesOrder + " CHECK LIST.doc";
             Document cl = null;
             Paragraph para = null;
             IEdmFile5 f;
-            var name = "";
-            var endName = clLoc + Globals.machine.checkEnd + ".doc";
+            string name = "";
+            string endName = clLoc + Globals.machine.checkEnd + ".doc";
             if (Globals.machine.checkName != "")
             {
-                var fName = clLoc + Globals.machine.checkName + ".doc";
+                string fName = clLoc + Globals.machine.checkName + ".doc";
                 f = vault.GetFileFromPath(fName, out fol);
                 if (f == null) return;
                 f.GetFileCopy(0);
@@ -43,14 +43,14 @@ namespace Configurator_2._0
                 para.Range.InsertBreak(WdBreakType.wdPageBreak);
             }
 
-            for (var i = 0; i < Globals.machine.selOpts.Count(); ++i)
+            for (int i = 0; i < Globals.machine.selOpts.Count(); ++i)
             {
-                var opt = Globals.machine.selOpts[i];
+                option opt = Globals.machine.selOpts[i];
                 if (opt.checkName != "" && opt.checkName != null)
                 {
                     if (cl == null)
                     {
-                        var fName = clLoc + Globals.machine.selOpts[i].checkName + ".docx";
+                        string fName = clLoc + Globals.machine.selOpts[i].checkName + ".docx";
                         f = vault.GetFileFromPath(fName, out fol);
                         f.GetFileCopy(0);
                         cl = ap.Documents.Open(fName);
@@ -81,7 +81,7 @@ namespace Configurator_2._0
 
             try
             {
-                var file = default(IEdmFile5);
+                IEdmFile5 file = default(IEdmFile5);
                 fol = vault.GetFolderFromPath(writePath);
                 fol.AddFile(0, spCL, null);
                 file = vault.GetFileFromPath(spCL, out fol);
@@ -96,35 +96,35 @@ namespace Configurator_2._0
 
         public static void writeSP2()
         {
-            var salesOrder = Globals.machine.soNum;
+            string salesOrder = Globals.machine.soNum;
             if (salesOrder == "") return;
             try
             {
-                var opts = new List<string>();
+                List<string> opts = new List<string>();
 
-                var ap = new Application();
-                var writePath = @"W:\Engineering\Machine Configurator\CONFIGURED CHECKLISTS\";
-                var spCL = writePath + salesOrder + " CHECK LIST.doc";
+                Application ap = new Application();
+                string writePath = @"W:\Engineering\Machine Configurator\CONFIGURED CHECKLISTS\";
+                string spCL = writePath + salesOrder + " CHECK LIST.doc";
                 Document cl = null;
                 Paragraph para = null;
-                var name = "";
-                var endName = clLoc2 + Globals.machine.checkEnd + ".doc";
+                string name = "";
+                string endName = clLoc2 + Globals.machine.checkEnd + ".doc";
                 if (Globals.machine.checkName != "")
                 {
-                    var fName = clLoc2 + Globals.machine.checkName + ".doc";
+                    string fName = clLoc2 + Globals.machine.checkName + ".doc";
                     cl = ap.Documents.Open(fName);
                     para = cl.Content.Paragraphs.Add();
                     para.Range.InsertBreak(WdBreakType.wdPageBreak);
                 }
 
-                for (var i = 0; i < Globals.machine.selOpts.Count(); ++i)
+                for (int i = 0; i < Globals.machine.selOpts.Count(); ++i)
                 {
-                    var opt = Globals.machine.selOpts[i];
+                    option opt = Globals.machine.selOpts[i];
                     if (opt.checkName != "" && opt.checkName != null)
                     {
                         if (cl == null)
                         {
-                            var fName = clLoc2 + Globals.machine.selOpts[i].checkName + ".docx";
+                            string fName = clLoc2 + Globals.machine.selOpts[i].checkName + ".docx";
                             cl = ap.Documents.Open(fName);
                             para = cl.Content.Paragraphs.Add();
                             continue;
@@ -154,15 +154,15 @@ namespace Configurator_2._0
 
         public static string searchPDM(string folName)
         {
-            var path = "";
-            var file = folName + ".SO-link.cvd";
+            string path = "";
+            string file = folName + ".SO-link.cvd";
             if (File.Exists(folName) == false)
             {
                 setVault();
-                var search = vault.CreateSearch();
+                IEdmSearch5 search = vault.CreateSearch();
 
                 search.FileName = file;
-                var res = search.GetFirstResult();
+                IEdmSearchResult5 res = search.GetFirstResult();
                 if (res != null)
                     path = Path.GetDirectoryName(res.Path) + "\\";
                 else

@@ -21,14 +21,14 @@ namespace Configurator_2._0
         {
             ComboBox c;
             ListBox lb;
-            var co = (Control)sender;
-            var dt = Globals.machineData;
+            Control co = (Control)sender;
+            DataTable dt = Globals.machineData;
             ;
             ComboBox cb2;
-            var cName = co.Name;
-            var parCol = cName;
-            var col = "";
-            var selVal =
+            string cName = co.Name;
+            string parCol = cName;
+            string col = "";
+            List<string> selVal =
                 new List<string>(); //Changing selVal from a string to a List to handle Multi-selection elements (Listboxes)
             if (co is ComboBox)
             {
@@ -53,7 +53,7 @@ namespace Configurator_2._0
                     dt = dt.Select(co.Name + " = '" + selVal[0] + "'").CopyToDataTable();
                     machModelBox.Items.Clear();
                     foreach (DataRow r in dt.Rows) machModelBox.Items.Add(r[3]);
-                    var cFind = co.Parent.Controls.Find(cName, false);
+                    Control[] cFind = co.Parent.Controls.Find(cName, false);
                     if (cFind.Count() > 0)
                     {
                         cb2 = (ComboBox)cFind[0];
@@ -68,7 +68,7 @@ namespace Configurator_2._0
         private void addOption_Load(object sender, EventArgs e)
         {
             // List<Control> conts = new List<Control>();
-            var conts = new ControlCollection(this);
+            ControlCollection conts = new ControlCollection(this);
             foreach (Control c in Controls)
                 if (c.Controls.Count > 1)
                     foreach (Control c2 in c.Controls)
@@ -85,11 +85,11 @@ namespace Configurator_2._0
 
         private void addPartsButt_Click(object sender, EventArgs e)
         {
-            var tbH = 27;
+            int tbH = 27;
             foreach (string item in machModelBox.SelectedItems)
             {
-                var lbl = new Label();
-                var tb = new TextBox();
+                Label lbl = new Label();
+                TextBox tb = new TextBox();
                 lbl.Text = item;
                 tb.Name = item.Replace(' ', '_');
                 tb.Width = 400;
@@ -102,15 +102,15 @@ namespace Configurator_2._0
 
         private void addButt_Click(object sender, EventArgs e)
         {
-            var row = Globals.cmdOptComp.Rows.Count;
-            var dr2 = Globals.cmdOptComp.NewRow();
+            int row = Globals.cmdOptComp.Rows.Count;
+            DataRow dr2 = Globals.cmdOptComp.NewRow();
             dr2[0] = optTypeCombo.Text;
             dr2[1] = nameBox.Text;
             dr2[2] = snDesBox.Text;
             dr2[3] = checkListBox.Text;
             dr2[4] = reqsBox.Text;
             dr2[5] = shortDescBox.Text;
-            var d = Globals.cmdOptComp.Select("Type = '" + optTypeCombo.Text + "'");
+            DataRow[] d = Globals.cmdOptComp.Select("Type = '" + optTypeCombo.Text + "'");
             if (d.Count() > 0) row = Globals.cmdOptComp.Rows.IndexOf(d[d.Count() - 1]);
             Globals.cmdOptComp.Rows.InsertAt(dr2, row);
             Globals.utils.writeExcel(dr2.ItemArray, Globals.dbFile, "Option Compatability", 1,
@@ -127,7 +127,7 @@ namespace Configurator_2._0
                 if (c is TextBox) c.Text = "";
                 if (c is ComboBox)
                 {
-                    var cb = (ComboBox)c;
+                    ComboBox cb = (ComboBox)c;
                     cb.Text = "";
                     cb.DataSource = null;
                 }

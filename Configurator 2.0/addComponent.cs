@@ -22,20 +22,20 @@ namespace Configurator_2._0
         {
             if (prep) return;
             prep = true;
-            var skipRows = new List<int> { 0, 1, 3, 4, 5, 9 };
+            List<int> skipRows = new List<int> { 0, 1, 3, 4, 5, 9 };
             string[,] ddVals =
             {
                 { "", "", "" }, { "", "", "" }, { "Y", "N", "" }, { "", "", "" }, { "", "", "" }, { "", "", "" },
                 { "M", "P", "" }, { "BOM", "LINE", "" }, { "Cutting Machine", "Positioner", "Portable" },
                 { "", "", "" }, { "", "", "" }
             };
-            for (var i = 0; i < 10; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 if (vals != null) compGrid.Rows[r].Cells[i].Value = vals[i];
                 if (skipRows.Contains(i) == false)
                 {
-                    var cbc = new DataGridViewComboBoxCell();
-                    for (var j = 0; j < 3; ++j)
+                    DataGridViewComboBoxCell cbc = new DataGridViewComboBoxCell();
+                    for (int j = 0; j < 3; ++j)
                         if (ddVals[i, j] != "")
                         {
                             cbc.Items.Add(ddVals[i, j]);
@@ -51,8 +51,9 @@ namespace Configurator_2._0
 
         private void addButt_Click(object sender, EventArgs e)
         {
-            var chkName = "";
-            var tup = Globals.utils.dbAddPrep(compGrid.Rows.Count, compGrid.Columns.Count, Globals.compData, compGrid,
+            string chkName = "";
+            Tuple<object[,], DataTable> tup = Globals.utils.dbAddPrep(compGrid.Rows.Count, compGrid.Columns.Count,
+                Globals.compData, compGrid,
                 "COMP");
             if (tup.Item2 != null)
             {
@@ -83,11 +84,11 @@ namespace Configurator_2._0
         {
             if (editSel)
             {
-                var dCell = compGrid.SelectedCells[0];
-                var dGV = (DataTable)compGrid.DataSource;
-                var dgVR = dCell.OwningRow;
-                var pNum = dgVR.Cells[0].Value.ToString();
-                var dt2 = Globals.compData.Select("[Part Number] = '" + pNum + "'").CopyToDataTable();
+                DataGridViewCell dCell = compGrid.SelectedCells[0];
+                DataTable dGV = (DataTable)compGrid.DataSource;
+                DataGridViewRow dgVR = dCell.OwningRow;
+                string pNum = dgVR.Cells[0].Value.ToString();
+                DataTable dt2 = Globals.compData.Select("[Part Number] = '" + pNum + "'").CopyToDataTable();
                 if (dt2.Rows.Count == 0)
                 {
                     MessageBox.Show("No match for Part Number found. Please try again.", "Existential Threat Error");
@@ -105,11 +106,12 @@ namespace Configurator_2._0
 
         private void updateItemButt_Click(object sender, EventArgs e)
         {
-            var partNum = Interaction.InputBox("Input part number to edit, or leave blank for a list of components.");
+            string partNum =
+                Interaction.InputBox("Input part number to edit, or leave blank for a list of components.");
             if (partNum != "")
             {
-                var dr = Globals.compData.Select("[Part Number] = '" + partNum + "'");
-                var dt2 = Globals.compData.Select("[Part Number] = '" + partNum + "'").CopyToDataTable();
+                DataRow[] dr = Globals.compData.Select("[Part Number] = '" + partNum + "'");
+                DataTable dt2 = Globals.compData.Select("[Part Number] = '" + partNum + "'").CopyToDataTable();
                 compGrid.DataSource = dt2;
                 row = Globals.compData.Rows.IndexOf(dr[0]);
                 if (compGrid.Rows.Count == 0)
@@ -122,10 +124,10 @@ namespace Configurator_2._0
             }
             else if (partNum == "")
             {
-                var dV = new DataView(Globals.compData);
+                DataView dV = new DataView(Globals.compData);
                 compGrid.DataSource = dV.ToTable("Component Database", false, "Part Number", "Part Description");
                 compGrid.ReadOnly = true;
-                var i = 0;
+                int i = 0;
                 foreach (DataRow dr in Globals.compData.Rows)
                 {
                     prepCells(i, dr.ItemArray);
