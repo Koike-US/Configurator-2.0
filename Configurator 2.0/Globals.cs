@@ -5,8 +5,8 @@ namespace Configurator_2._0
 {
     internal class Globals
     {
-        public const string DbDir = @"W:\Engineering\Machine Configurator\";
-        public const string DbName = "Configurator DB.xlsx";
+        private const string DbDir = @"W:\Engineering\Machine Configurator\";
+        private const string DbName = "Configurator DB.xlsx";
         public const string DbFile = DbDir + DbName;
 
         public static Utilities utils = new Utilities();
