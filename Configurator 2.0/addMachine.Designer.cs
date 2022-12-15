@@ -54,7 +54,7 @@
             this.machineGrid.Name = "machineGrid";
             this.machineGrid.Size = new System.Drawing.Size(1602, 314);
             this.machineGrid.TabIndex = 0;
-            this.machineGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.updateRow);
+            this.machineGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.UpdateRow);
             // 
             // label7
             // 

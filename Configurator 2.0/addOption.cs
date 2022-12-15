@@ -12,12 +12,12 @@ namespace Configurator_2._0
         public addOption()
         {
             InitializeComponent();
-            Globals.utils.popItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
+            Globals.utils.PopItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
                 "");
-            Globals.utils.popItem(optTypeCombo, Globals.cmdOptComp, "Type", "", "");
+            Globals.utils.PopItem(optTypeCombo, Globals.cmdOptComp, "Type", "", "");
         }
 
-        private void optSels(object sender, EventArgs e)
+        private void OptSels(object sender, EventArgs e)
         {
             ComboBox c;
             ListBox lb;
@@ -57,7 +57,7 @@ namespace Configurator_2._0
                     if (cFind.Count() > 0)
                     {
                         cb2 = (ComboBox)cFind[0];
-                        Globals.utils.popItem(cb2, Globals.machineData, col, parCol, selVal[0]);
+                        Globals.utils.PopItem(cb2, Globals.machineData, col, parCol, selVal[0]);
                     }
                 }
                 catch
@@ -75,7 +75,7 @@ namespace Configurator_2._0
                         conts.Add(c2);
                 else
                     conts.Add(c);
-            Globals.utils.initSelChange(conts, optSels);
+            Utilities.InitSelChange(conts, OptSels);
         }
 
         private void quitButt_Click(object sender, EventArgs e)
@@ -113,7 +113,7 @@ namespace Configurator_2._0
             DataRow[] d = Globals.cmdOptComp.Select("Type = '" + optTypeCombo.Text + "'");
             if (d.Count() > 0) row = Globals.cmdOptComp.Rows.IndexOf(d[d.Count() - 1]);
             Globals.cmdOptComp.Rows.InsertAt(dr2, row);
-            Globals.utils.writeExcel(dr2.ItemArray, Globals.dbFile, "Option Compatability", 1,
+            Globals.utils.WriteExcel(dr2.ItemArray, Globals.DbFile, "Option Compatability", 1,
                 dr2.ItemArray.Count() - 1, row, 1, "");
             MessageBox.Show("Option Added to Database");
         }
@@ -135,9 +135,9 @@ namespace Configurator_2._0
 
             machModelBox.ClearSelected();
             machModelBox.Items.Clear();
-            Globals.utils.popItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
+            Globals.utils.PopItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
                 "");
-            Globals.utils.popItem(optTypeCombo, Globals.cmdOptComp, "Type", "", "");
+            Globals.utils.PopItem(optTypeCombo, Globals.cmdOptComp, "Type", "", "");
         }
 
         private void DivisionCombo_SelectedIndexChanged(object sender, EventArgs e)

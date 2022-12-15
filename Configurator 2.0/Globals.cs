@@ -5,9 +5,9 @@ namespace Configurator_2._0
 {
     internal class Globals
     {
-        public const string dbDir = @"W:\Engineering\Machine Configurator\";
-        public const string dbName = "Configurator DB.xlsx";
-        public const string dbFile = dbDir + dbName;
+        public const string DbDir = @"W:\Engineering\Machine Configurator\";
+        public const string DbName = "Configurator DB.xlsx";
+        public const string DbFile = DbDir + DbName;
 
         public static Utilities utils = new Utilities();
         public static MachineData machine = new MachineData();
@@ -27,7 +27,7 @@ namespace Configurator_2._0
                 new DataTable(); //This contains all of the pre-configured Shop pro data, and new configurations will be written to
 
         public static DataTable
-            MachineOptComp =
+            machineOptComp =
                 new DataTable(); //This contains all of the option compatability data for the currently selected machine, and is the "heart" of the configurator
 
         public static int expRows = 30;

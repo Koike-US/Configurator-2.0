@@ -8,32 +8,32 @@ namespace Configurator_2._0
 {
     public partial class addMachine : Form
     {
-        private readonly List<string> cmdData = new List<string>
+        private readonly List<string> _cmdData = new List<string>
         {
             "CUT WIDTH", "CUT LENGTH", "MACH WIDTH", "MACH LENGTH", "WEIGHT", "TOOL CAP", "WATER CAP", "THICKNESS CAP",
             "MACH POWER"
         };
 
-        private readonly List<string> colData = new List<string>();
-        private readonly List<string> posData = new List<string>();
-        private bool cellCBs = true;
-        private DataTable dt;
-        private int r;
+        private readonly List<string> _colData = new List<string>();
+        private readonly List<string> _posData = new List<string>();
+        private bool _cellCBs = true;
+        private DataTable _dt;
+        private int _r;
 
         public addMachine()
         {
             InitializeComponent();
         }
 
-        private void popGrid()
+        private void PopGrid()
         {
             switch (DivisionCombo.Text)
             {
                 case "POSITIONERS":
-                    colData.AddRange(posData.ToArray());
+                    _colData.AddRange(_posData.ToArray());
                     break;
                 case "CUTTING MACHINES":
-                    colData.AddRange(cmdData.ToArray());
+                    _colData.AddRange(_cmdData.ToArray());
                     break;
             }
 
@@ -42,9 +42,9 @@ namespace Configurator_2._0
             foreach (DataColumn dc in Globals.machineData.Columns)
             {
                 colName = dc.ColumnName;
-                if ((colData.Count() > 0 && dc.ColumnName == "CUT WIDTH") || (i > 0 && i < colData.Count()))
+                if ((_colData.Count() > 0 && dc.ColumnName == "CUT WIDTH") || (i > 0 && i < _colData.Count()))
                 {
-                    colName = colData[i];
+                    colName = _colData[i];
                     ++i;
                 }
 
@@ -53,17 +53,17 @@ namespace Configurator_2._0
 
             DataGridViewComboBoxCell cbc = new DataGridViewComboBoxCell();
             cbc.DataSource =
-                Globals.utils.getDT2(Globals.machineData, Globals.machineData.Columns[0].ColumnName, "", "");
+                Globals.utils.GetDt2(Globals.machineData, Globals.machineData.Columns[0].ColumnName, "", "");
             cbc.DisplayMember = Globals.machineData.Columns[0].ColumnName;
             cbc.ValueMember = Globals.machineData.Columns[0].ColumnName;
             machineGrid.Rows[0].Cells[0] = cbc;
-            updateRow(null, null);
+            UpdateRow(null, null);
         }
 
-        private void optSels(object sender, EventArgs e)
+        private void OptSels(object sender, EventArgs e)
         {
             ComboBox c = (ComboBox)sender;
-            dt = Globals.machineData;
+            _dt = Globals.machineData;
             ;
             ComboBox cb2;
             string cName = c.Name;
@@ -77,42 +77,42 @@ namespace Configurator_2._0
             }
             else
             {
-                cName = dt.Columns[dt.Columns[cName].Ordinal + 1].ColumnName;
+                cName = _dt.Columns[_dt.Columns[cName].Ordinal + 1].ColumnName;
                 col = cName;
-                dt = dt.Select(c.Name + " = '" + selVal + "'").CopyToDataTable();
+                _dt = _dt.Select(c.Name + " = '" + selVal + "'").CopyToDataTable();
 
                 Control[] cFind = Controls.Find(cName, false);
                 if (cFind.Count() > 0)
                 {
                     cb2 = (ComboBox)cFind[0];
-                    Globals.utils.popItem(cb2, Globals.machineData, col, parCol, selVal);
+                    Globals.utils.PopItem(cb2, Globals.machineData, col, parCol, selVal);
                 }
             }
         }
 
         private void addMachine_Load(object sender, EventArgs e)
         {
-            Globals.utils.popItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
+            Globals.utils.PopItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
                 "");
-            Globals.utils.initSelChange(Controls, optSels);
-            popGrid();
+            Utilities.InitSelChange(Controls, OptSels);
+            PopGrid();
         }
 
-        private void updateRow(object sender, DataGridViewCellEventArgs e)
+        private void UpdateRow(object sender, DataGridViewCellEventArgs e)
         {
-            machineGrid.Rows[r].Cells[0].Value = DivisionCombo.Text;
-            machineGrid.Rows[r].Cells[1].Value = TypeCombo.Text;
-            machineGrid.Rows[r].Cells[2].Value = LineCombo.Text;
-            ++r;
+            machineGrid.Rows[_r].Cells[0].Value = DivisionCombo.Text;
+            machineGrid.Rows[_r].Cells[1].Value = TypeCombo.Text;
+            machineGrid.Rows[_r].Cells[2].Value = LineCombo.Text;
+            ++_r;
         }
 
         private void addMachButt_Click(object sender, EventArgs e)
         {
-            Tuple<object[,], DataTable> tup = Globals.utils.dbAddPrep(machineGrid.Rows.Count, machineGrid.Columns.Count,
+            Tuple<object[,], DataTable> tup = Globals.utils.DbAddPrep(machineGrid.Rows.Count, machineGrid.Columns.Count,
                 Globals.machineData,
                 machineGrid, "MACH");
             Globals.machineData.Merge(tup.Item2);
-            Globals.utils.writeExcel(tup.Item1, Globals.dbFile, "Machine Data", machineGrid.Rows.Count - 1,
+            Globals.utils.WriteExcel(tup.Item1, Globals.DbFile, "Machine Data", machineGrid.Rows.Count - 1,
                 machineGrid.Columns.Count - 1, Globals.machineData.Rows.Count + 1, 1, "");
         }
 
@@ -123,14 +123,14 @@ namespace Configurator_2._0
 
         private void gridButt_Click(object sender, EventArgs e)
         {
-            popGrid();
+            PopGrid();
         }
 
         private void addTypeButt_Click(object sender, EventArgs e)
         {
             if (modelCombo.Text == "")
             {
-                cellCBs = false;
+                _cellCBs = false;
                 int i = machineGrid.Rows.Count - 1;
                 if (machineGrid.Rows.Count == 1 && machineGrid.Rows[i].Cells[0].Value.ToString() != "")
                     machineGrid.Rows.Add();
@@ -140,7 +140,7 @@ namespace Configurator_2._0
                 DivisionCombo.Text = "";
                 TypeCombo.Text = "";
                 LineCombo.Text = "";
-                cellCBs = true;
+                _cellCBs = true;
             }
         }
     }

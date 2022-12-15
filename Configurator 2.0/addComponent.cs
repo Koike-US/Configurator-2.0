@@ -8,9 +8,9 @@ namespace Configurator_2._0
 {
     public partial class addComponent : Form
     {
-        private bool editSel;
-        private bool prep;
-        private int row = -1;
+        private bool _editSel;
+        private bool _prep;
+        private int _row = -1;
 
         public addComponent()
         {
@@ -18,10 +18,10 @@ namespace Configurator_2._0
             foreach (DataColumn dc in Globals.compData.Columns) compGrid.Columns.Add(dc.ColumnName, dc.ColumnName);
         }
 
-        private void prepCells(int r, object[] vals)
+        private void PrepCells(int r, object[] vals)
         {
-            if (prep) return;
-            prep = true;
+            if (_prep) return;
+            _prep = true;
             List<int> skipRows = new List<int> { 0, 1, 3, 4, 5, 9 };
             string[,] ddVals =
             {
@@ -46,26 +46,26 @@ namespace Configurator_2._0
                 }
             }
 
-            prep = false;
+            _prep = false;
         }
 
         private void addButt_Click(object sender, EventArgs e)
         {
             string chkName = "";
-            Tuple<object[,], DataTable> tup = Globals.utils.dbAddPrep(compGrid.Rows.Count, compGrid.Columns.Count,
+            Tuple<object[,], DataTable> tup = Globals.utils.DbAddPrep(compGrid.Rows.Count, compGrid.Columns.Count,
                 Globals.compData, compGrid,
                 "COMP");
             if (tup.Item2 != null)
             {
                 if (compGrid.Rows.Count == 2) chkName = tup.Item1[0, 0].ToString();
                 Globals.compData.Merge(tup.Item2);
-                Globals.utils.delEmptyRows(Globals.compData);
-                Globals.utils.writeExcel(tup.Item1, Globals.dbFile, "Component Database", tup.Item2.Rows.Count - 1,
+                Utilities.DeleteEmptyRows(Globals.compData);
+                Globals.utils.WriteExcel(tup.Item1, Globals.DbFile, "Component Database", tup.Item2.Rows.Count - 1,
                     tup.Item2.Columns.Count, -1, 1, chkName);
                 compGrid.DataSource = null;
                 compGrid.Rows.Clear();
                 compGrid.Refresh();
-                if (editSel) editSel = false;
+                if (_editSel) _editSel = false;
             }
         }
 
@@ -77,17 +77,16 @@ namespace Configurator_2._0
         private void addComponent_Load(object sender, EventArgs e)
         {
             compGrid.RowsAdded += compGrid_RowsAdded;
-            prepCells(compGrid.Rows.Count - 1, null);
+            PrepCells(compGrid.Rows.Count - 1, null);
         }
 
         private void compGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (editSel)
+            if (_editSel)
             {
                 DataGridViewCell dCell = compGrid.SelectedCells[0];
-                DataTable dGV = (DataTable)compGrid.DataSource;
-                DataGridViewRow dgVR = dCell.OwningRow;
-                string pNum = dgVR.Cells[0].Value.ToString();
+                DataGridViewRow dgVr = dCell.OwningRow;
+                string pNum = dgVr.Cells[0].Value.ToString();
                 DataTable dt2 = Globals.compData.Select("[Part Number] = '" + pNum + "'").CopyToDataTable();
                 if (dt2.Rows.Count == 0)
                 {
@@ -96,7 +95,7 @@ namespace Configurator_2._0
                 else
                 {
                     compGrid.DataSource = null;
-                    prepCells(0, dt2.Rows[0].ItemArray);
+                    PrepCells(0, dt2.Rows[0].ItemArray);
                 }
 
                 compGrid.ReadOnly = false;
@@ -113,14 +112,14 @@ namespace Configurator_2._0
                 DataRow[] dr = Globals.compData.Select("[Part Number] = '" + partNum + "'");
                 DataTable dt2 = Globals.compData.Select("[Part Number] = '" + partNum + "'").CopyToDataTable();
                 compGrid.DataSource = dt2;
-                row = Globals.compData.Rows.IndexOf(dr[0]);
+                _row = Globals.compData.Rows.IndexOf(dr[0]);
                 if (compGrid.Rows.Count == 0)
                 {
                     MessageBox.Show("No match for Part Number found. Please try again.", "Existential Threat Error");
                     compGrid.DataSource = null;
                 }
 
-                prepCells(0, dr[0].ItemArray);
+                PrepCells(0, dr[0].ItemArray);
             }
             else if (partNum == "")
             {
@@ -130,17 +129,17 @@ namespace Configurator_2._0
                 int i = 0;
                 foreach (DataRow dr in Globals.compData.Rows)
                 {
-                    prepCells(i, dr.ItemArray);
+                    PrepCells(i, dr.ItemArray);
                     ++i;
                 }
 
-                editSel = true;
+                _editSel = true;
             }
         }
 
         private void compGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
-            prepCells(compGrid.Rows.Count - 1, null);
+            PrepCells(compGrid.Rows.Count - 1, null);
         }
     }
 }

@@ -12,37 +12,37 @@ namespace Configurator_2._0
 {
     public partial class Configurator : Form
     {
-        private readonly List<Control> addedControls = new List<Control>();
-        private readonly List<string> baseOpts = new List<string>();
-        private readonly List<Label> lbls = new List<Label>();
-        private readonly List<string> optBoxes = new List<string>();
+        private readonly List<Control> _addedControls = new List<Control>();
+        private readonly List<string> _baseOpts = new List<string>();
+        private readonly List<Label> _lbls = new List<Label>();
+        private readonly List<string> _optBoxes = new List<string>();
 
-        private readonly string optDB = "Option Compatability";
-        private readonly List<string> runTypes = new List<string>();
-        private List<Label> addedLabels = new List<Label>();
-        private int cBoxH = 265;
-        private int cntrlHt;
-        private int cntrlWidth;
+        private readonly string _optDb = "Option Compatability";
+        private readonly List<string> _runTypes = new List<string>();
+        private List<Label> _addedLabels = new List<Label>();
+        private int _cBoxH = 265;
+        private int _cntrlHt;
+        private int _cntrlWidth;
 
-        private int iMax;
-        private int initOpts;
+        private int _iMax;
+        private int _initOpts;
 
-        private List<ListBox> lBoxes = new List<ListBox>();
-        private int[] maxOptQty;
+        private List<ListBox> _lBoxes = new List<ListBox>();
+        private int[] _maxOptQty;
 
         public Configurator()
         {
             LoadingForm lf = new LoadingForm();
             lf.Show();
-            Globals.utils.updateDBs();
+            Globals.utils.UpdateDBs();
             InitializeComponent();
             FormClosing += Configurator_FormClosing;
-            baseOpts.AddRange(Globals.machineData.Columns.Cast<DataColumn>().Select(x => x.ColumnName)
+            _baseOpts.AddRange(Globals.machineData.Columns.Cast<DataColumn>().Select(x => x.ColumnName)
                 .Where(x => x.Contains("Combo")).ToArray());
-            optBoxes.AddRange(baseOpts.ToArray());
-            initOpts = baseOpts.Count() - 1;
-            Globals.utils.initSelChange(Controls, selecChange);
-            iMax = Globals.cmdOptComp.Rows.Count;
+            _optBoxes.AddRange(_baseOpts.ToArray());
+            _initOpts = _baseOpts.Count() - 1;
+            Utilities.InitSelChange(Controls, SelecChange);
+            _iMax = Globals.cmdOptComp.Rows.Count;
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             Text = string.Format(Text, version.Major, version.Minor, version.Build, version.Revision);
             Refresh();
@@ -51,7 +51,7 @@ namespace Configurator_2._0
             string version1 = AssemblyName
                 .GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe")
                 .Version.ToString();
-            Assembly assembly = Assembly.GetExecutingAssembly();
+            Assembly.GetExecutingAssembly();
             string version2 = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Version client = new Version(version2);
             Version server = new Version(version1);
@@ -59,22 +59,22 @@ namespace Configurator_2._0
             {
                 MessageBox.Show(
                     "Configurator Update is required!! Configurator will now close, update, and restart when complete.");
-                updateConfigurator();
+                UpdateConfigurator();
                 //TODO: Auto check for updates
                 //updateConfButt.BackColor = Color.Red;
                 //updateConfButt.Text = "Update Required!";
             }
 
-            Globals.utils.popItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
+            Globals.utils.PopItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
                 "");
         }
 
-        private void clearCombos(string cur)
+        private void ClearCombos(string cur)
         {
-            List<string> conNames = new List<string>();
+            new List<string>();
             int i = 0;
             //int j = 0;
-            foreach (string c in optBoxes) //(j = 0; j < optBoxes.Count;++j)//
+            foreach (string c in _optBoxes) //(j = 0; j < optBoxes.Count;++j)//
             {
                 //string c = optBoxes[j];
                 //if (i > optBoxes.IndexOf(cur))
@@ -84,12 +84,11 @@ namespace Configurator_2._0
                 cb.AddRange(Controls.Find(c.Replace("Combo", "Label"), false));
                 cb.AddRange(Controls.Find(c.Replace("List", "Label"), false));
                 if (cb.Count == 0) return;
-                Control co = cb[0];
 
 
                 //if (cb[0].Text != "")
                 //{
-                if (baseOpts.Contains(c))
+                if (_baseOpts.Contains(c))
                 {
                     ComboBox cb0 = (ComboBox)cb[0];
                     cb0.BeginInvoke(new Action(() => { cb0.Text = ""; }));
@@ -108,8 +107,8 @@ namespace Configurator_2._0
             }
 
             BeginInvoke(new Action(() => { Refresh(); }));
-            optBoxes.Clear();
-            optBoxes.AddRange(baseOpts.ToArray());
+            _optBoxes.Clear();
+            _optBoxes.AddRange(_baseOpts.ToArray());
         }
 
         private void ResetAllControls(Control form)
@@ -148,43 +147,42 @@ namespace Configurator_2._0
                 }
             }
 
-            foreach (Control control in addedControls)
+            foreach (Control control in _addedControls)
             {
                 form.Controls.Remove(control);
                 control.Dispose();
             }
 
-            addedControls.Clear();
+            _addedControls.Clear();
             completeConfigurationButton.BackColor = SystemColors.Control;
             checkConfigurationButton.BackColor = SystemColors.Control;
         }
 
-        private void clearAndResetForm()
+        private void ClearAndResetForm()
         {
-            Task.Run(() => Globals.utils.updateDBs());
+            Task.Run(() => Globals.utils.UpdateDBs());
             Globals.machine = new MachineData();
             Globals.prevConf = false;
-            Globals.utils.popItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
+            Globals.utils.PopItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
                 "");
-            cBoxH = 265;
+            _cBoxH = 265;
             dataGridView1.DataSource = null;
             ResetAllControls(this);
-            runTypes.Clear();
-            runTypes.Capacity = 0;
+            _runTypes.Clear();
+            _runTypes.Capacity = 0;
         }
 
-        private void selecChange(object sender, EventArgs e)
+        private void SelecChange(object sender, EventArgs e)
         {
             checkConfigurationButton.BackColor = SystemColors.Control;
             completeConfigurationButton.BackColor = SystemColors.Control;
             Control co = (Control)sender;
             //clearCombos(co.Name);
-            List<string> sns = Globals.machine.snList;
             Control coNext = new Control();
             ComboBox cb = new ComboBox();
             ListBox lb = new ListBox();
             NumericUpDown nb = new NumericUpDown();
-            DataTable dtCur = new DataTable(); //Datatable to get data for the current option
+            new DataTable();
             DataTable dtNext = new DataTable(); //Datatable to get data for the next option
             List<string> selVal =
                 new List<string>(); //Changing selVal from a string to a List to handle Multi-selection elements (Listboxes)
@@ -211,11 +209,11 @@ namespace Configurator_2._0
                 cb = (ComboBox)co;
                 if (cb.SelectedValue == null) return;
                 selVal.Add(cb.SelectedValue.ToString());
-                if (cb.Name == "ModelCombo") setMach(selVal[0]);
-                if (maxOptQty != null && maxOptQty.Count() > 0)
+                if (cb.Name == "ModelCombo") SetMach(selVal[0]);
+                if (_maxOptQty != null && _maxOptQty.Count() > 0)
                 {
-                    int maxQ = maxOptQty[cb.SelectedIndex];
-                    nextCont(cb.Name.Replace("Combo", "Numeric"), maxQ, selVal[0], "");
+                    int maxQ = _maxOptQty[cb.SelectedIndex];
+                    NextCont(cb.Name.Replace("Combo", "Numeric"), maxQ, selVal[0], "");
                 }
             }
 
@@ -246,10 +244,10 @@ namespace Configurator_2._0
                     }
 
                 selVal.AddRange(lb.SelectedItems.Cast<string>().ToList());
-                if (maxOptQty != null && maxOptQty.Count() > 0)
+                if (_maxOptQty != null && _maxOptQty.Count() > 0)
                 {
-                    int maxQ = maxOptQty[0];
-                    nextCont(lb.Name.Replace("List", "Numeric"), maxQ, selVal[0], lb.Name);
+                    int maxQ = _maxOptQty[0];
+                    NextCont(lb.Name.Replace("List", "Numeric"), maxQ, selVal[0], lb.Name);
                 }
             }
 
@@ -269,18 +267,18 @@ namespace Configurator_2._0
                         break;
                     }
 
-                foreach (string val in selVal) addOpt(val, co.Name);
+                foreach (string val in selVal) AddOpt(val, co.Name);
             }
             //}
 
-            Tuple<DataTable, string, string> tup = nextOption(curOpt, selVal[0]);
+            Tuple<DataTable, string, string> tup = NextOption(curOpt, selVal[0]);
             if (tup == null) return;
             dtNext = tup.Item1;
             nextOpt = tup.Item2;
             dbName = tup.Item3;
-            coNext = nextCont(nextOpt, 0, "", "");
+            coNext = NextCont(nextOpt, 0, "", "");
 
-            if (dbName == optDB)
+            if (dbName == _optDb)
             {
                 if (nextOpt == "") return;
                 selVal[0] = nextOpt;
@@ -288,7 +286,7 @@ namespace Configurator_2._0
                 curOpt = "Type";
             }
 
-            maxOptQty = Globals.utils.popItem(coNext, dtNext, nextOpt, curOpt, selVal[0]);
+            _maxOptQty = Globals.utils.PopItem(coNext, dtNext, nextOpt, curOpt, selVal[0]);
             //int coIC = 0;
             //if (coNext is ComboBox)
             //{
@@ -312,12 +310,12 @@ namespace Configurator_2._0
             //}
         }
 
-        private void setMach(string selVal)
+        private void SetMach(string selVal)
         {
             DataTable dr2 = Globals.machineData.Select("ModelCombo = '" + selVal + "'").CopyToDataTable();
             Globals.machine.prefix = dr2.Rows[0].Field<string>("Name Prefix");
-            Globals.machine.SmartPartNumber = dr2.Rows[0].Field<string>("Smart PN");
-            Globals.machine.PartNumber = dr2.Rows[0].Field<string>("Base Part Number");
+            Globals.machine.smartPartNumber = dr2.Rows[0].Field<string>("Smart PN");
+            Globals.machine.partNumber = dr2.Rows[0].Field<string>("Base Part Number");
             Globals.machine.drawingName = dr2.Rows[0].Field<string>("Drawing Name");
             Globals.machine.drawingSize = dr2.Rows[0].Field<string>("Drawing Size");
 
@@ -342,15 +340,15 @@ namespace Configurator_2._0
             Globals.machine.machComp = c;
         }
 
-        private void addOpt(string selVal, string cName)
+        private void AddOpt(string selVal, string cName)
         {
             DataRow[] drs = Globals.cmdOptComp.Select("Name = '" + selVal + "'");
             if (drs.Count() == 0) return;
-            int RowIndex = 0;
+            int rowIndex = 0;
             if (drs.Count() > 1)
                 for (int i = 0; i < drs.Count(); ++i)
                     if (Globals.machine.snList.Contains(drs[i][4]))
-                        RowIndex = i;
+                        rowIndex = i;
             //Condense option rows across machine lines
             //for (int i = 1; i < drs.Count();++i)
             //{
@@ -367,7 +365,7 @@ namespace Configurator_2._0
             //}
             //Condense option rows across machine lines
 
-            DataRow[] drs2 = { drs[RowIndex] };
+            DataRow[] drs2 = { drs[rowIndex] };
 
             DataTable dr2 = drs2.CopyToDataTable();
             if (Globals.machine.snList.Contains(dr2.Rows[0].Field<string>("Smart Designator")) == false)
@@ -387,7 +385,7 @@ namespace Configurator_2._0
 
                 if (selVal.ToUpper() != "NONE")
                 {
-                    opt.optComps.AddRange(getCompData(dr2.Rows[0], opt.optQty));
+                    opt.optComps.AddRange(GetCompData(dr2.Rows[0], opt.optQty));
                     if (dr2.Rows[0].Field<string>("OptionReqs") != null)
                         try
                         {
@@ -405,26 +403,26 @@ namespace Configurator_2._0
             }
         }
 
-        private void addLabel(string name)
+        private void AddLabel(string name)
         {
             Label lbl = new Label();
-            lbl.Text = Globals.utils.AddSpacesToSentence(name.Replace("Combo", ""));
+            lbl.Text = Utilities.AddSpacesToSentence(name.Replace("Combo", ""));
             lbl.Size = new Size(200, 15);
             lbl.Name = name.Replace("Combo", "Label");
-            lbl.Location = new Point(12, cBoxH - 15);
-            lbls.Add(lbl);
+            lbl.Location = new Point(12, _cBoxH - 15);
+            _lbls.Add(lbl);
             Controls.Add(lbl);
             lbl.Show();
-            addedControls.Add(lbl);
+            _addedControls.Add(lbl);
         }
 
-        private ComboBox addCombo(string name)
+        private ComboBox AddCombo(string name)
         {
             ComboBox cb = new ComboBox();
             return cb;
         }
 
-        private ListBox addList(string name)
+        private ListBox AddList(string name)
         {
             ListBox cb = new ListBox();
             cb.SelectionMode = SelectionMode.MultiSimple;
@@ -439,7 +437,7 @@ namespace Configurator_2._0
             return checkedListBox;
         }
 
-        private NumericUpDown addNumeric(string name, int mQty)
+        private NumericUpDown AddNumeric(string name, int mQty)
         {
             NumericUpDown cb = new NumericUpDown();
             cb.Maximum = mQty;
@@ -447,7 +445,7 @@ namespace Configurator_2._0
             return cb;
         }
 
-        private Tuple<DataTable, string, string> nextOption(string optName, string selVal)
+        private Tuple<DataTable, string, string> NextOption(string optName, string selVal)
         {
             //optName should be the name of the current option box that fired off the event in selecChange()
             //Going to handle determining which DB I need to use in here, this should help clean up the selecChange() some
@@ -458,26 +456,26 @@ namespace Configurator_2._0
             Tuple<DataTable, string, string> opt = new Tuple<DataTable, string, string>(dt, nextOpt, "MachineData");
             if (optName == null)
             {
-                return new Tuple<DataTable, string, string>(dt, "", optDB);
+                return new Tuple<DataTable, string, string>(dt, "", _optDb);
                 ;
             }
 
-            bool machDB = false;
+            bool machDb = false;
             bool optFound = false;
             if (Globals.machineData.Columns.Contains(optName))
             {
                 //If the current option name is in the MachineData DB;
                 dt = Globals.machineData;
-                machDB = true;
-                if (Globals.utils.isOptName(dt.Columns[dt.Columns[optName].Ordinal + 1].ColumnName))
+                machDb = true;
+                if (Globals.utils.IsOption(dt.Columns[dt.Columns[optName].Ordinal + 1].ColumnName))
                     //If the next Machine DB header is an option Name
                     opt = new Tuple<DataTable, string, string>(dt,
                         dt.Columns[dt.Columns[optName].Ordinal + 1].ColumnName, "MachineData");
                 else
-                    machDB = false;
+                    machDb = false;
             }
 
-            if (machDB == false)
+            if (machDb == false)
             {
                 dt = Globals.cmdOptComp;
                 int i;
@@ -539,16 +537,15 @@ namespace Configurator_2._0
                                 if (i + 1 < dt.Rows.Count &&
                                     dt.Rows[i + 1][0].ToString() != optName) //&& dt.Rows[i + 1][0] != DBNull.Value)
                                 {
-                                    string ring = dt.Rows[i + 1][0].ToString();
                                     opt = new Tuple<DataTable, string, string>(dt, dt.Rows[i + 1].Field<string>(0),
-                                        optDB);
+                                        _optDb);
                                     parCol = "Type";
                                     optFound = true;
                                 }
 
                                 if (i + 1 == dt.Rows.Count)
                                 {
-                                    return new Tuple<DataTable, string, string>(dt, "", optDB);
+                                    return new Tuple<DataTable, string, string>(dt, "", _optDb);
                                     ;
                                 }
 
@@ -562,18 +559,18 @@ namespace Configurator_2._0
                 {
                 }
 
-                if (optFound == false) opt = new Tuple<DataTable, string, string>(dt, dt.Rows[0][0].ToString(), optDB);
+                if (optFound == false) opt = new Tuple<DataTable, string, string>(dt, dt.Rows[0][0].ToString(), _optDb);
             }
 
-            if (opt.Item3 == optDB)
+            if (opt.Item3 == _optDb)
             {
-                DataTable dt2 = Globals.utils.getDT2(dt, "Name", parCol, opt.Item2);
-                if (dt2.Rows.Count == 0 || Globals.utils.validOpt("Type", opt.Item2) == false)
+                DataTable dt2 = Globals.utils.GetDt2(dt, "Name", parCol, opt.Item2);
+                if (dt2.Rows.Count == 0 || Globals.utils.IsValidOption("Type", opt.Item2) == false)
                 {
-                    if (runTypes.Contains(opt.Item2) == false)
+                    if (_runTypes.Contains(opt.Item2) == false)
                     {
-                        runTypes.Add(opt.Item2);
-                        opt = nextOption(opt.Item2, selVal);
+                        _runTypes.Add(opt.Item2);
+                        opt = NextOption(opt.Item2, selVal);
                     }
                     else
                     {
@@ -585,11 +582,11 @@ namespace Configurator_2._0
             return opt;
         }
 
-        private Control nextCont(string optName, int mQty, string selVal, string parName)
+        private Control NextCont(string optName, int mQty, string selVal, string parName)
         {
             int newCBoxH = 0;
             Control co = new Control();
-            cntrlWidth = 288;
+            _cntrlWidth = 288;
             if (optName != "")
             {
                 Control[] found = Controls.Find(optName, false);
@@ -599,37 +596,37 @@ namespace Configurator_2._0
                     switch (contTypes.FirstOrDefault(s => optName.Contains(s)))
                     {
                         case "Combo":
-                            co = addCombo(optName);
-                            cntrlHt = 21;
-                            newCBoxH = cBoxH + 40;
+                            co = AddCombo(optName);
+                            _cntrlHt = 21;
+                            newCBoxH = _cBoxH + 40;
                             break;
                         case "List":
-                            co = addList(optName);
-                            cntrlHt = 80;
-                            newCBoxH = cBoxH + 90;
+                            co = AddList(optName);
+                            _cntrlHt = 80;
+                            newCBoxH = _cBoxH + 90;
                             break;
                         case "Numeric":
-                            co = addNumeric(optName, mQty);
+                            co = AddNumeric(optName, mQty);
                             co.AccessibleName = parName;
                             optName = optName.Replace("Numeric", "Quantity");
-                            cntrlHt = 21;
-                            cntrlWidth = 128;
-                            newCBoxH = cBoxH + 40;
+                            _cntrlHt = 21;
+                            _cntrlWidth = 128;
+                            newCBoxH = _cBoxH + 40;
                             break;
                     }
 
-                    co.Size = new Size(cntrlWidth, cntrlHt);
-                    co.Location = new Point(12, cBoxH);
+                    co.Size = new Size(_cntrlWidth, _cntrlHt);
+                    co.Location = new Point(12, _cBoxH);
                     co.Name = optName;
                     co.TabIndex = 0;
-                    optBoxes.Add(optName);
-                    addLabel(optName);
+                    _optBoxes.Add(optName);
+                    AddLabel(optName);
                     Controls.Add(co);
-                    Globals.utils.initSelChange(Controls, selecChange);
+                    Utilities.InitSelChange(Controls, SelecChange);
                     co.Show();
                     Refresh();
-                    cBoxH = newCBoxH;
-                    addedControls.Add(co);
+                    _cBoxH = newCBoxH;
+                    _addedControls.Add(co);
                 }
                 else
                 {
@@ -640,7 +637,7 @@ namespace Configurator_2._0
             return co;
         }
 
-        private component[] getCompData(DataRow dr, int optQty)
+        private component[] GetCompData(DataRow dr, int optQty)
         {
             List<component> comps = new List<component>();
             string[] compList = dr.Field<string>(Globals.machine.machName).Split(',');
@@ -692,12 +689,12 @@ namespace Configurator_2._0
             return comps.ToArray();
         }
 
-        private bool updateConfigurator()
+        private bool UpdateConfigurator()
         {
             string version1 = AssemblyName
                 .GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe")
                 .Version.ToString();
-            Assembly assembly = Assembly.GetExecutingAssembly();
+            Assembly.GetExecutingAssembly();
             string version2 = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Version client = new Version(version2);
             Version server = new Version(version1);
@@ -707,21 +704,20 @@ namespace Configurator_2._0
                 return false;
             }
 
-            ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
-            Info.Arguments = "Configurator 1";
+            ProcessStartInfo info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
+            info.Arguments = "Configurator 1";
             //Info.UseShellExecute = true;
-            Process.Start(Info);
+            Process.Start(info);
 
             Application.Exit();
             return true;
         }
 
-        private void findDumNum()
+        private void FindDumNum()
         {
             string dNum = "";
             string prefix = Globals.machine.prefix;
             string suffix = "";
-            DataTable dt = Globals.confMachs;
             for (int i = 1; i < 10000; ++i)
             {
                 suffix = i.ToString();
@@ -732,27 +728,27 @@ namespace Configurator_2._0
                     DataRow[] dr = Globals.confMachs.Select("[Epicor Part Number] = '" + dNum + "'");
                     if (dr.Count() <= 0)
                     {
-                        Globals.machine.EpicorPartNumber = dNum;
+                        Globals.machine.epicorPartNumber = dNum;
                         return;
                     }
                 }
                 else
                 {
-                    Globals.machine.EpicorPartNumber = dNum;
+                    Globals.machine.epicorPartNumber = dNum;
                     return;
                 }
             }
         }
 
-        private void exportBOM()
+        private void ExportBom()
         {
-            string[,] expBOM = new string[Globals.machine.bom.Rows.Count + 2, Globals.expRows];
+            string[,] expBom = new string[Globals.machine.bom.Rows.Count + 2, Globals.expRows];
             int j = 0;
-            for (j = 0; j < Globals.expRows; ++j) expBOM[0, j] = j.ToString();
+            for (j = 0; j < Globals.expRows; ++j) expBom[0, j] = j.ToString();
             string pType = "POS Machines";
             if (Globals.machine.partType == "Cutting Machine") pType = "CM";
             //Number PartDescription Epicor_Mfgcomment Epicor_Purcomment   Epicor_Mfg_name Epicor_MFGPartNum   Epicor_RandD_c Epicor_createdbylegacy_c    Epicor_PartType_c Epicor_EngComment_c Epicor_Confreq_c Epicor_EA_Manf_c    Epicor_EA_Volts_c Epicor_EA_Phase_c   Epicor_EA_Freq_c Epicor_EA_FLA_Supply_c  Epicor_EA_FLA_LgMot_c Epicor_EA_ProtDevRating_c   Epicor_EA_PannelSCCR_c Epicor_EA_EncRating_c   Revision Epicor_RevisionDescription  Dwg.Rev.Epicor_FullRel_c Reference Count PartRev.DrawNum_c Part.Model_c PartTypeElectrical  PartRev.DrawSize_c PartRev.SheetCount_c
-            string[] mRow = (Globals.machine.EpicorPartNumber + "," + Globals.machine.description.Replace(',', ' ') +
+            string[] mRow = (Globals.machine.epicorPartNumber + "," + Globals.machine.description.Replace(',', ' ') +
                              ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType +
                              ",,False, , , , , , , , , ,-,New Machine," + Globals.machine.dwgRev + ",1,1," +
                              Globals.machine.drawingName + "," + Globals.machine.machName + ",FALSE," +
@@ -762,7 +758,7 @@ namespace Configurator_2._0
             int i = 0;
             foreach (string s in mRow)
             {
-                expBOM[1, i] = s;
+                expBom[1, i] = s;
                 ++i;
             }
 
@@ -785,7 +781,7 @@ namespace Configurator_2._0
                 i = 0;
                 foreach (string s in row)
                 {
-                    expBOM[j, i] = s;
+                    expBom[j, i] = s;
                     ++i;
                 }
 
@@ -793,27 +789,27 @@ namespace Configurator_2._0
             }
 
             if (epicorExportCheckbox.Checked && Globals.prevConf == false)
-                Globals.utils.writeExcel(expBOM,
-                    @"\\manifest\BOM_Import\Mechanical\Import\" + Globals.machine.EpicorPartNumber + "_BOM_0000.xlsx",
+                Globals.utils.WriteExcel(expBom,
+                    @"\\manifest\BOM_Import\Mechanical\Import\" + Globals.machine.epicorPartNumber + "_BOM_0000.xlsx",
                     "EpdmBOMTable", Globals.machine.bom.Rows.Count + 2, Globals.expRows, -1, 1, "");
             if (testExportCheckbox.Checked)
             {
                 Globals.prevConf = false;
-                Globals.utils.writeExcel(expBOM, @"C:\Temp\BOM\" + Globals.machine.EpicorPartNumber + "_BOM_0000.xlsx",
+                Globals.utils.WriteExcel(expBom, @"C:\Temp\BOM\" + Globals.machine.epicorPartNumber + "_BOM_0000.xlsx",
                     "EpdmBOMTable", Globals.machine.bom.Rows.Count + 2, Globals.expRows, -1, 1, "");
             }
         }
 
         private void updateConfButt_Click(object sender, EventArgs e)
         {
-            updateConfigurator();
+            UpdateConfigurator();
         }
 
         private void Configurator_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
-            Info.Arguments = "Machine Configurator 0";
-            Process.Start(Info);
+            ProcessStartInfo info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
+            info.Arguments = "Machine Configurator 0";
+            Process.Start(info);
         }
 
         private void addMachineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -836,12 +832,12 @@ namespace Configurator_2._0
 
         private void checkDBsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Globals.utils.checkDB();
+            Utilities.CheckDatabase();
         }
 
         private void refreshDBsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Globals.utils.updateDBs();
+            Globals.utils.UpdateDBs();
         }
 
         private void featureRequestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -865,7 +861,7 @@ namespace Configurator_2._0
             string version1 = AssemblyName
                 .GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe")
                 .Version.ToString();
-            Assembly assembly = Assembly.GetExecutingAssembly();
+            Assembly.GetExecutingAssembly();
             string version2 = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Version client = new Version(version2);
             Version server = new Version(version1);
@@ -875,10 +871,10 @@ namespace Configurator_2._0
                 return;
             }
 
-            ProcessStartInfo Info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
-            Info.Arguments = "Configurator 1";
+            ProcessStartInfo info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe");
+            info.Arguments = "Configurator 1";
             //Info.UseShellExecute = true;
-            Process.Start(Info);
+            Process.Start(info);
 
             Application.Exit();
         }
@@ -888,7 +884,7 @@ namespace Configurator_2._0
             timesConfBox.BackColor = Color.Red;
             confNumBox.BackColor = Color.Red;
             dataGridView1.DataSource = null;
-            if (Globals.machine.selOpts.Count < 1 && optBoxes.Count > baseOpts.Count)
+            if (Globals.machine.selOpts.Count < 1 && _optBoxes.Count > _baseOpts.Count)
             {
                 MessageBox.Show("No machine options have been selected yet.");
                 return;
@@ -898,7 +894,6 @@ namespace Configurator_2._0
 
             string smartNum = Globals.machine.snList[0]; // + "-";
             string smartStart = Globals.machine.snList[0];
-            string[] derp = Globals.machine.snList.ToArray();
 
             List<string> sortedSNs = new List<string>();
             sortedSNs.AddRange(Globals.machine.snList.ToArray());
@@ -909,7 +904,7 @@ namespace Configurator_2._0
             foreach (string i in sortedSNs)
                 if (i != smartStart && string.IsNullOrWhiteSpace(i) == false)
                     smartNum = smartNum + "-" + i;
-            findDumNum();
+            FindDumNum();
             timesConfBox.Text = "0";
             confNumBox.Text = "";
             dwgNumBox.Text = Globals.machine.drawingName;
@@ -929,17 +924,17 @@ namespace Configurator_2._0
                             confNum.Sort();
                             if (confNum.SequenceEqual(sortedSNs))
                             {
-                                Globals.machine.EpicorPartNumber = dr[0].Field<string>("Epicor Part Number");
+                                Globals.machine.epicorPartNumber = dr[0].Field<string>("Epicor Part Number");
                                 timesConfBox.Text = Convert.ToInt32(dr[0].Field<string>("Times Configured")).ToString();
                                 Globals.machine.configuredDate = dr[0].Field<string>("Date Configured");
                                 Globals.machine.configuredBy = dr[0].Field<string>("User Added");
-                                string[] sales_orders = dr[0].Field<string>("Sales Orders").Replace("[", "")
+                                string[] salesOrders = dr[0].Field<string>("Sales Orders").Replace("[", "")
                                     .Replace("]", "")
                                     .Replace(" ", "").Split(',');
                                 timesConfBox.BackColor = Color.LightGreen;
-                                confNumBox.Text = Globals.machine.EpicorPartNumber;
+                                confNumBox.Text = Globals.machine.epicorPartNumber;
                                 confNumBox.BackColor = Color.LightGreen;
-                                Globals.machine.salesOrders = sales_orders.ToList();
+                                Globals.machine.salesOrders = salesOrders.ToList();
                                 Globals.foundRow = j;
                                 Globals.prevConf = true;
                                 break;
@@ -948,11 +943,11 @@ namespace Configurator_2._0
                 }
             }
 
-            Globals.machine.SmartPartNumber = smartNum;
+            Globals.machine.smartPartNumber = smartNum;
             Globals.machine.timesConfigured = Convert.ToInt32(timesConfBox.Text);
             Globals.machine.configuredDate = DateTime.Now.ToShortDateString();
             Globals.machine.configuredBy = Environment.UserName;
-            Globals.utils.writeMachine();
+            Globals.utils.WriteMachine();
             DataTable dt = Globals.machine.bom;
             dataGridView1.DataSource = dt;
             dataGridView1.RowHeadersVisible = false;
@@ -978,7 +973,7 @@ namespace Configurator_2._0
             Globals.machine.salesOrders.Add(soBox.Text);
             Globals.utils.WriteMachineToDatabase(Globals.machine);
 
-            if (epicorExportCheckbox.Checked || testExportCheckbox.Checked) Task.Run(() => exportBOM());
+            if (epicorExportCheckbox.Checked || testExportCheckbox.Checked) Task.Run(() => ExportBom());
             //MessageBox.Show("BOM Exported for Epicor.");
             MessageBox.Show("Configuration Complete");
             completeConfigurationButton.BackColor = Color.LawnGreen;
@@ -986,7 +981,7 @@ namespace Configurator_2._0
 
         private void clearConfigButton_Click(object sender, EventArgs e)
         {
-            clearAndResetForm();
+            ClearAndResetForm();
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

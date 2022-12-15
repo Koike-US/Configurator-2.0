@@ -14,19 +14,19 @@ namespace Configurator_2._0
 
         public static string clLoc2 = @"W:\Engineering\Machine Configurator\Checklist Segments\";
 
-        private static EdmVault5 vault = new EdmVault5();
-        private static IEdmFolder5 fol;
+        private static EdmVault5 _vault = new EdmVault5();
+        private static IEdmFolder5 _fol;
 
-        public static void writeSP()
+        public static void WriteSp()
         {
             string salesOrder = Globals.machine.soNum;
             if (salesOrder == "") return;
-            vault.LoginAuto("EPDM", 0);
-            List<string> opts = new List<string>();
+            _vault.LoginAuto("EPDM", 0);
+            new List<string>();
 
             Application ap = new Application();
             string writePath = @"C:\EPDM\MANUALS\CONFIGURED CHECKLISTS\";
-            string spCL = writePath + salesOrder + " CHECK LIST.doc";
+            string spCl = writePath + salesOrder + " CHECK LIST.doc";
             Document cl = null;
             Paragraph para = null;
             IEdmFile5 f;
@@ -35,7 +35,7 @@ namespace Configurator_2._0
             if (Globals.machine.checkName != "")
             {
                 string fName = clLoc + Globals.machine.checkName + ".doc";
-                f = vault.GetFileFromPath(fName, out fol);
+                f = _vault.GetFileFromPath(fName, out _fol);
                 if (f == null) return;
                 f.GetFileCopy(0);
                 cl = ap.Documents.Open(fName);
@@ -51,7 +51,7 @@ namespace Configurator_2._0
                     if (cl == null)
                     {
                         string fName = clLoc + Globals.machine.selOpts[i].checkName + ".docx";
-                        f = vault.GetFileFromPath(fName, out fol);
+                        f = _vault.GetFileFromPath(fName, out _fol);
                         f.GetFileCopy(0);
                         cl = ap.Documents.Open(fName);
                         para = cl.Content.Paragraphs.Add();
@@ -59,7 +59,7 @@ namespace Configurator_2._0
                     }
 
                     name = clLoc + opt.checkName + ".docx";
-                    f = vault.GetFileFromPath(name, out fol);
+                    f = _vault.GetFileFromPath(name, out _fol);
                     f.GetFileCopy(0);
                     if (File.Exists(name)) para.Range.InsertFile(name);
                 }
@@ -67,24 +67,24 @@ namespace Configurator_2._0
 
             para = cl.Content.Paragraphs.Add();
             para.Range.InsertBreak(WdBreakType.wdPageBreak);
-            f = vault.GetFileFromPath(endName, out fol);
+            f = _vault.GetFileFromPath(endName, out _fol);
             f.GetFileCopy(0);
             para.Range.InsertFile(endName);
             para = cl.Content.Paragraphs.Add();
             para.Range.InsertBreak(WdBreakType.wdPageBreak);
-            f = vault.GetFileFromPath(@"C:\EPDM\MANUALS\CHECKLISTS-CMD\New Machine Verification Checklist.docx",
-                out fol);
+            f = _vault.GetFileFromPath(@"C:\EPDM\MANUALS\CHECKLISTS-CMD\New Machine Verification Checklist.docx",
+                out _fol);
             f.GetFileCopy(0);
             para.Range.InsertFile(@"C:\EPDM\MANUALS\CHECKLISTS-CMD\New Machine Verification Checklist.docx");
-            cl.SaveAs2(spCL);
+            cl.SaveAs2(spCl);
             cl.Close();
 
             try
             {
                 IEdmFile5 file = default(IEdmFile5);
-                fol = vault.GetFolderFromPath(writePath);
-                fol.AddFile(0, spCL, null);
-                file = vault.GetFileFromPath(spCL, out fol);
+                _fol = _vault.GetFolderFromPath(writePath);
+                _fol.AddFile(0, spCl, null);
+                file = _vault.GetFileFromPath(spCl, out _fol);
                 file.UnlockFile(0, "", 42);
             }
             catch
@@ -94,17 +94,17 @@ namespace Configurator_2._0
             }
         }
 
-        public static void writeSP2()
+        public static void WriteSp2()
         {
             string salesOrder = Globals.machine.soNum;
             if (salesOrder == "") return;
             try
             {
-                List<string> opts = new List<string>();
+                new List<string>();
 
                 Application ap = new Application();
                 string writePath = @"W:\Engineering\Machine Configurator\CONFIGURED CHECKLISTS\";
-                string spCL = writePath + salesOrder + " CHECK LIST.doc";
+                string spCl = writePath + salesOrder + " CHECK LIST.doc";
                 Document cl = null;
                 Paragraph para = null;
                 string name = "";
@@ -142,7 +142,7 @@ namespace Configurator_2._0
                 para.Range.InsertBreak(WdBreakType.wdPageBreak);
                 para.Range.InsertFile(
                     @"W:\Engineering\Machine Configurator\Checklist Segments\New Machine Verification Checklist.docx");
-                cl.SaveAs2(spCL);
+                cl.SaveAs2(spCl);
                 cl.Close();
             }
             catch
@@ -152,14 +152,14 @@ namespace Configurator_2._0
             }
         }
 
-        public static string searchPDM(string folName)
+        public static string SearchPdm(string folName)
         {
             string path = "";
             string file = folName + ".SO-link.cvd";
             if (File.Exists(folName) == false)
             {
-                setVault();
-                IEdmSearch5 search = vault.CreateSearch();
+                SetVault();
+                IEdmSearch5 search = _vault.CreateSearch();
 
                 search.FileName = file;
                 IEdmSearchResult5 res = search.GetFirstResult();
@@ -172,13 +172,13 @@ namespace Configurator_2._0
             return path;
         }
 
-        public static void setVault()
+        public static void SetVault()
         {
-            if (vault == null || vault.IsLoggedIn == false) vault = new EdmVault5();
-            if (vault.IsLoggedIn == false)
+            if (_vault == null || _vault.IsLoggedIn == false) _vault = new EdmVault5();
+            if (_vault.IsLoggedIn == false)
                 try
                 {
-                    vault.LoginAuto("EPDM", 0);
+                    _vault.LoginAuto("EPDM", 0);
                 }
                 catch
                 {

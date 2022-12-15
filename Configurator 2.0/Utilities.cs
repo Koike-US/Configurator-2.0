@@ -20,20 +20,20 @@ namespace Configurator_2._0
 {
     internal class Utilities
     {
-        public IMongoDatabase webdatabase;
+        private IMongoDatabase _webDatabase;
 
-        public void updateDBs()
+        public void UpdateDBs()
         {
-            string mongoDbAtlasString =
+            const string mongoDbAtlasString =
                 "mongodb+srv://messer:5hoSjwIpbCwKSdH2@cluster0.gftmk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
             MongoClient dbClient = new MongoClient(mongoDbAtlasString);
-            webdatabase = dbClient.GetDatabase("configurator_db");
-            List<string> collectionList = webdatabase.ListCollectionNames().ToList();
+            _webDatabase = dbClient.GetDatabase("configurator_db");
+            List<string> collectionList = _webDatabase.ListCollectionNames().ToList();
             Globals.dataBase = new DataSet();
 
             foreach (string collectionName in collectionList)
             {
-                IMongoCollection<BsonDocument> collection = webdatabase.GetCollection<BsonDocument>(collectionName);
+                IMongoCollection<BsonDocument> collection = _webDatabase.GetCollection<BsonDocument>(collectionName);
                 List<BsonDocument> documents = collection.Find(new BsonDocument()).ToList();
 
                 DataTable dt = new DataTable();
@@ -53,8 +53,6 @@ namespace Configurator_2._0
 
                         if (!dt.Columns.Contains(collName)) dt.Columns.Add(new DataColumn(collName));
                     }
-
-                    Console.WriteLine(dt.Columns.ToString());
                     DataRow dr = dt.NewRow();
                     foreach (BsonElement elm in doc.Elements)
                     {
@@ -87,33 +85,25 @@ namespace Configurator_2._0
             Globals.machineData = Globals.dataBase.Tables["Machine Data"];
         }
 
-        private void genDesc()
+        private static void GenerateDescription()
         {
             Globals.machine.description =
-                Globals.machine.description.Substring(0, Globals.machine.description.IndexOf(",") + 2);
-            DataTable dt = Globals.machine.bom;
-            option[] derp = Globals.machine.selOpts.ToArray();
-            for (int i = 0; i < Globals.machine.selOpts.Count; ++i)
-                if (string.IsNullOrWhiteSpace(Globals.machine.selOpts[i].optDesc) == false)
-                {
-                    string ding = Globals.machine.selOpts[i].optDesc;
-                    string ring = Globals.machine.selOpts[i].optName;
-                    Globals.machine.description =
-                        Globals.machine.description + Globals.machine.selOpts[i].optDesc + ", ";
-                }
+                Globals.machine.description.Substring(0, Globals.machine.description.IndexOf(",", StringComparison.Ordinal) + 2);
+            foreach (option t in Globals.machine.selOpts.Where(t => string.IsNullOrWhiteSpace(t.optDesc) == false))
+                Globals.machine.description =
+                    Globals.machine.description + t.optDesc + ", ";
 
             Globals.machine.description =
                 Globals.machine.description.Substring(0, Globals.machine.description.Length - 2);
         }
 
-        public void writeMachine()
+        public void WriteMachine()
         {
-            genBom();
-            genDesc();
+            GenerateBom();
+            GenerateDescription();
             if (Directory.Exists(@"C:\CONFIGURATOR EPICOR UPLOADS\") == false)
                 Directory.CreateDirectory(@"C:\CONFIGURATOR EPICOR UPLOADS\");
             DataTable dt = new DataTable();
-            DataTable dtl = new DataTable();
             dt.Columns.Add("Part Number", typeof(string));
             dt.Columns.Add("Description", typeof(string));
             dt.Columns.Add("MRP Type", typeof(string));
@@ -124,12 +114,11 @@ namespace Configurator_2._0
             dt.Columns.Add("Last Configured", typeof(string));
             dt.Columns.Add("Notes", typeof(string));
             dt.Columns.Add("Sales Orders", typeof(string));
-
-            dtl = dt.Copy();
+            
             DateTime d = DateTime.Now;
-            dt.Rows.Add(Globals.machine.SmartPartNumber, "", "", "", "1", d.ToShortDateString(), Environment.UserName,
+            dt.Rows.Add(Globals.machine.smartPartNumber, "", "", "", "1", d.ToShortDateString(), Environment.UserName,
                 d.ToShortDateString(), "", Globals.machine.soNum + ";");
-            dt.Rows.Add(Globals.machine.EpicorPartNumber, Globals.machine.description, "", "", "", "", "", "", "", "");
+            dt.Rows.Add(Globals.machine.epicorPartNumber, Globals.machine.description, "", "", "", "", "", "", "", "");
             foreach (component c in Globals.machine.bomComps)
                 dt.Rows.Add(c.number, c.desc, c.mrpType, c.qty, "", "", "", "", "", "");
             if (Globals.machine.lineComps.Count > 0)
@@ -150,58 +139,60 @@ namespace Configurator_2._0
             }
 
             Globals.machine.bomObj = arr;
-            if (Globals.machine.soNum != "") Task.Run(() => checkListGen.writeSP2());
+            if (Globals.machine.soNum != "") Task.Run(checkListGen.WriteSp2);
         }
 
-        private void genBom()
+        private static void GenerateBom()
         {
             Globals.machine.bomComps.Clear();
             Globals.machine.lineComps.Clear();
             Globals.machine.bomComps.Add(Globals.machine.machComp);
             List<string> doneComps = new List<string>();
             List<component> tempComps = new List<component>();
-            component c2;
             foreach (option opt in Globals.machine.selOpts)
             foreach (component comp in opt.optComps)
             {
                 if (comp.number == Globals.machine.machComp.number)
                 {
-                    Globals.machine.bomComps[0].qty = Globals.machine.bomComps[0].qty + 1;
+                    Globals.machine.bomComps[0].qty += 1;
                     doneComps.Add(comp.number);
                     continue;
                 }
 
                 if (doneComps.Contains(comp.number))
                 {
-                    c2 = tempComps[doneComps.IndexOf(comp.number)];
-                    if (comp.maxQty == 0 || comp.maxQty >= c2.qty + comp.typQty) c2.qty = c2.qty + comp.typQty;
+                    component c2 = tempComps[doneComps.IndexOf(comp.number)];
+                    if (comp.maxQty == 0 || comp.maxQty >= c2.qty + comp.typQty) c2.qty += comp.typQty;
                 }
                 else
                 {
                     if (string.IsNullOrEmpty(comp.typQty.ToString())) comp.typQty = 1;
                     comp.qty = comp.typQty;
                     doneComps.Add(comp.number);
-                    comp.qty = comp.qty * opt.optQty;
+                    comp.qty *= opt.optQty;
                     tempComps.Add(comp);
                 }
             }
 
-            foreach (component c in tempComps)
-                if (c.qty != 0)
+            foreach (component c in tempComps.Where(c => c.qty != 0))
+                switch (c.addType)
                 {
-                    if (c.addType == "BOM") Globals.machine.bomComps.Add(c);
-                    if (c.addType == "LINE") Globals.machine.lineComps.Add(c);
+                    case "BOM":
+                        Globals.machine.bomComps.Add(c);
+                        break;
+                    case "LINE":
+                        Globals.machine.lineComps.Add(c);
+                        break;
                 }
 
             Globals.machine.bomComps = Globals.machine.bomComps.OrderBy(o => o.number).ToList();
             Globals.machine.lineComps = Globals.machine.lineComps.OrderBy(o => o.number).ToList();
         }
 
-        public Tuple<object[,], DataTable> dbAddPrep(int r, int c, DataTable dt, DataGridView dg, string type)
+        public Tuple<object[,], DataTable> DbAddPrep(int r, int c, DataTable dt, DataGridView dg, string type)
         {
             object[,] arr = new object[r, c];
-            DataTable dt2 = new DataTable();
-            dt2 = dt.Clone();
+            DataTable dt2 = dt.Clone();
             int i = 0;
             foreach (DataGridViewRow dr in dg.Rows)
             {
@@ -222,7 +213,7 @@ namespace Configurator_2._0
             switch (type)
             {
                 case "COMP":
-                    valid = compValidity(dt2);
+                    valid = ValidateComp(dt2);
                     break;
                 case "MACH":
 
@@ -232,23 +223,19 @@ namespace Configurator_2._0
                     break;
             }
 
-            if (valid != "")
-            {
-                MessageBox.Show(valid);
-                return null;
-            }
+            if (valid == "") return new Tuple<object[,], DataTable>(arr, dt2);
+            MessageBox.Show(valid);
+            return null;
 
 
-            return new Tuple<object[,], DataTable>(arr, dt2);
         }
 
-        private string compValidity(DataTable dt)
+        private static string ValidateComp(DataTable dt)
         {
             string errors = "";
-            int i = 0;
-            for (i = 0; i < dt.Rows.Count - 1; ++i)
+            for (int i = 0; i < dt.Rows.Count; i++)
             {
-                DataRow r = dt.Rows[i];
+                                DataRow r = dt.Rows[i];
                 if (r.Field<string>("Qty Select").ToUpper() == "Y")
                     if (new Regex(@"^\d+").IsMatch(r.Field<string>("Qty Step")) == false)
                         errors = errors + "Field 'Qty Step' for part " + r.Field<string>("Part Number") +
@@ -278,30 +265,11 @@ namespace Configurator_2._0
                         errors = errors + "Typ Qty' for part " + r.Field<string>("Part Number") +
                                  " Does not contain a valid number." + Environment.NewLine;
             }
-
+            
             return errors;
         }
-
-        private string machValidity(DataTable dt)
-        {
-            string errors = "";
-            int i = 0;
-            for (i = 0; i < dt.Rows.Count - 1; ++i)
-            {
-                DataRow r = dt.Rows[i];
-                //if (r.Field<string>("Qty Select").ToUpper() == "Y")
-                //{
-                //    if (new Regex(@"^\d+").IsMatch(r.Field<string>("Qty Step")) == false)
-                //    {
-                //        errors = errors + "Field 'Qty Step' for part " + r.Field<string>("Part Number") + " Does not contain a valid integer." + System.Environment.NewLine;
-                //    }
-                //}
-            }
-
-            return errors;
-        }
-
-        public void writeExcel(object arr, string bkName, string shtName, int ht, int len, int r, int c, string chkName)
+        
+        public void WriteExcel(object arr, string bkName, string shtName, int ht, int len, int r, int c, string chkName)
         {
             if (Globals.prevConf)
             {
@@ -310,35 +278,35 @@ namespace Configurator_2._0
             }
 
             Application xl = new Application();
-            Workbook wrkbk;
+            Workbook workBook;
             if (File.Exists(bkName) == false)
             {
-                wrkbk = xl.Workbooks.Add(Type.Missing);
-                wrkbk.SaveAs(bkName);
+                workBook = xl.Workbooks.Add(Type.Missing);
+                workBook.SaveAs(bkName);
             }
             else
             {
-                wrkbk = xl.Workbooks.Open(bkName);
+                workBook = xl.Workbooks.Open(bkName);
             }
 
-            Worksheet wrksht = null;
+            Worksheet workSheet = null;
             if (shtName == "EpdmBOMTable")
             {
-                wrksht = wrkbk.Sheets[1];
-                wrksht.Name = "EpdmBOMTable";
+                workSheet = workBook.Sheets[1];
+                workSheet.Name = "EpdmBOMTable";
             }
             else
             {
                 try
                 {
-                    wrksht = wrkbk.Worksheets[shtName];
+                    workSheet = workBook.Worksheets[shtName];
                 }
-                catch //if(wrksht == null)
+                catch //if(workSheet == null)
                 {
-                    wrksht = wrkbk.Worksheets["CONF TEMPLATE"];
-                    wrksht.Copy(wrkbk.Worksheets[wrkbk.Worksheets.Count]);
-                    wrksht = wrkbk.Worksheets[wrkbk.Worksheets.Count - 1];
-                    wrksht.Name = shtName;
+                    workSheet = workBook.Worksheets["CONF TEMPLATE"];
+                    workSheet.Copy(workBook.Worksheets[workBook.Worksheets.Count]);
+                    workSheet = workBook.Worksheets[workBook.Worksheets.Count - 1];
+                    workSheet.Name = shtName;
                 }
             }
 
@@ -346,19 +314,18 @@ namespace Configurator_2._0
             if (c == 1)
             {
                 row = 1;
-                bool insert = true;
-                if (r == -1) insert = false;
-                while (wrksht.Cells[row, 1].Value2 != null)
+                bool insert = r != -1;
+                while (workSheet.Cells[row, 1].Value2 != null)
                 {
                     if (insert)
                     {
-                        if (wrksht.Cells[row, 2].Value2 == null && wrksht.Cells[row, 1].Value2.Equals(chkName))
+                        if (workSheet.Cells[row, 2].Value2 == null && workSheet.Cells[row, 1].Value2.Equals(chkName))
                         {
-                            wrksht.Rows[row + 1].Insert();
+                            workSheet.Rows[row + 1].Insert();
                             break;
                         }
                     }
-                    else if (wrksht.Cells[row, 1].Value2.Equals(chkName))
+                    else if (workSheet.Cells[row, 1].Value2.Equals(chkName))
                     {
                         break;
                     }
@@ -367,260 +334,251 @@ namespace Configurator_2._0
                 }
             }
 
-            Range c1 = (Range)wrksht.Cells[row, c];
-            Range c2 = (Range)wrksht.Cells[row + ht - 1, c + len - 1];
-            Range rng = wrksht.Range[c1, c2];
-            if (wrksht.Name.Contains("CONF"))
+            Range c1 = (Range)workSheet.Cells[row, c];
+            Range c2 = (Range)workSheet.Cells[row + ht - 1, c + len - 1];
+            Range rng = workSheet.Range[c1, c2];
+            if (workSheet.Name.Contains("CONF"))
             {
-                Range r1 = (Range)wrksht.Cells[2, 1];
-                Range r2 = (Range)wrksht.Cells[row, 1];
+                Range r2 = (Range)workSheet.Cells[row, 1];
                 r2.Rows.EntireRow.Interior.Color = Color.LightGreen;
             }
 
             rng.Value = arr;
-            wrkbk.Save();
-            wrkbk.Close(0);
+            workBook.Save();
+            workBook.Close(0);
             xl.Quit();
             GC.Collect();
-            Marshal.FinalReleaseComObject(wrkbk);
+            Marshal.FinalReleaseComObject(workBook);
             Marshal.FinalReleaseComObject(xl);
 
-            Globals.utils.updateDBs();
+            Globals.utils.UpdateDBs();
         }
 
-        public SimpleMachineData CreateSimpleMachine(MachineData _machineData)
+        private static SimpleMachineData CreateSimpleMachine(MachineData machineData)
         {
             SimpleMachineData sm = new SimpleMachineData
             {
-                _id = _machineData.SmartPartNumber,
-                User_Added = _machineData.configuredBy,
-                Epicor_Part_Number = _machineData.EpicorPartNumber,
-                Description = _machineData.description,
-                Date_Configured = _machineData.configuredDate,
-                Last_Configured = DateTime.Now.ToShortDateString(),
-                Times_Configured = _machineData.timesConfigured,
-                BOM = new List<SimplePartData>(),
-                Line_Items = new List<SimplePartData>(),
-                Sales_Orders = _machineData.salesOrders
+                id = machineData.smartPartNumber,
+                userAdded = machineData.configuredBy,
+                epicorPartNumber = machineData.epicorPartNumber,
+                description = machineData.description,
+                dateConfigured = machineData.configuredDate,
+                lastConfigured = DateTime.Now.ToShortDateString(),
+                timesConfigured = machineData.timesConfigured,
+                bom = new List<SimplePartData>(),
+                lineItems = new List<SimplePartData>(),
+                salesOrders = machineData.salesOrders
             };
-            foreach (component part in _machineData.bomComps)
+            foreach (component part in machineData.bomComps)
             {
                 SimplePartData sp = new SimplePartData
                 {
-                    Part_Number = part.number,
-                    Part_Description = part.desc,
-                    MRP_Type = part.mrpType,
-                    Qty = part.qty.ToString()
+                    partNumber = part.number,
+                    partDescription = part.desc,
+                    mrpType = part.mrpType,
+                    qty = part.qty.ToString()
                 };
-                sm.BOM.Add(sp);
+                sm.bom.Add(sp);
             }
 
-            foreach (component part in _machineData.lineComps)
+            foreach (SimplePartData sp in machineData.lineComps.Select(part => new SimplePartData
+                     {
+                         partNumber = part.number,
+                         partDescription = part.desc,
+                         mrpType = part.mrpType,
+                         qty = part.qty.ToString()
+                     }))
             {
-                SimplePartData sp = new SimplePartData
-                {
-                    Part_Number = part.number,
-                    Part_Description = part.desc,
-                    MRP_Type = part.mrpType,
-                    Qty = part.qty.ToString()
-                };
-                sm.BOM.Add(sp);
+                sm.bom.Add(sp);
             }
 
-            sm.Times_Configured += 1;
+            sm.timesConfigured += 1;
 
-            if (string.IsNullOrEmpty(sm.User_Added))
-                sm.User_Added = Environment.UserName;
-            if (string.IsNullOrEmpty(sm.Date_Configured))
-                sm.Date_Configured = DateTime.Now.ToShortDateString();
+            if (string.IsNullOrEmpty(sm.userAdded))
+                sm.userAdded = Environment.UserName;
+            if (string.IsNullOrEmpty(sm.dateConfigured))
+                sm.dateConfigured = DateTime.Now.ToShortDateString();
 
             return sm;
         }
 
-        public bool WriteMachineToDatabase(MachineData _machineData)
+        public void WriteMachineToDatabase(MachineData machineData)
         {
-            SimpleMachineData simpleMachine = CreateSimpleMachine(_machineData);
+            SimpleMachineData simpleMachine = CreateSimpleMachine(machineData);
 
             string collectionName = Globals.machine.prefix + " CONF";
-            IMongoCollection<BsonDocument> collection = webdatabase.GetCollection<BsonDocument>(collectionName);
+            IMongoCollection<BsonDocument> collection = _webDatabase.GetCollection<BsonDocument>(collectionName);
 
             FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter
-                .Eq("_id", simpleMachine._id);
+                .Eq("_id", simpleMachine.id);
 
             ReplaceOptions replaceOption = new ReplaceOptions { IsUpsert = true };
 
             collection.ReplaceOne(filter, simpleMachine.ToBsonDocument(), replaceOption);
-
-            return true;
         }
 
 
-        public int[] popItem(Control cb, DataTable dt, string col, string parCol, string val)
+        public int[] PopItem(Control cb, DataTable dt, string col, string parCol, string val)
         {
-            DataTable dt2 = getDT2(dt, col, parCol, val);
+            DataTable dt2 = GetDt2(dt, col, parCol, val);
             //Determine if there is a max quantity for this option
             List<int> maxItems = new List<int>();
-            if (Globals.machine.machName != null)
-                foreach (DataRow r in dt2.Rows)
+            if (Globals.machine.machName != null) maxItems.AddRange(from DataRow r in dt2.Rows select r.Field<string>(Globals.machine.machName) into dat where dat.Contains("{") select dat.Split(new[] { "{", "}" }, 3, StringSplitOptions.None)[1] into result select Convert.ToInt32(result));
+
+            switch (cb)
+            {
+                case ListBox box:
                 {
-                    string dat = r.Field<string>(Globals.machine.machName);
-                    if (dat.Contains("{"))
-                    {
-                        string result = dat.Split(new[] { "{", "}" }, 3, StringSplitOptions.None)[1];
-                        maxItems.Add(Convert.ToInt32(result));
-                    }
+                    ListBox lb = box;
+                    lb.Items.Clear();
+                    for (int i = 0; i <= dt2.Rows.Count - 1; ++i) lb.Items.Add(dt2.Rows[i][1].ToString());
+                    break;
                 }
-
-            if (cb is ListBox)
-            {
-                ListBox lb = (ListBox)cb;
-                lb.Items.Clear();
-                for (int i = 0; i <= dt2.Rows.Count - 1; ++i) lb.Items.Add(dt2.Rows[i][1].ToString());
-            }
-
-            if (cb is ComboBox)
-            {
-                ComboBox lb = (ComboBox)cb;
-                lb.DataSource = dt2;
-                //if (dt.TableName == "Option Compatability")
-                //{
-                //    lb.ValueMember = dt2.Columns[dt2.Columns[col].Ordinal + 1].ColumnName;
-                //}
-                //else
-                //{
-                lb.ValueMember = col;
-                ////}
-                lb.DisplayMember = col;
-                lb.SelectedValue = "";
+                case ComboBox box:
+                {
+                    ComboBox lb = box;
+                    lb.DataSource = dt2;
+                    //if (dt.TableName == "Option Compatability")
+                    //{
+                    //    lb.ValueMember = dt2.Columns[dt2.Columns[col].Ordinal + 1].ColumnName;
+                    //}
+                    //else
+                    //{
+                    lb.ValueMember = col;
+                    ////}
+                    lb.DisplayMember = col;
+                    lb.SelectedValue = "";
+                    break;
+                }
             }
 
             return maxItems.ToArray();
         }
 
-        public DataTable getDT2(DataTable dt, string col, string parCol, string val)
+        public DataTable GetDt2(DataTable dt, string col, string parCol, string val)
         {
             DataTable dt2 = new DataTable();
-            if (parCol == "" && val == "")
+            switch (parCol)
             {
-                //This is for initial population
-                dt2 = distTable(dt, col);
-            }
-            else if (parCol == "Type" && val != "")
-            {
-                //This section will handle the compatability DB. Going to pass the CB name through val, and use that in a dt.Select.
-                //Also need to do a dt.Select on the machine name, then grab all of the data and input to the Option datatype (will do that in the selChange method)
-                DataView dv = new DataView();
-                try
+                case "" when val == "":
+                    //This is for initial population
+                    dt2 = DistTable(dt, col);
+                    break;
+                case "Type" when val != "":
                 {
-                    dv = new DataView(dt.Select("Type = '" + val + "'").CopyToDataTable());
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-
-                dv.Sort = col;
-                List<string> headers = new List<string>();
-                for (int k = 0; k < dt2.Columns.Count; ++k) headers.Add(dt2.Columns[k].ColumnName);
-                dv.RowFilter = '[' + Globals.machine.machName + ']' + " <> ''";
-
-
-                dt2 = dv.ToTable(false, headers.ToArray());
-                int r = 0;
-                for (r = 0; r < dt2.Rows.Count; ++r)
-                {
-                    bool reqMatch = false;
-                    bool bomConts = false;
-                    DataRow dr = dt2.Rows[r];
-                    string req1 = dr.Field<string>("OptionReqs");
-                    if (req1 == "+")
+                    //This section will handle the compatability DB. Going to pass the CB name through val, and use that in a dt.Select.
+                    //Also need to do a dt.Select on the machine name, then grab all of the data and input to the Option datatype (will do that in the selChange method)
+                    DataView dv = new DataView();
+                    try
                     {
-                        if (dr.Field<string>(Globals.machine.machName).Contains("["))
+                        dv = new DataView(dt.Select("Type = '" + val + "'").CopyToDataTable());
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
+
+                    dv.Sort = col;
+                    List<string> headers = new List<string>();
+                    for (int k = 0; k < dt2.Columns.Count; ++k) headers.Add(dt2.Columns[k].ColumnName);
+                    dv.RowFilter = '[' + Globals.machine.machName + ']' + " <> ''";
+
+
+                    dt2 = dv.ToTable(false, headers.ToArray());
+                    int r = 0;
+                    for (r = 0; r < dt2.Rows.Count; ++r)
+                    {
+                        bool reqMatch = false;
+                        bool bomConts = false;
+                        DataRow dr = dt2.Rows[r];
+                        string req1 = dr.Field<string>("OptionReqs");
+                        if (req1 == "+")
                         {
-                            string[] req2 = dr.Field<string>(Globals.machine.machName).Split('[', ']');
-                            foreach (option opt in Globals.machine.selOpts)
-                            foreach (component c in opt.optComps)
+                            if (dr.Field<string>(Globals.machine.machName).Contains("["))
                             {
-                                string reqTest = req2[1];
-                                if (req2[1][0] == '-') reqTest = req2[1].Remove(0, 1);
-                                if (c.number == reqTest)
+                                string[] req2 = dr.Field<string>(Globals.machine.machName).Split('[', ']');
+                                foreach (option opt in Globals.machine.selOpts)
+                                foreach (component c in opt.optComps)
                                 {
+                                    string reqTest = req2[1];
+                                    if (req2[1][0] == '-') reqTest = req2[1].Remove(0, 1);
+                                    if (c.number != reqTest) continue;
                                     bomConts = true;
                                     if (req2[1].Contains("-") == false) reqMatch = true;
                                 }
-                            }
 
-                            if (bomConts == false && req2[1].Contains("-")) reqMatch = true;
+                                if (bomConts == false && req2[1].Contains("-")) reqMatch = true;
+                            }
+                            else
+                            {
+                                reqMatch = true;
+                            }
                         }
-                        else
+                        else if (string.IsNullOrEmpty(req1) == false && string.IsNullOrWhiteSpace(req1) == false)
+                        {
+                            string[] reqs = req1.Split(',');
+                            foreach (string req in reqs)
+                                if (req.Contains('-') == false && Globals.machine.snList.Contains(req))
+                                    reqMatch = true;
+                        }
+                        else if (string.IsNullOrEmpty(req1))
                         {
                             reqMatch = true;
                         }
-                    }
-                    else if (string.IsNullOrEmpty(req1) == false && string.IsNullOrWhiteSpace(req1) == false)
+
+                        if (reqMatch == false)
+                        {
+                            dt2.Rows.Remove(dr);
+                            --r;
+                        }
+                    } //end foreach
+
+                    int i = 0;
+                    DataTable dt3 = dt2.Copy();
+                    foreach (DataColumn d in dt3.Columns)
                     {
-                        string[] reqs = req1.Split(',');
-                        foreach (string req in reqs)
-                            if (req.Contains('-') == false && Globals.machine.snList.Contains(req))
-                                reqMatch = true;
-                    }
-                    else if (req1 == null || req1 == "")
-                    {
-                        reqMatch = true;
+                        if (i > 5 && !string.Equals(d.ColumnName, Globals.machine.machName, StringComparison.CurrentCultureIgnoreCase))
+                            dt2.Columns.Remove(d.ColumnName);
+                        ++i;
                     }
 
-                    if (reqMatch == false)
+                    break;
+                }
+                default:
+                    //This section handles the Machine Data DB
+                    try
                     {
-                        dt2.Rows.Remove(dr);
-                        --r;
+                        dt2 = DistTable(dt.Select(parCol + " = '" + val + "'").CopyToDataTable(), col);
                     }
-                } //end foreach
+                    catch
+                    {
+                        dt2 = dt;
+                    }
 
-                int i = 0;
-                DataTable dt3 = dt2.Copy();
-                foreach (DataColumn d in dt3.Columns)
-                {
-                    if (i > 5 && d.ColumnName.ToUpper() != Globals.machine.machName.ToUpper())
-                        dt2.Columns.Remove(d.ColumnName);
-                    ++i;
-                }
-            }
-            else
-            {
-                //This section handles the Machine Data DB
-                try
-                {
-                    dt2 = distTable(dt.Select(parCol + " = '" + val + "'").CopyToDataTable(), col);
-                }
-                catch
-                {
-                    dt2 = dt;
-                }
+                    break;
             }
 
             return dt2;
         }
 
-        public bool validOpt(string col, string opt)
+        public bool IsValidOption(string col, string opt)
         {
             bool valid = false;
-            if (opt != null)
-            {
-                DataTable dt = Globals.cmdOptComp;
-                DataView dv = new DataView(dt.Select(col + " = '" + opt + "'").CopyToDataTable());
-                DataTable dt2 = new DataTable();
-                dv.Sort = col;
-                List<string> headers = new List<string>();
-                for (int k = 0; k < dt2.Columns.Count; ++k) headers.Add(dt2.Columns[k].ColumnName);
-                dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
-                dt2 = dv.ToTable(false, headers.ToArray());
-                if (dt2.Rows.Count > 0) valid = true;
-            }
+            if (opt == null) return valid;
+            DataTable dt = Globals.cmdOptComp;
+            DataView dv = new DataView(dt.Select(col + " = '" + opt + "'").CopyToDataTable());
+            DataTable dt2 = new DataTable();
+            dv.Sort = col;
+            List<string> headers = new List<string>();
+            for (int k = 0; k < dt2.Columns.Count; ++k) headers.Add(dt2.Columns[k].ColumnName);
+            dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
+            dt2 = dv.ToTable(false, headers.ToArray());
+            if (dt2.Rows.Count > 0) valid = true;
 
             return valid;
         }
 
-        private DataTable distTable(DataTable dt, string col)
+        private static DataTable DistTable(DataTable dt, string col)
         {
             DataTable dt2;
             DataView dv = new DataView(dt);
@@ -630,7 +588,7 @@ namespace Configurator_2._0
             return dt2;
         }
 
-        public void initSelChange(Control.ControlCollection conts, EventHandler hand)
+        public static void InitSelChange(Control.ControlCollection conts, EventHandler hand)
         {
             foreach (Control c in conts)
             {
@@ -654,7 +612,7 @@ namespace Configurator_2._0
             }
         }
 
-        public string AddSpacesToSentence(string text)
+        public static string AddSpacesToSentence(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return string.Empty;
@@ -673,41 +631,31 @@ namespace Configurator_2._0
             return newText.ToString();
         }
 
-        public bool isDrEmpty(DataRow dr)
+        private static bool IsDataRowEmpty(DataRow dr)
         {
-            if (dr == null) return true;
-            bool empty = false;
-            foreach (object val in dr.ItemArray)
-                if (val != null && val.ToString() != "")
-                    return false;
-            return empty;
+            return (dr == null || dr.ToString() == "");
         }
 
-        public bool isOptName(string optName)
+        public bool IsOption(string optName)
         {
             List<string> optTypes = new List<string> { "Combo", "List" };
-            foreach (string t in optTypes)
-                if (optName.Contains(t))
-                    return true;
-            return false;
+            return optTypes.Any(optName.Contains);
         }
 
-        public DataTable delEmptyRows(DataTable dt)
+        public static void DeleteEmptyRows(DataTable dt)
         {
             foreach (DataRow dr in dt.Rows)
-                if (isDrEmpty(dr))
+                if (IsDataRowEmpty(dr))
                     dt.Rows.Remove(dr);
-            return dt;
         }
 
-        public void checkDB()
+        public static void CheckDatabase()
         {
             DataTable optComp = Globals.cmdOptComp.Copy();
             DataTable comps = Globals.compData.Copy();
             StringBuilder missingComps = new StringBuilder();
             missingComps.Append("Missing Component Entries for;").AppendLine();
             List<string> optComps = new List<string>();
-            List<string> dbComps = new List<string>();
             string message = "No Missing Components";
             int i = 0;
             int j = 0;
@@ -715,18 +663,15 @@ namespace Configurator_2._0
             for (j = 0; j < optComp.Rows.Count; ++j)
             {
                 string[] cell = optComp.Rows[j][i].ToString().Split(',');
-                foreach (string s in cell)
-                    if (s.Contains("{") == false && s.Contains("[") == false && s.ToUpper() != "X" && s != "")
-                        optComps.Add(s);
+                optComps.AddRange(cell.Where(s => s.Contains("{") == false && s.Contains("[") == false && s.ToUpper() != "X" && s != ""));
             }
 
             optComps = optComps.Distinct().ToList();
-            dbComps = comps.AsEnumerable().Select(p => p.Field<string>("Part Number")).ToList();
+            List<string> dbComps = comps.AsEnumerable().Select(p => p.Field<string>("Part Number")).ToList();
             dbComps.Sort();
             optComps.Sort();
-            foreach (string s in optComps)
-                if (dbComps.Contains(s) == false)
-                    missingComps.Append(s).AppendLine();
+            foreach (string s in optComps.Where(s => dbComps.Contains(s) == false))
+                missingComps.Append(s).AppendLine();
             if (missingComps.Length > 0) message = missingComps.ToString();
             if (dbComps.Count() > optComps.Count())
             {

@@ -58,10 +58,10 @@ namespace Configurator_2._0
 
         public string description { get; set; }
         public string prefix { get; set; }
-        public string SmartPartNumber { get; set; }
-        public string EpicorPartNumber { get; set; }
-        public string PartNumber { get; set; }
-        public string ModelName { get; set; }
+        public string smartPartNumber { get; set; }
+        public string epicorPartNumber { get; set; }
+        public string partNumber { get; set; }
+        public string modelName { get; set; }
         public string drawingName { get; set; }
         public string drawingSize { get; set; }
         public string revision { get; set; }
@@ -79,23 +79,23 @@ namespace Configurator_2._0
 
     internal class SimpleMachineData
     {
-        public string _id { get; set; }
-        public List<SimplePartData> BOM { get; set; }
-        public List<SimplePartData> Line_Items { get; set; }
-        public string User_Added { get; set; }
-        public List<string> Sales_Orders { get; set; }
-        public string Epicor_Part_Number { get; set; }
-        public string Description { get; set; }
-        public string Date_Configured { get; set; }
-        public string Last_Configured { get; set; }
-        public int Times_Configured { get; set; }
+        public string id { get; set; }
+        public List<SimplePartData> bom { get; set; }
+        public List<SimplePartData> lineItems { get; set; }
+        public string userAdded { get; set; }
+        public List<string> salesOrders { get; set; }
+        public string epicorPartNumber { get; set; }
+        public string description { get; set; }
+        public string dateConfigured { get; set; }
+        public string lastConfigured { get; set; }
+        public int timesConfigured { get; set; }
     }
 
     internal class SimplePartData
     {
-        public string Part_Number { get; set; }
-        public string Part_Description { get; set; }
-        public string MRP_Type { get; set; }
-        public string Qty { get; set; }
+        public string partNumber { get; set; }
+        public string partDescription { get; set; }
+        public string mrpType { get; set; }
+        public string qty { get; set; }
     }
 }
