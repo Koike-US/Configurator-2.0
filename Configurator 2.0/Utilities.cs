@@ -38,8 +38,18 @@ namespace Configurator_2._0
 
                 DataTable dt = new DataTable();
                 dt.TableName = collectionName;
+
+                if (collectionName == "Component Database")
+                {
+                    foreach (BsonDocument document in documents)
+                    {
+                        Globals.componenetData.Add(new Component(document));
+                    }
+                }
+                
                 foreach (BsonDocument doc in documents)
                 {
+
                     foreach (BsonElement elm in doc.Elements)
                     {
                         string collName = elm.Name.Replace("_", " ");
@@ -81,7 +91,7 @@ namespace Configurator_2._0
 
             Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"].AsEnumerable()
                 .OrderBy(r => Convert.ToInt32(r["Order"])).CopyToDataTable();
-            Globals.compData = Globals.dataBase.Tables["Component Database"];
+            //Globals.compData = Globals.dataBase.Tables["Component Database"];
             Globals.machineData = Globals.dataBase.Tables["Machine Data"];
         }
 
@@ -119,13 +129,13 @@ namespace Configurator_2._0
             dt.Rows.Add(Globals.machine.smartPartNumber, "", "", "", "1", d.ToShortDateString(), Environment.UserName,
                 d.ToShortDateString(), "", Globals.machine.soNum + ";");
             dt.Rows.Add(Globals.machine.epicorPartNumber, Globals.machine.description, "", "", "", "", "", "", "", "");
-            foreach (component c in Globals.machine.bomComps)
-                dt.Rows.Add(c.number, c.desc, c.mrpType, c.qty, "", "", "", "", "", "");
+            foreach (Component c in Globals.machine.bomComps)
+                dt.Rows.Add(c.partNumber, c.partDescription, c.mrpType, c.typicalQuantity, "", "", "", "", "", "");
             if (Globals.machine.lineComps.Count > 0)
             {
                 dt.Rows.Add("--", "Line Items", "", "", "", "", "", "", "");
-                foreach (component c in Globals.machine.lineComps)
-                    dt.Rows.Add(c.number, c.desc, c.mrpType, c.qty, "", "", "", "", "", "");
+                foreach (Component c in Globals.machine.lineComps)
+                    dt.Rows.Add(c.partNumber, c.partDescription, c.mrpType, c.typicalQuantity, "", "", "", "", "", "");
             }
 
             dt.Rows.Add("--", "--", "", "", "", "", "", "", "");
@@ -148,33 +158,33 @@ namespace Configurator_2._0
             Globals.machine.lineComps.Clear();
             Globals.machine.bomComps.Add(Globals.machine.machComp);
             List<string> doneComps = new List<string>();
-            List<component> tempComps = new List<component>();
+            List<Component> tempComps = new List<Component>();
+            
             foreach (option opt in Globals.machine.selOpts)
-            foreach (component comp in opt.optComps)
+            foreach (Component component in opt.optComps)
             {
-                if (comp.number == Globals.machine.machComp.number)
+                if (component.partNumber == Globals.machine.machComp.partNumber)
                 {
-                    Globals.machine.bomComps[0].qty += 1;
-                    doneComps.Add(comp.number);
+                    Globals.machine.bomComps[0].typicalQuantity += 1;
+                    doneComps.Add(component.partNumber);
                     continue;
                 }
 
-                if (doneComps.Contains(comp.number))
+                if (doneComps.Contains(component.partNumber))
                 {
-                    component c2 = tempComps[doneComps.IndexOf(comp.number)];
-                    if (comp.maxQty == 0 || comp.maxQty >= c2.qty + comp.typQty) c2.qty += comp.typQty;
+                    Component c2 = tempComps[doneComps.IndexOf(component.partNumber)];
+                    if (component.maxQuantity == 0 || component.maxQuantity >= c2.typicalQuantity + component.typicalQuantity) c2.typicalQuantity += component.typicalQuantity;
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(comp.typQty.ToString())) comp.typQty = 1;
-                    comp.qty = comp.typQty;
-                    doneComps.Add(comp.number);
-                    comp.qty *= opt.optQty;
-                    tempComps.Add(comp);
+                    if (string.IsNullOrEmpty(component.typicalQuantity.ToString())) component.typicalQuantity = 1;
+                    doneComps.Add(component.partNumber);
+                    component.typicalQuantity *= opt.optQty;
+                    tempComps.Add(component);
                 }
             }
 
-            foreach (component c in tempComps.Where(c => c.qty != 0))
+            foreach (Component c in tempComps.Where(c => c.typicalQuantity != 0))
                 switch (c.addType)
                 {
                     case "BOM":
@@ -185,8 +195,8 @@ namespace Configurator_2._0
                         break;
                 }
 
-            Globals.machine.bomComps = Globals.machine.bomComps.OrderBy(o => o.number).ToList();
-            Globals.machine.lineComps = Globals.machine.lineComps.OrderBy(o => o.number).ToList();
+            Globals.machine.bomComps = Globals.machine.bomComps.OrderBy(o => o.partNumber).ToList();
+            Globals.machine.lineComps = Globals.machine.lineComps.OrderBy(o => o.partNumber).ToList();
         }
 
         public Tuple<object[,], DataTable> DbAddPrep(int r, int c, DataTable dt, DataGridView dg, string type)
@@ -369,24 +379,24 @@ namespace Configurator_2._0
                 lineItems = new List<SimplePartData>(),
                 salesOrders = machineData.salesOrders
             };
-            foreach (component part in machineData.bomComps)
+            foreach (Component part in machineData.bomComps)
             {
                 SimplePartData sp = new SimplePartData
                 {
-                    partNumber = part.number,
-                    partDescription = part.desc,
+                    partNumber = part.partNumber,
+                    partDescription = part.partDescription,
                     mrpType = part.mrpType,
-                    qty = part.qty.ToString()
+                    qty = part.typicalQuantity.ToString()
                 };
                 sm.bom.Add(sp);
             }
 
             foreach (SimplePartData sp in machineData.lineComps.Select(part => new SimplePartData
                      {
-                         partNumber = part.number,
-                         partDescription = part.desc,
+                         partNumber = part.partNumber,
+                         partDescription = part.partDescription,
                          mrpType = part.mrpType,
-                         qty = part.qty.ToString()
+                         qty = part.typicalQuantity.ToString()
                      }))
             {
                 sm.bom.Add(sp);
@@ -429,25 +439,28 @@ namespace Configurator_2._0
             {
                 case ListBox box:
                 {
-                    ListBox lb = box;
-                    lb.Items.Clear();
-                    for (int i = 0; i <= dt2.Rows.Count - 1; ++i) lb.Items.Add(dt2.Rows[i][1].ToString());
+                    box.Items.Clear();
+                    for (int i = 0; i <= dt2.Rows.Count - 1; ++i)
+                    {
+                        if(dt2.Rows[i][1].ToString() == "")
+                            continue;
+                        box.Items.Add(dt2.Rows[i][1].ToString());
+                    }
                     break;
                 }
                 case ComboBox box:
                 {
-                    ComboBox lb = box;
-                    lb.DataSource = dt2;
+                    box.DataSource = dt2;
                     //if (dt.TableName == "Option Compatability")
                     //{
                     //    lb.ValueMember = dt2.Columns[dt2.Columns[col].Ordinal + 1].ColumnName;
                     //}
                     //else
                     //{
-                    lb.ValueMember = col;
+                    box.ValueMember = col;
                     ////}
-                    lb.DisplayMember = col;
-                    lb.SelectedValue = "";
+                    box.DisplayMember = col;
+                    box.SelectedValue = "";
                     break;
                 }
             }
@@ -498,11 +511,11 @@ namespace Configurator_2._0
                             {
                                 string[] req2 = dr.Field<string>(Globals.machine.machName).Split('[', ']');
                                 foreach (option opt in Globals.machine.selOpts)
-                                foreach (component c in opt.optComps)
+                                foreach (Component c in opt.optComps)
                                 {
                                     string reqTest = req2[1];
                                     if (req2[1][0] == '-') reqTest = req2[1].Remove(0, 1);
-                                    if (c.number != reqTest) continue;
+                                    if (c.partNumber != reqTest) continue;
                                     bomConts = true;
                                     if (req2[1].Contains("-") == false) reqMatch = true;
                                 }
@@ -518,7 +531,7 @@ namespace Configurator_2._0
                         {
                             string[] reqs = req1.Split(',');
                             foreach (string req in reqs)
-                                if (req.Contains('-') == false && Globals.machine.snList.Contains(req))
+                                if (req.Contains('-') == false && Globals.machine.selectedOptionsList.Contains(req))
                                     reqMatch = true;
                         }
                         else if (string.IsNullOrEmpty(req1))
@@ -526,11 +539,9 @@ namespace Configurator_2._0
                             reqMatch = true;
                         }
 
-                        if (reqMatch == false)
-                        {
-                            dt2.Rows.Remove(dr);
-                            --r;
-                        }
+                        if (reqMatch != false) continue;
+                        dt2.Rows.Remove(dr);
+                        --r;
                     } //end foreach
 
                     int i = 0;
@@ -651,35 +662,35 @@ namespace Configurator_2._0
 
         public static void CheckDatabase()
         {
-            DataTable optComp = Globals.cmdOptComp.Copy();
-            DataTable comps = Globals.compData.Copy();
-            StringBuilder missingComps = new StringBuilder();
-            missingComps.Append("Missing Component Entries for;").AppendLine();
-            List<string> optComps = new List<string>();
-            string message = "No Missing Components";
-            int i = 0;
-            int j = 0;
-            for (i = 6; i < optComp.Columns.Count; ++i)
-            for (j = 0; j < optComp.Rows.Count; ++j)
-            {
-                string[] cell = optComp.Rows[j][i].ToString().Split(',');
-                optComps.AddRange(cell.Where(s => s.Contains("{") == false && s.Contains("[") == false && s.ToUpper() != "X" && s != ""));
-            }
-
-            optComps = optComps.Distinct().ToList();
-            List<string> dbComps = comps.AsEnumerable().Select(p => p.Field<string>("Part Number")).ToList();
-            dbComps.Sort();
-            optComps.Sort();
-            foreach (string s in optComps.Where(s => dbComps.Contains(s) == false))
-                missingComps.Append(s).AppendLine();
-            if (missingComps.Length > 0) message = missingComps.ToString();
-            if (dbComps.Count() > optComps.Count())
-            {
-                int diff = dbComps.Count() - optComps.Count();
-                message = "There are " + diff + " more Components in DB than Accounted for in Compatability";
-            }
-
-            MessageBox.Show(message);
+            // DataTable optComp = Globals.cmdOptComp.Copy();
+            // DataTable comps = Globals.compData.Copy();
+            // StringBuilder missingComps = new StringBuilder();
+            // missingComps.Append("Missing Component Entries for;").AppendLine();
+            // List<string> optComps = new List<string>();
+            // string message = "No Missing Components";
+            // int i = 0;
+            // int j = 0;
+            // for (i = 6; i < optComp.Columns.Count; ++i)
+            // for (j = 0; j < optComp.Rows.Count; ++j)
+            // {
+            //     string[] cell = optComp.Rows[j][i].ToString().Split(',');
+            //     optComps.AddRange(cell.Where(s => s.Contains("{") == false && s.Contains("[") == false && s.ToUpper() != "X" && s != ""));
+            // }
+            //
+            // optComps = optComps.Distinct().ToList();
+            // List<string> dbComps = comps.AsEnumerable().Select(p => p.Field<string>("Part Number")).ToList();
+            // dbComps.Sort();
+            // optComps.Sort();
+            // foreach (string s in optComps.Where(s => dbComps.Contains(s) == false))
+            //     missingComps.Append(s).AppendLine();
+            // if (missingComps.Length > 0) message = missingComps.ToString();
+            // if (dbComps.Count() > optComps.Count())
+            // {
+            //     int diff = dbComps.Count() - optComps.Count();
+            //     message = "There are " + diff + " more Components in DB than Accounted for in Compatability";
+            // }
+            //
+            // MessageBox.Show(message);
         }
     }
 }

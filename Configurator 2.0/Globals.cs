@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using MongoDB.Driver;
 
 namespace Configurator_2._0
@@ -15,12 +16,11 @@ namespace Configurator_2._0
         public static DataSet dataBase = new DataSet();
         public static DataTable machineData = new DataTable(); //This contains the base data of each machine type
 
-        public static DataTable
-            compData = new DataTable(); //This contains all of the data of each option component by part number
-
-        public static DataTable
-            cmdOptComp =
-                new DataTable(); //This contains all of the option compatability data, and is the "heart" of the configurator
+        //public static DataTable compData = new DataTable(); //This contains all of the data of each option component by part number
+        public static List<Component> componenetData = new List<Component>();
+        
+        
+        public static DataTable cmdOptComp = new DataTable(); //This contains all of the option compatability data, and is the "heart" of the configurator
 
         public static DataTable
             confMachs =

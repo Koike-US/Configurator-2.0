@@ -32,8 +32,8 @@ namespace Configurator_2._0
 
         public Configurator()
         {
-            LoadingForm lf = new LoadingForm();
-            lf.Show();
+            LoadingForm loadingForm = new LoadingForm();
+            loadingForm.Show();
             Globals.utils.UpdateDBs();
             InitializeComponent();
             FormClosing += Configurator_FormClosing;
@@ -46,7 +46,7 @@ namespace Configurator_2._0
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             Text = string.Format(Text, version.Major, version.Minor, version.Build, version.Revision);
             Refresh();
-            lf.Close();
+            loadingForm.Close();
 
             string version1 = AssemblyName
                 .GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe")
@@ -144,9 +144,9 @@ namespace Configurator_2._0
                     foreach (option o in Globals.machine.selOpts.Where(o => o.optType == down.AccessibleName))
                     {
                         o.optQty = Convert.ToInt32(down.Value);
-                        Globals.machine.snList.Remove(o.optFinSn);
+                        Globals.machine.selectedOptionsList.Remove(o.optFinSn);
                         o.optFinSn = o.optSnDes + "_" + down.Value;
-                        Globals.machine.snList.Add(o.optSnDes + "_" + down.Value);
+                        Globals.machine.selectedOptionsList.Add(o.optSnDes + "_" + down.Value);
                     }
 
                     return;
@@ -202,12 +202,12 @@ namespace Configurator_2._0
             {
                 foreach (option o in Globals.machine.selOpts.Where(o => o.optType == co.Name && co is ListBox == false))
                 {
-                    Globals.machine.snList.Remove(o.optSnDes);
+                    Globals.machine.selectedOptionsList.Remove(o.optSnDes);
                     Globals.machine.selOpts.Remove(o);
                     break;
                 }
 
-                foreach (string val in selVal) AddOpt(val, co.Name);
+                foreach (string val in selVal) AddOption(val, co.Name);
             }
 
             Tuple<DataTable, string, string> tup = NextOption(curOpt, selVal[0]);
@@ -246,13 +246,13 @@ namespace Configurator_2._0
             Globals.machine.machName = selVal;
             Globals.machine.partType = DivisionCombo.Text;
             Globals.machine.description = dr2.Rows[0].Field<string>("ModelCombo") + ", ";
-            Globals.machine.snList[0] = dr2.Rows[0].Field<string>("Smart PN");
+            Globals.machine.selectedOptionsList[0] = dr2.Rows[0].Field<string>("Smart PN");
             Globals.machine.soNum = soBox.Text;
-            component c = new component
+            Component c = new Component()
             {
-                desc = dr2.Rows[0].Field<string>("Description"),
-                number = dr2.Rows[0].Field<string>("Base Part Number"),
-                qty = 1,
+                partDescription = dr2.Rows[0].Field<string>("Description"),
+                partNumber = dr2.Rows[0].Field<string>("Base Part Number"),
+                typicalQuantity = 1,
                 mrpType = "M",
                 partType = DivisionCombo.Text,
                 revision = dr2.Rows[0].Field<string>("Revision")
@@ -260,20 +260,20 @@ namespace Configurator_2._0
             Globals.machine.machComp = c;
         }
 
-        private void AddOpt(string selVal, string cName)
+        private void AddOption(string selVal, string cName)
         {
-            DataRow[] drs = Globals.cmdOptComp.Select("Name = '" + selVal + "'");
-            if (!drs.Any()) return;
+            DataRow[] filteredOptions = Globals.cmdOptComp.Select("Name = '" + selVal + "'");
+            if (!filteredOptions.Any()) return;
             int rowIndex = 0;
-            if (drs.Count() > 1)
-                for (int i = 0; i < drs.Count(); ++i)
-                    if (Globals.machine.snList.Contains(drs[i][4]))
+            if (filteredOptions.Count() > 1)
+                for (int i = 0; i < filteredOptions.Count(); ++i)
+                    if (Globals.machine.selectedOptionsList.Contains(filteredOptions[i][4]))
                         rowIndex = i;
 
-            DataRow[] drs2 = { drs[rowIndex] };
+            DataRow[] drs2 = { filteredOptions[rowIndex] };
 
             DataTable dr2 = drs2.CopyToDataTable();
-            if (Globals.machine.snList.Contains(dr2.Rows[0].Field<string>("Smart Designator")) != false) return;
+            if (Globals.machine.selectedOptionsList.Contains(dr2.Rows[0].Field<string>("Smart Designator")) != false) return;
             option opt = new option
             {
                 optType = dr2.Rows[0].Field<string>("Type"),
@@ -304,7 +304,7 @@ namespace Configurator_2._0
             }
 
             //This section checks for and removes an option if it was already selected.
-            if (string.IsNullOrEmpty(opt.optSnDes) == false) Globals.machine.snList.Add(opt.optSnDes);
+            if (string.IsNullOrEmpty(opt.optSnDes) == false) Globals.machine.selectedOptionsList.Add(opt.optSnDes);
             Globals.machine.selOpts.Add(opt);
         }
 
@@ -481,48 +481,49 @@ namespace Configurator_2._0
             return co;
         }
 
-        private static IEnumerable<component> GetComponentData(DataRow dr, int optQty)
+        private static List<Component> GetComponentData(DataRow dr, int optQty)
         {
-            List<component> comps = new List<component>();
-            string[] compList = dr.Field<string>(Globals.machine.machName).Split(',');
-            DataTable dt = Globals.compData;
-            foreach (string lComp in compList)
+            string[] componentPartNumberArray = dr.Field<string>(Globals.machine.machName).Split(',');
+            List<Component> newComponentList = new List<Component>();
+            foreach (string partNumber in componentPartNumberArray)
             {
-                string comp = lComp.Replace(" ", "");
-                if (comp.Contains("]")) comp = comp.Split(']')[1];
-                if (comp.Contains("}")) comp = comp.Split('}')[1];
-                if (comp.ToUpper() == "X") continue;
-                DataRow dr2 = null;
-                component c = new component();
-                try
-                {
-                    DataRow[] drA = dt.Select("[Part Number] = '" + comp + "'");
-                    dr2 = drA[0];
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show("Error getting component data. Component " + comp +
-                                    ", may not be entered in Configurator Component Database! \n" + e);
-                }
-
-                c.addType = dr2.Field<string>("Add Type");
-                c.desc = dr2.Field<string>("Part Description");
-                if (string.IsNullOrWhiteSpace(dr2.Field<string>("Max Qty")) == false)
-                    c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
-                if (string.IsNullOrWhiteSpace(dr2.Field<string>("Typ Qty")) == false)
-                    c.typQty = Convert.ToInt32(dr2.Field<string>("Typ Qty"));
-                c.mrpType = dr2.Field<string>("MRP Type");
-                c.number = dr2.Field<string>("Part Number");
-                c.partType = dr2.Field<string>("Part Type");
-                c.revision = dr2.Field<string>("Revision");
-                if (c.typQty * optQty <= c.maxQty)
-                    c.qty = c.typQty * optQty;
-                else
-                    c.qty = c.typQty;
-                comps.Add(c);
+                newComponentList.AddRange(Globals.componenetData.Where(component => component.partNumber == partNumber));
+                //
+                // string comp = partNumber.Replace(" ", "");
+                // if (comp.Contains("]")) comp = comp.Split(']')[1];
+                // if (comp.Contains("}")) comp = comp.Split('}')[1];
+                // if (comp.ToUpper() == "X") continue;
+                // DataRow dr2 = null;
+                // component c = new component();
+                // try
+                // {
+                //     DataRow[] drA = componentList.Select("[Part Number] = '" + comp + "'");
+                //     dr2 = drA[0];
+                // }
+                // catch (Exception e)
+                // {
+                //     MessageBox.Show("Error getting component data. Component " + comp +
+                //                     ", may not be entered in Configurator Component Database! \n" + e);
+                // }
+                //
+                // c.addType = dr2.Field<string>("Add Type");
+                // c.desc = dr2.Field<string>("Part Description");
+                // if (string.IsNullOrWhiteSpace(dr2.Field<string>("Max Qty")) == false)
+                //     c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
+                // if (string.IsNullOrWhiteSpace(dr2.Field<string>("Typ Qty")) == false)
+                //     c.typQty = Convert.ToInt32(dr2.Field<string>("Typ Qty"));
+                // c.mrpType = dr2.Field<string>("MRP Type");
+                // c.number = dr2.Field<string>("Part Number");
+                // c.partType = dr2.Field<string>("Part Type");
+                // c.revision = dr2.Field<string>("Revision");
+                // if (c.typQty * optQty <= c.maxQty)
+                //     c.qty = c.typQty * optQty;
+                // else
+                //     c.qty = c.typQty;
+                // comps.Add(c);
             }
 
-            return comps.ToArray();
+            return newComponentList;
         }
 
         private void UpdateConfigurator()
@@ -594,7 +595,7 @@ namespace Configurator_2._0
 
             j = 2;
             string manu = "";
-            foreach (component c in Globals.machine.bomComps)
+            foreach (Component c in Globals.machine.bomComps)
             {
                 if (c.mrpType == "M")
                 {
@@ -602,9 +603,9 @@ namespace Configurator_2._0
                 }
 
                 //Number PartDescription Epicor_Mfgcomment Epicor_Purcomment   Epicor_Mfg_name Epicor_MFGPartNum   Epicor_RandD_c Epicor_createdbylegacy_c    Epicor_PartType_c Epicor_EngComment_c Epicor_Confreq_c Epicor_EA_Manf_c    Epicor_EA_Volts_c Epicor_EA_Phase_c   Epicor_EA_Freq_c Epicor_EA_FLA_Supply_c  Epicor_EA_FLA_LgMot_c Epicor_EA_ProtDevRating_c   Epicor_EA_PannelSCCR_c Epicor_EA_EncRating_c   Revision Epicor_RevisionDescription  Dwg.Rev.Epicor_FullRel_c Reference Count PartRev.DrawNum_c Part.Model_c PartTypeElectrical  PartRev.DrawSize_c PartRev.SheetCount_c
-                string[] row = (c.number + "," + c.desc.Replace(',', ' ') + ",,," + manu + ",,False,," + c.partType +
-                                ",,False, , , , , , , , , ," + c.revision + ",CONF PART," + c.revision + ",1," + c.qty +
-                                "," + c.number + ",,TRUE,,").Split(',');
+                string[] row = (c.partNumber + "," + c.partDescription.Replace(',', ' ') + ",,," + manu + ",,False,," + c.partType +
+                                ",,False, , , , , , , , , ," + c.revision + ",CONF PART," + c.revision + ",1," + c.typicalQuantity +
+                                "," + c.partNumber + ",,TRUE,,").Split(',');
                 //string[] row = (c.number + "," + c.desc.Replace(',', ' ') + ",,," + manu + ",,False,," + c.partType + ",,False, , , , , , , , , ," + c.number + "," + c.revision + "," + c.desc.Replace(',', ' ') + "," + c.revision + ",1," + Globals.machine.dumNum + ",A," + c.qty.ToString() + ",," + c.number + ",TRUE," + c.partClass + "," + purch + "," + c.number + ",,,").Split(',');
                 i = 0;
                 foreach (string s in row)
@@ -717,11 +718,11 @@ namespace Configurator_2._0
 
             Globals.confMachs = Globals.dataBase.Tables[Globals.machine.prefix + " CONF"];
 
-            string smartNum = Globals.machine.snList[0]; // + "-";
-            string smartStart = Globals.machine.snList[0];
+            string smartNum = Globals.machine.selectedOptionsList[0]; // + "-";
+            string smartStart = Globals.machine.selectedOptionsList[0];
 
             List<string> sortedSNs = new List<string>();
-            sortedSNs.AddRange(Globals.machine.snList.ToArray());
+            sortedSNs.AddRange(Globals.machine.selectedOptionsList.ToArray());
             sortedSNs.Sort();
             sortedSNs.RemoveAll(item => item == null);
             sortedSNs.RemoveAll(item => item == "");

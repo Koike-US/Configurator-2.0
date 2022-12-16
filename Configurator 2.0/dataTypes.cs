@@ -5,7 +5,7 @@ namespace Configurator_2._0
 {
     internal class option
     {
-        public List<component> optComps = new List<component>();
+        public List<Component> optComps = new List<Component>();
         public List<string> optReqs = new List<string>();
         public string optType { get; set; }
         public string optName { get; set; }
@@ -25,9 +25,9 @@ namespace Configurator_2._0
             revision = "-";
         }
 
-        public string number { get; set; }
+        public string partNumber { get; set; }
         public string revision { get; set; }
-        public string desc { get; set; }
+        public string partDescription { get; set; }
         public int typQty { get; set; }
         public int maxQty { get; set; }
         public string mrpType { get; set; }
@@ -41,19 +41,19 @@ namespace Configurator_2._0
     internal class MachineData
     {
         public DataTable bom = new DataTable();
-        public List<component> bomComps = new List<component>();
+        public List<Component> bomComps = new List<Component>();
         public object[,] bomObj;
-        public List<component> lineComps = new List<component>();
+        public List<Component> lineComps = new List<Component>();
         public DataTable lines = new DataTable();
-        public component machComp = new component();
+        public Component machComp = new Component();
         public List<string> salesOrders = new List<string>();
         public List<option> selOpts = new List<option>();
-        public List<string> snList = new List<string>();
+        public List<string> selectedOptionsList = new List<string>();
 
         public MachineData()
         {
             description = "";
-            snList.Add("");
+            selectedOptionsList.Add("");
         }
 
         public string description { get; set; }
