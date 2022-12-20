@@ -480,7 +480,7 @@ namespace Configurator_2._0
 
                     dv.Sort = col;
                     List<string> headers = new List<string>();
-                    for (int k = 0; k < dt2.Columns.Count; ++k) headers.Add(dt2.Columns[k].ColumnName);
+                    for (int k = 0; k < dt.Columns.Count; ++k) headers.Add(dt.Columns[k].ColumnName);
                     dv.RowFilter = '[' + Globals.machine.machName + ']' + " <> ''";
 
 
@@ -514,16 +514,16 @@ namespace Configurator_2._0
                                 reqMatch = true;
                             }
                         }
+                        else if (string.IsNullOrEmpty(req1) || req1 == "-")
+                        {
+                            reqMatch = true;
+                        }
                         else if (string.IsNullOrEmpty(req1) == false && string.IsNullOrWhiteSpace(req1) == false)
                         {
                             string[] reqs = req1.Split(',');
                             foreach (string req in reqs)
                                 if (req.Contains('-') == false && Globals.machine.snList.Contains(req))
                                     reqMatch = true;
-                        }
-                        else if (string.IsNullOrEmpty(req1))
-                        {
-                            reqMatch = true;
                         }
 
                         if (reqMatch == false)
