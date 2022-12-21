@@ -60,13 +60,13 @@ namespace Configurator_2._0
                         if (collName == "" || elm.Name == "_id")
                         {
                             if (collectionName.Contains("CONF") && !dt.Columns.Contains(collName))
-                                dr["Part Number"] = elm.Value.AsString.Replace("\"", "");
+                                dr["Part Number"] = elm.Value.AsString.Replace("\"", "").Replace("-","");
                             continue;
                         }
 
                         if (elm.Value is BsonString)
                         {
-                            dr[collName] = elm.Value.AsString.Replace("\"", "");
+                            dr[collName] = elm.Value.AsString.Replace("\"", "").Replace("-", "");
                             continue;
                         }
 
