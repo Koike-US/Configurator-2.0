@@ -48,19 +48,22 @@ namespace Configurator_2._0
             Refresh();
             lf.Close();
 
-            string version1 = AssemblyName
+            if (System.Diagnostics.Debugger.IsAttached == false)
+            {
+                string version1 = AssemblyName
                 .GetAssemblyName(@"W:\Engineering\Machine Configurator\Machine Configurator.exe")
                 .Version.ToString();
-            Assembly.GetExecutingAssembly();
-            string version2 = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Version client = new Version(version2);
-            Version server = new Version(version1);
-            if (server > client)
-            {
-                MessageBox.Show(
-                    "Configurator Update is required!! Configurator will now close, update, and restart when complete.");
-                UpdateConfigurator();
-                //TODO: Auto check for updates
+                Assembly.GetExecutingAssembly();
+                string version2 = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                Version client = new Version(version2);
+                Version server = new Version(version1);
+                if (server > client)
+                {
+                    MessageBox.Show(
+                        "Configurator Update is required!! Configurator will now close, update, and restart when complete.");
+                    UpdateConfigurator();
+                    //TODO: Auto check for updates
+                }
             }
 
             Globals.utils.PopItem(DivisionCombo, Globals.machineData, Globals.machineData.Columns[0].ColumnName, "",
@@ -541,9 +544,9 @@ namespace Configurator_2._0
             }
 
             ProcessStartInfo info = new ProcessStartInfo(@"W:\Engineering\Apps - Calculators\Koike Update.exe")
-                {
-                    Arguments = "Configurator 1"
-                };
+            {
+                Arguments = "Configurator 1"
+            };
             Process.Start(info);
 
             Application.Exit();
