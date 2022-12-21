@@ -75,6 +75,7 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.clearConfigButton = new System.Windows.Forms.ToolStripMenuItem();
             this.outputLabel = new System.Windows.Forms.Label();
+            this.getQuoteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -265,7 +266,7 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.fileToolStripMenuItem, this.salesToolStripMenuItem, this.engineeringToolStripMenuItem, this.helpToolStripMenuItem, this.toolsToolStripMenuItem, this.exportOptionsToolStripMenuItem, this.toolStripMenuItem1, this.checkConfigurationButton, this.completeConfigurationButton, this.toolStripMenuItem2, this.clearConfigButton });
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.fileToolStripMenuItem, this.salesToolStripMenuItem, this.engineeringToolStripMenuItem, this.helpToolStripMenuItem, this.toolsToolStripMenuItem, this.exportOptionsToolStripMenuItem, this.toolStripMenuItem1, this.checkConfigurationButton, this.completeConfigurationButton, this.toolStripMenuItem2, this.clearConfigButton, this.getQuoteToolStripMenuItem });
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1062, 24);
@@ -443,6 +444,13 @@
             this.outputLabel.TabIndex = 41;
             this.outputLabel.Text = "Output";
             // 
+            // getQuoteToolStripMenuItem
+            // 
+            this.getQuoteToolStripMenuItem.Name = "getQuoteToolStripMenuItem";
+            this.getQuoteToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.getQuoteToolStripMenuItem.Text = "Get Quote";
+            this.getQuoteToolStripMenuItem.Click += new System.EventHandler(this.getQuoteToolStripMenuItem_Click);
+            // 
             // Configurator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -484,6 +492,8 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.ToolStripMenuItem getQuoteToolStripMenuItem;
 
         #endregion
 

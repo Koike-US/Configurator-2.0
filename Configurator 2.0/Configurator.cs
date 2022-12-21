@@ -813,5 +813,11 @@ namespace Configurator_2._0
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
         }
+
+        private void getQuoteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetQuoteForm form = new GetQuoteForm();
+            form.Show();
+        }
     }
 }
