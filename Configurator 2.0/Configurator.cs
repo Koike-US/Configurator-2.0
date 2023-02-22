@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using Stand_Alone_Solidworks_Interface;
 
 namespace Configurator_2._0
 {
@@ -27,6 +28,7 @@ namespace Configurator_2._0
         List<Control> addedControls = new List<Control>();
         List<Label> addedLabels = new List<Label>();
 
+        epicorInterop eOp = new epicorInterop();
         int iMax = 0;
         int cBoxH = 265;
         int initOpts = 0;
@@ -704,7 +706,7 @@ namespace Configurator_2._0
                         MessageBox.Show("Error getting component data. Component " + comp + ", may not be entered in Configurator Component Database! \n" + e.ToString());
                     }
                     c.addType = dr2.Field<string>("Add Type");
-                    c.desc = dr2.Field<string>("Part Description");
+                    //c.desc = dr2.Field<string>("Part Description");
                     if (string.IsNullOrWhiteSpace(dr2.Field<string>("Max Qty")) == false)
                     {
                         c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
@@ -716,7 +718,10 @@ namespace Configurator_2._0
                     c.mrpType = dr2.Field<string>("MRP Type");
                     c.number = dr2.Field<string>("Part Number");
                     c.partType = dr2.Field<string>("Part Type");
-                    c.revision = dr2.Field<string>("Revision");
+                    //c.revision = dr2.Field<string>("Revision");
+
+
+
                     //if(c.revision == "" || c.revision == null)
                     //{
                     //    c.revision = "-";
@@ -815,8 +820,12 @@ namespace Configurator_2._0
                     manu = "KOIKE";
                     purch = "False";
                 }
+                if(string.IsNullOrEmpty(c.revision)== true)
+                {
+                    c.revision = "-";
+                }
                 //Number PartDescription Epicor_Mfgcomment Epicor_Purcomment   Epicor_Mfg_name Epicor_MFGPartNum   Epicor_RandD_c Epicor_createdbylegacy_c    Epicor_PartType_c Epicor_EngComment_c Epicor_Confreq_c Epicor_EA_Manf_c    Epicor_EA_Volts_c Epicor_EA_Phase_c   Epicor_EA_Freq_c Epicor_EA_FLA_Supply_c  Epicor_EA_FLA_LgMot_c Epicor_EA_ProtDevRating_c   Epicor_EA_PannelSCCR_c Epicor_EA_EncRating_c   Revision Epicor_RevisionDescription  Dwg.Rev.Epicor_FullRel_c Reference Count PartRev.DrawNum_c Part.Model_c PartTypeElectrical  PartRev.DrawSize_c PartRev.SheetCount_c
-                string[] row = (c.number + "," + c.desc.Replace(',', ' ') + ",,," + manu + ",,False,," + c.partType + ",,False, , , , , , , , , ," + c.revision + ",CONF PART," + c.revision + ",1," + c.qty.ToString() + "," + c.number + ",,TRUE,,").Split(',');
+                string[] row = (c.number + "%" + c.desc + "%%%" + manu + "%%False%%" + c.partType + "%%False% % % % % % % % % %" + c.revision + "%" + c.epicorRevDescription + "%" + c.epicorDrawRev + "%1%" + c.qty.ToString() + "%" + c.epicorDrawNum + "%%TRUE%" + c.epicorDrawSize + "%" + c.epicorDrawSheetCount).Split('%');
                 //string[] row = (c.number + "," + c.desc.Replace(',', ' ') + ",,," + manu + ",,False,," + c.partType + ",,False, , , , , , , , , ," + c.number + "," + c.revision + "," + c.desc.Replace(',', ' ') + "," + c.revision + ",1," + Globals.machine.dumNum + ",A," + c.qty.ToString() + ",," + c.number + ",TRUE," + c.partClass + "," + purch + "," + c.number + ",,,").Split(',');
                 i = 0;
                 foreach (string s in row)

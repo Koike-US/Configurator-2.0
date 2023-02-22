@@ -15,6 +15,7 @@ using MongoDB.Driver;
 
 
 using System.Text.RegularExpressions;
+using Stand_Alone_Solidworks_Interface;
 
 namespace Configurator_2._0
 {
@@ -70,7 +71,7 @@ namespace Configurator_2._0
                         }
                         if(elm.Value is BsonString)
                         {
-                            dr[collName] = elm.Value.AsString.Replace("\"", "");
+                            dr[collName] = elm.Value.AsString.Replace("\"", "").Replace("-", "");
                             continue;
                         }
                         dr[collName] = elm.Value;
@@ -153,7 +154,7 @@ namespace Configurator_2._0
             Globals.machine.bomObj = arr;
             if (Globals.machine.soNum != "")
             {
-                Task.Run(() => checkListGen.writeSP2());
+                Task.Run(() => checkListGen.writeSP());
             }
             return;
         }
@@ -165,11 +166,21 @@ namespace Configurator_2._0
             List<string> doneComps = new List<string>();
             List<component> tempComps = new List<component>();
             component c2;
+            epicorInterop eOp = new epicorInterop();
             foreach (option opt in Globals.machine.selOpts)
             {
                 foreach (component comp in opt.optComps)
                 {
-                    if(comp.number == Globals.machine.machComp.number)
+
+                    Dictionary<string, string> data = eOp.getPartData(comp.number);
+                    comp.revision = data["RevisionNum"];
+                    comp.desc = data["PartDescription"];
+                    comp.epicorRevDescription = "REVISION";
+                    comp.epicorDrawNum = data["DrawNum"];
+                    comp.epicorDrawRev = data["DrawRev_c"];
+                    comp.epicorDrawSize = data["DrawSize_c"];
+                    comp.epicorDrawSheetCount = data["SheetCount_c"];
+                    if (comp.number == Globals.machine.machComp.number)
                     {
                         Globals.machine.bomComps[0].qty = Globals.machine.bomComps[0].qty + 1;
                         doneComps.Add(comp.number);
@@ -594,6 +605,10 @@ namespace Configurator_2._0
                             reqMatch = true;
                         }
                     }
+                    else if (string.IsNullOrEmpty(req1) || req1 == "-")
+                    {
+                        reqMatch = true;
+                    }
                     else if (string.IsNullOrEmpty(req1) == false && string.IsNullOrWhiteSpace(req1) == false)
                     {
                         string[] reqs = req1.Split(',');
@@ -604,10 +619,6 @@ namespace Configurator_2._0
                                 reqMatch = true;
                             }
                         }
-                    }
-                    else if (req1 == null || req1 == "")
-                    {
-                        reqMatch = true;
                     }
                     if (reqMatch == false)
                     {
@@ -655,7 +666,13 @@ namespace Configurator_2._0
                 {
                     headers.Add(dt2.Columns[k].ColumnName);
                 }
-                dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
+                try
+                {
+
+
+                    dv.RowFilter = "Isnull([" + Globals.machine.machName + "],'') <> ''";
+                }
+                catch { return valid; }
                 dt2 = dv.ToTable(false, headers.ToArray());
                 if (dt2.Rows.Count > 0)
                 {

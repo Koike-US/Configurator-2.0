@@ -38,6 +38,18 @@ namespace Configurator_2._0
         public string partClass { get; set; }
         public int qty { get; set; }
 
+        public string epicorRev { get; set; } = "";
+        public string epicorRevDescription { get; set; } = "";
+        public string epicorDrawNum { get; set; } = "";
+        public string epicorDrawRev { get; set; } = "";
+        public string epicorDrawSize { get; set; } = "";
+        public string epicorDrawSheetCount { get; set; } = "";
+        public string epicorFullRelease { get; set; } = "";
+
+
+        public string epicorDesc { get; set; }
+        public string epicorMfgName { get; set; }
+        public string epicorMrpType { get; set; }
         public component()
         {
             qty = 0;

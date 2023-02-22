@@ -8,6 +8,7 @@ using System.IO;
 using Word = Microsoft.Office.Interop.Word;
 using EPDM.Interop.epdm;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Configurator_2._0
 {
@@ -27,7 +28,15 @@ namespace Configurator_2._0
             {
                 return;
             }
-            vault.LoginAuto("EPDM", 0);
+            try
+            {
+
+                vault.LoginAuto("EPDM", 0);
+            }
+            catch(Exception e)
+            {
+                Debug.Print(e.Message);
+            }
             List<string> opts = new List<string>();
 
             Word.Application ap = new Word.Application();
