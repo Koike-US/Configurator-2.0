@@ -22,7 +22,6 @@ namespace Configurator_2._0
         public int optQty { get; set; }
         public List<component> optComps = new List<component>();
         public List<string> optReqs = new List<string>();
-
     }
     class component
     {
@@ -122,5 +121,34 @@ namespace Configurator_2._0
         public string Part_Description { get; set; }
         public string MRP_Type { get; set; }
         public string Qty { get; set; }
+    }
+    class SimpleOption
+    {
+        public string _id { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
+        public string Smart_Designator { get; set; }
+        public string OptionCheckList { get; set; } = "-";
+        public string OptionReqs { get; set; } = "-";
+        public string Short_Description { get; set; }
+        public int Order { get; set; }
+        public string optQtySelect { get; set; }
+        public string optMaxQty { get; set; }
+        public string optQtyStep { get; set; }
+        public string prevType { get; set; }
+
+        public Dictionary<string, string> optPartsData = new Dictionary<string, string>();
+
+    }
+
+    public class SimpleComponent
+    {
+        public string pn { get; set; }
+        public string qtySelect { get; set; } = "";
+        public string qtyStep { get; set; } = "1";
+        public string maxQty { get; set; } = "1";
+        public string lineAdd { get; set; } = "";
+
+
     }
 }

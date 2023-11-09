@@ -14,6 +14,9 @@ using System.Diagnostics;
 using System.Net.NetworkInformation;
 using Stand_Alone_Solidworks_Interface;
 
+using EPDM.Interop.epdm;
+using MongoDB.Driver;
+
 namespace Configurator_2._0
 {
     public partial class Configurator : Form
@@ -35,6 +38,8 @@ namespace Configurator_2._0
         int cntrlHt = 0;
         int cntrlWidth = 0;
         int[] maxOptQty;
+
+        bool configurationComplete = false;
 
         string optDB = "Option Compatability";
         public Configurator()
@@ -178,6 +183,7 @@ namespace Configurator_2._0
             ResetAllControls(this);
             runTypes.Clear();
             runTypes.Capacity = 0;
+            configurationComplete = false;
             return;
         }
         private void selecChange(object sender, EventArgs e)
@@ -368,6 +374,7 @@ namespace Configurator_2._0
             c.mrpType = "M";
             c.partType = DivisionCombo.Text;
             c.revision = dr2.Rows[0].Field<string>("Revision"); 
+            c.epicorRevDescription = "REVISION";
             Globals.machine.machComp = c;
             return;
         }
@@ -383,7 +390,7 @@ namespace Configurator_2._0
             {
                 for(int i = 0; i < drs.Count();++i)
                 {
-                    if (Globals.machine.snList.Contains(drs[i][4]) == true)
+                    if (Globals.machine.snList.Contains(drs[i][5]) == true)
                     {
                         RowIndex = i;
                     }
@@ -572,14 +579,14 @@ namespace Configurator_2._0
                 {
                     while (i < dt.Rows.Count && optFound == false)
                     {
-                        if (dt.Rows[i].Field<string>(0) == optName)
+                        if (dt.Rows[i].Field<string>(1) == optName)
                         {
-                            while (dt.Rows[i].Field<string>(0) == optName && optFound == false)
+                            while (dt.Rows[i].Field<string>(1) == optName && optFound == false)
                             {
-                                if (i + 1 < dt.Rows.Count && dt.Rows[i + 1][0].ToString() != optName)//&& dt.Rows[i + 1][0] != DBNull.Value)
+                                if (i + 1 < dt.Rows.Count && dt.Rows[i + 1][1].ToString() != optName)//&& dt.Rows[i + 1][0] != DBNull.Value)
                                 {
-                                    string ring = dt.Rows[i + 1][0].ToString();
-                                    opt = new Tuple<DataTable, string, string>(dt, dt.Rows[i + 1].Field<string>(0), optDB);
+                                    string ring = dt.Rows[i + 1][1].ToString();
+                                    opt = new Tuple<DataTable, string, string>(dt, dt.Rows[i + 1].Field<string>(1), optDB);
                                     parCol = "Type";
                                     optFound = true;
                                 }
@@ -596,7 +603,7 @@ namespace Configurator_2._0
                 catch { }
                 if (optFound == false)
                 {
-                    opt = new Tuple<DataTable, string, string>(dt, dt.Rows[0][0].ToString(), optDB);
+                    opt = new Tuple<DataTable, string, string>(dt, dt.Rows[0][1].ToString(), optDB);
                 }
             }
 
@@ -700,24 +707,33 @@ namespace Configurator_2._0
                     {
                         drA = dt.Select("[Part Number] = '" + comp + "'");
                         dr2 = drA[0];
+                        c.addType = dr2.Field<string>("Add Type");
+                        if (string.IsNullOrWhiteSpace(dr2.Field<string>("Max Qty")) == false)
+                        {
+                            c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
+                        }
+                        if (string.IsNullOrWhiteSpace(dr2.Field<string>("Typ Qty")) == false)
+                        {
+                            c.typQty = Convert.ToInt32(dr2.Field<string>("Typ Qty"));
+                        }
+                        c.mrpType = dr2.Field<string>("MRP Type");
+                        c.number = dr2.Field<string>("Part Number");
+                        c.epicorRevDescription = "REVISION";
+                        c.partType = dr2.Field<string>("Part Type");
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show("Error getting component data. Component " + comp + ", may not be entered in Configurator Component Database! \n" + e.ToString());
+                        c.maxQty = 1;
+                        c.typQty = 1;
+                        c.addType = "$";
+                        c.desc = "$";
+                        c.mrpType = "$";
+                        c.number = comp;
+                        c.epicorRevDescription = "REVISION";
+                        c.partType = "$";
+                        // MessageBox.Show("Error getting component data. Component " + comp + ", may not be entered in Configurator Component Database! \n" + e.ToString());
                     }
-                    c.addType = dr2.Field<string>("Add Type");
-                    //c.desc = dr2.Field<string>("Part Description");
-                    if (string.IsNullOrWhiteSpace(dr2.Field<string>("Max Qty")) == false)
-                    {
-                        c.maxQty = Convert.ToInt32(dr2.Field<string>("Max Qty"));
-                    }
-                    if (string.IsNullOrWhiteSpace(dr2.Field<string>("Typ Qty")) == false)
-                    {
-                        c.typQty = Convert.ToInt32(dr2.Field<string>("Typ Qty"));
-                    }
-                    c.mrpType = dr2.Field<string>("MRP Type");
-                    c.number = dr2.Field<string>("Part Number");
-                    c.partType = dr2.Field<string>("Part Type");
+
                     //c.revision = dr2.Field<string>("Revision");
 
 
@@ -801,7 +817,7 @@ namespace Configurator_2._0
                 pType = "CM";
             }
             //Number PartDescription Epicor_Mfgcomment Epicor_Purcomment   Epicor_Mfg_name Epicor_MFGPartNum   Epicor_RandD_c Epicor_createdbylegacy_c    Epicor_PartType_c Epicor_EngComment_c Epicor_Confreq_c Epicor_EA_Manf_c    Epicor_EA_Volts_c Epicor_EA_Phase_c   Epicor_EA_Freq_c Epicor_EA_FLA_Supply_c  Epicor_EA_FLA_LgMot_c Epicor_EA_ProtDevRating_c   Epicor_EA_PannelSCCR_c Epicor_EA_EncRating_c   Revision Epicor_RevisionDescription  Dwg.Rev.Epicor_FullRel_c Reference Count PartRev.DrawNum_c Part.Model_c PartTypeElectrical  PartRev.DrawSize_c PartRev.SheetCount_c
-            string[] mRow = (Globals.machine.EpicorPartNumber + "," + Globals.machine.description.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,-,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.drawingName + "," + Globals.machine.machName + ",FALSE," + Globals.machine.drawingSize + ",").Split(',');
+            string[] mRow = (Globals.machine.EpicorPartNumber + "," + Globals.machine.description.Replace(',', ' ') + ",,,KOIKE," + Globals.machine.SmartPartNumber +  ",False," + userBox.Text.ToUpper() + "," + pType + ",,False, , , , , , , , , ,-,New Machine," + Globals.machine.dwgRev + ",1,1," + Globals.machine.drawingName + "," + Globals.machine.machCode + ",FALSE," + Globals.machine.drawingSize + ",").Split(',');
 
             //string[] mRow = (Globals.machine.dumNum + "," + Globals.machine.desc.Replace(',', ' ') + ",,,KOIKE,,False," + userBox.Text.ToUpper() +"," + Globals.machine.partType + ",,False, , , , , , , , , ," + Globals.machine.dumNum + ",A," + "New Machine" + "," + Globals.machine.dwgRev + ",1," + Globals.machine.dumNum + ",A,1,,,FALSE,,FALSE," + Globals.machine.dwgName + "," + Globals.machine.dwgSize + ",,").Split(',');
             int i = 0;
@@ -859,20 +875,14 @@ namespace Configurator_2._0
 
         private void addMachineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            addMachine addMach = new addMachine();
-            addMach.Show();
         }
 
         private void addOptionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            addOption aOpt = new addOption();
-            aOpt.Show();
         }
 
         private void addComponentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            addComponent add = new addComponent();
-            add.Show();
         }
 
         private void checkDBsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1014,19 +1024,116 @@ namespace Configurator_2._0
                 MessageBox.Show("No User initials entered!!!! Please enter your three character User Initials and try again.", "Can I See Your ID Error");
                 return;
             }
-
-            Globals.machine.salesOrders.Add(soBox.Text);
-            Globals.utils.WriteMachineToDatabase(Globals.machine);
-
-            if (epicorExportCheckbox.Checked == true || testExportCheckbox.Checked == true)
+            if (configurationComplete == false)
             {
-                Task.Run(() => exportBOM());
-                //MessageBox.Show("BOM Exported for Epicor.");
-            }
-            MessageBox.Show("Configuration Complete");
-            completeConfigurationButton.BackColor = Color.LawnGreen;
-        }
+                createFolder();
+                configurationComplete = true;
+                Globals.machine.salesOrders.Add(soBox.Text);
+                Globals.utils.WriteMachineToDatabase(Globals.machine);
 
+                if (epicorExportCheckbox.Checked == true || testExportCheckbox.Checked == true)
+                {
+                    Task.Run(() => exportBOM());
+                    //MessageBox.Show("BOM Exported for Epicor.");
+                }
+                MessageBox.Show("Configuration Complete");
+                completeConfigurationButton.BackColor = Color.LawnGreen;
+            }
+        }
+        private void createFolder()
+        {
+            string smartPN = Globals.machine.SmartPartNumber.Split('-')[0];
+            string folPath = "";
+            EdmVault5 vault = new EdmVault5();
+            try
+            {
+                vault.LoginAuto("EPDM", 0);
+            }
+            catch (Exception e)
+            {
+                Debug.Print(e.Message);
+            }
+            IEdmFolder9 folder = (IEdmFolder9)vault.RootFolder;
+            switch(smartPN)
+            {
+                case "SP44":
+                    folPath = @"\CUTTING MACHINES\SHOP-PRO\4X4";
+                    break;
+                case "SP48":
+                    folPath = @"\CUTTING MACHINES\SHOP-PRO\4X8";
+                    break;
+                case "SP51":
+                    folPath = @"\CUTTING MACHINES\SHOP-PRO\5x10";
+                    break;
+                case "CII10":
+                    folPath = @"\POSITIONERS\MANIPULATORS 014-614\CRICKET-II\10X10";
+                    break;
+                case "CII66":
+                    folPath = @"\POSITIONERS\MANIPULATORS 014-614\CRICKET-II\6X6";
+                    break;
+                case "CII88":
+                    folPath = @"\POSITIONERS\MANIPULATORS 014-614\CRICKET-II\8X8";
+                    break;
+                case "CII12":
+                    folPath = @"\POSITIONERS\MANIPULATORS 014-614\CRICKET-II\12X12";
+                    break;
+                case "CI66":
+                    folPath = @"\POSITIONERS\MANIPULATORS 014-614\CRICKET";
+                    break;
+                case "MRD5":
+                    folPath = @"\POSITIONERS\TURN ROLLS - 013-613\MRD_MRI";
+                    break;
+                case "MRD10":
+                    folPath = @"\POSITIONERS\TURN ROLLS - 013-613\MRD_MRI";
+                    break;
+                case "MRD20":
+                    folPath = @"\POSITIONERS\TURN ROLLS - 013-613\MRD_MRI";
+                    break;
+                case "MD15":
+                    folPath = @"\POSITIONERS\G-DRIVEN 007-607-630\MD\MD15";
+                    break;
+                case "MD30":
+                    folPath = @"\POSITIONERS\G-DRIVEN 007-607-630\MD\MD30";
+                    break;
+                case "MD50":
+                    folPath = @"\POSITIONERS\G-DRIVEN 007-607-630\MD\MD50";
+                    break;
+                case "PRD3":
+                    folPath = @"\POSITIONERS\TURN ROLLS - 013-613\PRD_PRI";
+                    break;
+                case "HTX10":
+                    folPath = @"\POSITIONERS\HTS  009-609\MDHTS10";
+                    break;
+                case "LD4":
+                    folPath = @"\POSITIONERS\LD  030\LD 4";
+                    break;
+                case "SPXHD2612":
+                    folPath = @"\CUTTING MACHINES\SHOP-PRO HD\6X12";
+                    break;
+                case "SPXHD510":
+                    folPath = @"\CUTTING MACHINES\SHOP-PRO HD\5X10";
+                    break;
+                case "HTX5":
+                    folPath = @"\POSITIONERS\HTS  009-609\MDHTS5";
+                    break;
+                case "HTX15":
+                    folPath = @"\POSITIONERS\HTS  009-609\MDHTS15";
+                    break;
+                default:
+                    MessageBox.Show("Folder creation error. Please manually create the proper folder in EPDM");
+                    break;
+            }
+            folPath = folPath + "\\" + Globals.machine.soNum;
+            try
+            {
+                IEdmFolder5 fol2 = folder.CreateFolderPath(folPath, this.Handle.ToInt32());
+            }
+            catch
+            {
+                MessageBox.Show("Folder creation error. Please manually create the proper folder in EPDM");
+            }
+            return;
+        }
         private void clearConfigButton_Click(object sender, EventArgs e)
         {
             clearAndResetForm();
@@ -1035,6 +1142,18 @@ namespace Configurator_2._0
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
+        }
+
+        private void viewDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            databaseViewer dbView = new databaseViewer();
+            dbView.Show();
+        }
+
+        private void addEditOptionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            addEditOptionForm edit = new addEditOptionForm();
+            edit.Show();
         }
     }
 }

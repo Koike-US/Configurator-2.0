@@ -75,6 +75,8 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.clearConfigButton = new System.Windows.Forms.ToolStripMenuItem();
             this.outputLabel = new System.Windows.Forms.Label();
+            this.viewDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addEditOptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -379,7 +381,9 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.checkDBsToolStripMenuItem,
-            this.refreshDBsToolStripMenuItem});
+            this.refreshDBsToolStripMenuItem,
+            this.viewDatabaseToolStripMenuItem,
+            this.addEditOptionToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -387,14 +391,14 @@
             // checkDBsToolStripMenuItem
             // 
             this.checkDBsToolStripMenuItem.Name = "checkDBsToolStripMenuItem";
-            this.checkDBsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.checkDBsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.checkDBsToolStripMenuItem.Text = "Check DB\'s";
             this.checkDBsToolStripMenuItem.Click += new System.EventHandler(this.checkDBsToolStripMenuItem_Click);
             // 
             // refreshDBsToolStripMenuItem
             // 
             this.refreshDBsToolStripMenuItem.Name = "refreshDBsToolStripMenuItem";
-            this.refreshDBsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.refreshDBsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.refreshDBsToolStripMenuItem.Text = "Refresh DB\'s";
             this.refreshDBsToolStripMenuItem.Click += new System.EventHandler(this.refreshDBsToolStripMenuItem_Click);
             // 
@@ -465,6 +469,20 @@
             this.outputLabel.Size = new System.Drawing.Size(39, 13);
             this.outputLabel.TabIndex = 41;
             this.outputLabel.Text = "Output";
+            // 
+            // viewDatabaseToolStripMenuItem
+            // 
+            this.viewDatabaseToolStripMenuItem.Name = "viewDatabaseToolStripMenuItem";
+            this.viewDatabaseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.viewDatabaseToolStripMenuItem.Text = "View Database";
+            this.viewDatabaseToolStripMenuItem.Click += new System.EventHandler(this.viewDatabaseToolStripMenuItem_Click);
+            // 
+            // addEditOptionToolStripMenuItem
+            // 
+            this.addEditOptionToolStripMenuItem.Name = "addEditOptionToolStripMenuItem";
+            this.addEditOptionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addEditOptionToolStripMenuItem.Text = "Add/EditOption";
+            this.addEditOptionToolStripMenuItem.Click += new System.EventHandler(this.addEditOptionToolStripMenuItem_Click);
             // 
             // Configurator
             // 
@@ -557,5 +575,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem clearConfigButton;
         private System.Windows.Forms.Label outputLabel;
+        private System.Windows.Forms.ToolStripMenuItem viewDatabaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addEditOptionToolStripMenuItem;
     }
 }

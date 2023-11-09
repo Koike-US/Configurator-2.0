@@ -48,6 +48,10 @@ namespace Configurator_2._0
                             {
                                 dt.Columns.Add(new DataColumn("Part Number"));
                             }
+                            else if (!dt.Columns.Contains(collName) && collectionName.Contains("CONF") == false && collectionName.Contains("Machine Data") == false && collectionName.Contains("Component Database") == false)
+                            {
+                                dt.Columns.Add(new DataColumn(collName));
+                            }
 
                             continue;
                         }
@@ -63,13 +67,24 @@ namespace Configurator_2._0
                     foreach (BsonElement elm in doc.Elements)
                     {
                         var collName = elm.Name.Replace("_", " ");
+                        if (collName.Contains("SHOPPRO"))
+                        {
+                            string ring = collName;
+                            int dint = collName.Length;
+                        }
                         if (collName == "" || elm.Name == "_id")
                         {
                             if (collectionName.Contains("CONF") && !dt.Columns.Contains(collName))
                                 dr["Part Number"] = elm.Value.AsString.Replace("\"", "");
+                            else if (collName != "")
+                                try
+                                {
+                                    dr[collName] = elm.Value;
+                                }
+                                catch { }
                             continue;
                         }
-                        if(elm.Value is BsonString)
+                        if(elm.Value is BsonString && collectionName.ToUpper().Equals("MACHINE DATA") == false)
                         {
                             dr[collName] = elm.Value.AsString.Replace("\"", "").Replace("-", "");
                             continue;
@@ -80,9 +95,17 @@ namespace Configurator_2._0
                 }
                 Globals.dataBase.Tables.Add(dt);
             }
-            Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"].AsEnumerable().OrderBy(r => (Convert.ToInt32(r["Order"]))).CopyToDataTable(); 
-            Globals.compData = Globals.dataBase.Tables["Component Database"];
-            Globals.machineData = Globals.dataBase.Tables["Machine Data"];
+            try
+            {
+                //Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"].AsEnumerable().OrderBy(r => (Convert.ToInt32(r["Order"]))).CopyToDataTable();
+                Globals.cmdOptComp = Globals.dataBase.Tables["Option Compatability"].AsEnumerable().OrderBy(r => (Convert.ToInt32(r["Order"]))).CopyToDataTable();
+                Globals.compData = Globals.dataBase.Tables["Component Database"];
+                Globals.machineData = Globals.dataBase.Tables["Machine Data"];
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error loading Database. Please contact your System Administrator");
+            }
             return;
         }
         private void genDesc()
@@ -169,17 +192,31 @@ namespace Configurator_2._0
             epicorInterop eOp = new epicorInterop();
             foreach (option opt in Globals.machine.selOpts)
             {
+                string ring = opt.optName;
                 foreach (component comp in opt.optComps)
                 {
 
                     Dictionary<string, string> data = eOp.getPartData(comp.number);
-                    comp.revision = data["RevisionNum"];
+                    if(data.Count == 0)
+                    {
+                        MessageBox.Show("ERROR: " + comp.number + " has no entry in Epicor. Please ensure its Epicor data is correct and then re-configure this machine.");
+                        continue;
+                    }
+                    comp.revision = "-";
+                    if (data.ContainsKey("RevisionNum") == true)
+                    {
+                        comp.revision = data["RevisionNum"];
+                    }
                     comp.desc = data["PartDescription"];
                     comp.epicorRevDescription = "REVISION";
-                    comp.epicorDrawNum = data["DrawNum"];
-                    comp.epicorDrawRev = data["DrawRev_c"];
-                    comp.epicorDrawSize = data["DrawSize_c"];
-                    comp.epicorDrawSheetCount = data["SheetCount_c"];
+                    comp.epicorDrawNum = "NA";
+                    if (data.ContainsKey("DrawNum") == true)
+                    {
+                        comp.epicorDrawNum = data["DrawNum"];
+                        comp.epicorDrawRev = data["DrawRev_c"];
+                        comp.epicorDrawSize = data["DrawSize_c"];
+                        comp.epicorDrawSheetCount = data["SheetCount_c"];
+                    }
                     if (comp.number == Globals.machine.machComp.number)
                     {
                         Globals.machine.bomComps[0].qty = Globals.machine.bomComps[0].qty + 1;
@@ -211,13 +248,13 @@ namespace Configurator_2._0
             {
                 if (c.qty != 0)
                 {
-                    if (c.addType == "BOM")
-                    {
-                        Globals.machine.bomComps.Add(c);
-                    }
                     if (c.addType == "LINE")
                     {
                         Globals.machine.lineComps.Add(c);
+                    }
+                    else
+                    {
+                        Globals.machine.bomComps.Add(c);
                     }
                 }
             }
@@ -513,7 +550,7 @@ namespace Configurator_2._0
                 lb.Items.Clear();
                 for(int i = 0; i <= dt2.Rows.Count-1; ++i)
                 {
-                    lb.Items.Add(dt2.Rows[i][1].ToString());
+                    lb.Items.Add(dt2.Rows[i][2].ToString());
                 }
             }
             if (cb is ComboBox)

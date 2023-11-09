@@ -34,7 +34,7 @@ namespace Stand_Alone_Solidworks_Interface
 
         public epicorInterop()
         {
-            string[] constants = File.ReadAllLines(@"G:\Customer Service\Python\constants.py");
+            string[] constants = File.ReadAllLines(@"\\Dataserver\Customer Service\Python\constants.py");
             foreach(string s in constants)
             {
                 string[] s2 = s.Replace("'","").Split(new[] { " = " }, StringSplitOptions.None);
